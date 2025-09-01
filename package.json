@@ -1,0 +1,15 @@
+{
+  "name": "crs-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],    
+  "scripts": {
+    "dev:backend": "yarn workspace backend start:dev",
+    "dev:frontend": "yarn workspace frontend start",
+    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

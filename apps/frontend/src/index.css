@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* Light Mode */
+:root {
+  --primary-color: #2563EB;
+  --secondary-color: #1E40AF;
+  --tertiary-color: #38BDF8;
+  --background-color: #F9FAFB;
+  --surface-color: #FFFFFF;
+  --text-color: #111827;
+  --second-text-color: #6B7280;
+}
+
+/* Dark Mode */
+.dark {
+  --primary-color: #7C3AED;
+  --secondary-color: #9333EA;
+  --tertiary-color: #06B6D4;
+  --background-color: #0F172A;
+  --surface-color: #1E293B;
+  --text-color: #F1F5F9;
+  --second-text-color: #94A3B8;
+}
+
+/* Additional Colors */
+:root {
+  --danger-color: #cf0d0d;
+  --success-color: #0fb34b;
+  --warning-color: #f59e0b;
+  --info-color: #175dcc;
+  --light-color: #f3f4f6;
+}
+
+/* Apply variables to classes */
+.bg-primary { background-color: var(--primary-color); }
+.bg-secondary { background-color: var(--secondary-color); }
+.bg-tertiary { background-color: var(--tertiary-color); }
+.bg-background { background-color: var(--background-color); }
+.bg-surface { background-color: var(--surface-color); }
+.bg-danger { background-color: var(--danger-color); }
+
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--secondary-color); }
+.text-tertiary { color: var(--tertiary-color); }
+.text-background { color: var(--background-color); }
+.text-surface { color: var(--surface-color); }
+.text-text { color: var(--text-color); }
+.text-secondText { color: var(--second-text-color); }
+.text-danger { color: var(--danger-color); }
+.text-success { color: var(--success-color); }
+
+
+/* Focus ring */
+.focus\:ring-ring:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }

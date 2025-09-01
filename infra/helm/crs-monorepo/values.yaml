@@ -1,0 +1,19 @@
+frontend:
+  image: abnjain/crs-frontend:latest
+  replicas: 2
+  servicePort: 80
+
+backend:
+  image: abnjain/crs-backend:latest
+  replicas: 2
+  servicePort: 5000
+  env:
+    MONGO_URL: mongodb://localhost:27017/crs
+    REDIS_URL: redis://localhost:6379
+
+mongo:
+  image: mongo:6
+  storage: 1Gi
+
+redis:
+  image: redis:7

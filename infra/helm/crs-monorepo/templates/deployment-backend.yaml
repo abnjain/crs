@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crs-backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: crs-backend
+  template:
+    metadata:
+      labels:
+        app: crs-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_URL
+              value: {{ .Values.backend.env.MONGO_URL }}
+            - name: REDIS_URL
+              value: {{ .Values.backend.env.REDIS_URL }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crs-backend
+spec:
+  selector:
+    app: crs-backend
+  ports:
+    - port: {{ .Values.backend.servicePort }}
+      targetPort: 5000
+  type: ClusterIP
