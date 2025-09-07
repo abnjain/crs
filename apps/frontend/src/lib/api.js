@@ -1,25 +1,20 @@
-const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
-const API_VERSION = "/api/v1";
+import axios from 'axios'
 
-export async function getCurrentUser() {
-  const res = await fetch(`${API_URL}${API_VERSION}/auth/me`, { credentials: "include" });
-  return res.json();
-}
+const API_VERSION = import.meta.VITE_API_VERSION || '/api/v1'
 
-export async function loginUser(credentials) {
-  const res = await fetch(`${API_URL}${API_VERSION}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
-    credentials: "include",
-  });
-  return res.json();
-}
+const api = axios.create({
+  baseURL: API_VERSION,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-export async function logoutUser() {
-  const res = await fetch(`${API_URL}${API_VERSION}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  return res.json();
-}
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+export default api

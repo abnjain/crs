@@ -1,60 +1,87 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Routes, Route } from "react-router-dom";
-import { Home, BookOpen,Users, Calendar, Briefcase, FileText, Bell, Settings, LogOut, Moon, Sun, Menu, X, Search, Plus, Edit, Trash2, Eye } from 'lucide-react';
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import AdminDashboard from "./pages/Dashboards/AdminDashboard.jsx";
-import TeacherDashboard from "./pages/Dashboards/TeacherDashboard.jsx";
-import StudentDashboard from "./pages/Dashboards/StudentDashboard.jsx";
-import ProtectedRoute from "./routes/ProtectedRoutes.jsx";
-import RoleBasedRoute from "./routes/RoleBasedRoute.jsx";
-import Sidebar from './components/main/Sidebar.jsx';
-import Header from './components/main/Header.jsx';
+// src/App.jsx (snippet)
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { RootProviders } from '@/providers/RootProviders';
+import Login from '@/pages/auth/Login';
+import AdminDashboard from '@/pages/dashboard/AdminDashboard';
+import StudentDashboard from '@/pages/dashboard/StudentDashboard';
+import TeacherDashboard from '@/pages/dashboard/TeacherDashboard';
+import StaffDashboard from '@/pages/dashboard/StaffDashboard';
+import SuperAdminDashboard from '@/pages/dashboard/SuperAdminDashboard';
+import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
+import Register from './pages/auth/Register';
+import RequireAuth from './contexts/RequiredAuth';
+import Forbidden from './pages/errors/Forbidden';
+import NotFound from './pages/errors/NotFound';
+import RoleBasedDashboardRedirect from './pages/dashboard/RoleBasedDashboardRedirect';
 
 function App() {
+  
+debugger
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      
-      <Route path="/register" element={<Register />} />
+    <RootProviders>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> 
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <RoleBasedRoute roles={["Admin", "SuperAdmin"]}>
-              <AdminDashboard />
-            </RoleBasedRoute>
-          </ProtectedRoute>
-        }
-      />
+          <Route
+            path="/dashboard/admin"
+            element={
+              <ProtectedRoute allowedRoles={["Admin", "SuperAdmin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/student"
+            element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/teacher"
+            element={
+              <ProtectedRoute allowedRoles={['Teacher']}>
+                <TeacherDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/staff"
+            element={
+              <ProtectedRoute allowedRoles={['Staff']}>
+                <StaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/superadmin"
+            element={
+              <ProtectedRoute allowedRoles={["SuperAdmin"]}>
+                <SuperAdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['Admin', 'Student', 'SuperAdmin', 'Teacher', 'Staff']}>
+                <RoleBasedDashboardRedirect />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/forbidden" element={<Forbidden />} />
 
-      <Route
-        path="/teacher"
-        element={
-          <ProtectedRoute>
-            <RoleBasedRoute roles={["Teacher"]}>
-              <TeacherDashboard />
-            </RoleBasedRoute>
-          </ProtectedRoute>
-        }
-      />
+          <Route path="*" element={<NotFound />} />   {/* Catch all 404 */}
 
-      <Route
-        path="/student"
-        element={
-          <ProtectedRoute>
-            <RoleBasedRoute roles={["Student"]}>
-              <StudentDashboard />
-            </RoleBasedRoute>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        </Routes>
+
+      </BrowserRouter>
+    </RootProviders>
   );
 }
-
-
-
 
 export default App;

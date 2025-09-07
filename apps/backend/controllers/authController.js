@@ -15,6 +15,7 @@ export const register = async (req, res, next) => {
       const user = await User.create({ email, password: hash, name, phone, roles: roles || "Student" });
       const token = sign(user);
       const refresh = signRefresh(user);
+      console.log({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Registered successfully", ok: true });
       return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Registered successfully", ok: true });
   } catch (err) {
       console.error(err);
@@ -33,6 +34,7 @@ export const login = async (req, res, next) => {
     if (!ok) return res.status(400).json({ message: "Invalid credentials", error: "Invalid Input" });
     const token = sign(user);
     const refresh = signRefresh(user);
+    console.log({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Logged in successfully", ok: true });
     return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Logged in successfully", ok: true });
   } catch (err) {
     console.error(err);
@@ -55,6 +57,7 @@ export const requestPasswordReset = async (req, res, next) => {
     const url = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${token}`;
     await sendMail(email, "Password reset", `Reset: ${url}`, `<a href="${url}">Reset</a>`);
     console.log("sent", token, url);    
+    console.log({ ok: true, message: "If an account with that email exists, a password reset link will be sent." });    
     return res.status(200).json({ ok: true, message: "If an account with that email exists, a password reset link will be sent." });
   } catch (err) {
     console.error(err);
@@ -73,6 +76,7 @@ export const resetPassword = async (req, res, next) => {
     user.resetToken = null;
     user.resetTokenExp = null;
     await user.save();
+    console.log({ ok: true, message: "Password reset successfully" });
     return res.status(200).json({ ok: true, message: "Password reset successfully" });
   } catch (err) {
     console.error(err);
@@ -85,6 +89,7 @@ export const logout = async (req, res, next) => {
   try {
     // Invalidate user session or token
     req.token = null;
+    console.log({ ok: true, message: "Logged out" });
     res.status(200).json({ ok: true, message: "Logged out" });
   } catch (err) {
     console.error(err);
@@ -96,6 +101,7 @@ export const logout = async (req, res, next) => {
 export const sendOtp = async (req, res, next) => {
   try {
     // Send OTP logic
+    console.log({ ok: true, message: "OTP sent" });
     res.status(200).json({ ok: true, message: "OTP sent" });
   } catch (err) {
     console.error(err);
@@ -107,6 +113,7 @@ export const sendOtp = async (req, res, next) => {
 export const verifyOtp = async (req, res, next) => {
   try {
     // Verify OTP logic
+    console.log({ ok: true, message: "OTP verified" });
     res.status(200).json({ ok: true, message: "OTP verified" });
   } catch (err) {
     console.log(err);
