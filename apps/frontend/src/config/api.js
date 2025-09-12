@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Compose base URL safely
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+const BACKEND = import.meta.env.VITE_BACKEND_URL;
 const VERSION = import.meta.env.VITE_API_VERSION || '/api/v1';
 const BASE_URL = `${BACKEND.replace(/\/+$/, '')}${VERSION.startsWith('/') ? VERSION : `/${VERSION}`}`;
 
