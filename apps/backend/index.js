@@ -33,46 +33,46 @@
   const app = express();
   const debug = dbgr(process.env.DEBUG || "development:crs-backend");
 
-  // // Package Middlewares
-  // // helmet (to disable X-powered-by)
-  // app.use(helmet());
+  // Package Middlewares
+  // helmet (to disable X-powered-by)
+  app.use(helmet());
   // for limiting cross origin requests
   app.use(cors({
       origin: process.env.FRONTEND_URL,
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     }));
-  // // for limiting API requests
-  // const apiLimiter = rateLimit({
-  //   windowMs: 15 * 60 * 1000, // 15 min
-  //   max: 100, // 100 requests / IP / window
-  //   message: "Too many requests, please try again later",
-  // });
-  // app.use("/api/v1", apiLimiter);
+  // for limiting API requests
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min
+    max: 100, // 100 requests / IP / window
+    message: "Too many requests, please try again later",
+  });
+  app.use("/api/v1", apiLimiter);
   // for reading body message in a request (eg. POST request, and limiting it to 5 mb data)
   app.use(express.json({ limit: "5mb" }));
   app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded or in other words form data
-  // // for session creation, redis configuration and management
-  // const redisClient = new Redis(process.env.REDIS_URL);
-  // const RedisStores = new RedisStore({ client: redisClient });
-  // app.use(
-  //   session({
-  //     store: RedisStores,
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //     cookie: {
-  //       httpOnly: true,
-  //       secure: process.env.NODE_ENV === "production",
-  //       sameSite: "strict",
-  //       maxAge: 1000 * 60 * 60, // 1 hr
-  //     },
-  //   })
-  // );
+  // for session creation, redis configuration and management
+  const redisClient = new Redis(process.env.REDIS_URL);
+  const RedisStores = new RedisStore({ client: redisClient });
+  app.use(
+    session({
+      store: RedisStores,
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60, // 1 hr
+      },
+    })
+  );
   // for logging request hits in the console or terminal
   app.use(morgan("dev"));
-  // // ✅ Token Revocation Middleware
-  // app.use(revokeToken);
+  // ✅ Token Revocation Middleware
+  app.use(revokeToken);
 
 
 
