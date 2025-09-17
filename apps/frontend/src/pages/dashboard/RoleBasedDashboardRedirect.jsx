@@ -20,8 +20,8 @@ const RoleBasedDashboardRedirect = () => {
             navigate('/login');
             return;
         }
-        const role = user && user.roles ? user.roles.toLowerCase() : null;
-        const path = ROLE_DASHBOARD_PATHS[role] || '/login';
+        const roles = user && user.roles ? user.roles.map(r => r.toLowerCase()) : null;
+        const path = roles && roles.length > 0 ? ROLE_DASHBOARD_PATHS[roles[0]] || '/login' : '/login';
         navigate(path, { replace: true });
     }, [user, navigate]);
 

@@ -1,9 +1,10 @@
 import { Client, Account, Databases, Storage, Functions } from "appwrite";
+import { config } from "../config/config";
 
 const client = new Client()
-  .setEndpoint(process.env.APPWRITE_ENDPOINT || "http://localhost/v1")
-  .setProject(process.env.APPWRITE_PROJECT_ID || "")
-  .setKey(process.env.APPWRITE_API_KEY || "");
+  .setEndpoint(config.appwrite.endpoint)
+  .setProject(config.appwrite.projectId)
+  .setKey(config.appwrite.apiKey);
 
 const account = new Account(client);
 const databases = new Databases(client);

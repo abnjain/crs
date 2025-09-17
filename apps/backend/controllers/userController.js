@@ -69,3 +69,20 @@ export const listUsers = async (req, res, next) => {
         next(err);
     }
 };
+
+// Global revocation (emergency logout all users)
+export const revokeAllTokens = async (req, res) => {
+  try {
+    await User.updateMany({}, { 
+      $set: { lastRevocation: new Date() },
+      $inc: { tokenVersion: 1 }
+    });
+    
+    res.status(200).json({ 
+      ok: true, 
+      message: "All tokens revoked globally" 
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Revocation failed", error: err.message });
+  }
+};

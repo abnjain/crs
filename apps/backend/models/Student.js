@@ -15,12 +15,14 @@ const StudentSchema = new mongoose.Schema({
   admissionYear: Number,
   courseId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "Course" 
+    ref: "Course",
+    required: true
   },
   enrollmentNo: { 
     type: String, 
     required: true, 
-    unique: true 
+    unique: true,
+    index: true
   },
   section: {
     type: String

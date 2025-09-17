@@ -1,14 +1,15 @@
 import jwt from "jsonwebtoken";
 import Redis from "ioredis";
+import { config } from "../config/config.js";
 
-const redis = new Redis(process.env.REDIS_URL);
+const redis = new Redis(config.redis.url);
 
 // ✅ JWT verification
 export const verifyJWTAuth = (req, res, next) => {
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+  jwt.verify(token, config.jwt.secret, async (err, decoded) => {
     if (err) return res.status(403).json({ error: "Invalid token" });
 
     // ✅ Check revocation

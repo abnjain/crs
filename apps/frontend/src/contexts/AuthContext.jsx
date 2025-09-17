@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   }, []);
-  
+
   const fetchUser = async (tkn) => {
     try {
       const headers = {
@@ -26,8 +26,11 @@ export function AuthProvider({ children }) {
         "Authorization": `Bearer ${tkn}`,
       };
       const res = await api.get('/auth/users/me', { headers });
-      console.log(res.data.message);  
-      setUser(res.data.user);
+      console.log(res.data.message);
+      setUser({
+        ...res.data.user,
+        roles: Array.isArray(res.data.user.roles) ? res.data.user.roles : [res.data.user.roles].filter(Boolean)
+      });
       return { user: res.data.user, success: true };
     } catch (err) {
       console.error('Failed to fetch user');
@@ -36,13 +39,14 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   };
-// debugger 
-  const register  = async (email, password) => {
+
+  const register = async (email, password) => {
     try {
       const res = await api.post('/auth/register', { email, password });
-      console.log(res.data.message);  
-      const { token } = res.data;
+      console.log(res.data.message);
+      const { token, refresh } = res.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('refresh', refresh);
       setToken(token);
       await fetchUser(token);
       return { success: true, user: res.data.user };
@@ -54,13 +58,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-// debugger 
   const login = async (email, password) => {
     try {
       const res = await api.post('/auth/login', { email, password });
-      console.log(res.data.message);  
-      const { token } = res.data;
+      console.log(res.data.message);
+      const { token, refresh } = res.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('refresh', refresh);
       setToken(token);
       await fetchUser(token);
       return { success: true, user: res.data.user };
@@ -73,16 +77,16 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    setIsLoading(true);
     try {
-      await api.post('/auth/logout');
-      console.log(res.data.message);  
+      const res = await api.post('/auth/logout');
+      console.log(res.data.message);
+    } catch (error) {
+      console.warn('Logout request failed (maybe already logged out)');
+    } finally {
       localStorage.removeItem('token');
       setToken(null);
       setUser(null);
-      api.post('/auth/logout').catch(() => {});
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
       setIsLoading(false);
     }
   };

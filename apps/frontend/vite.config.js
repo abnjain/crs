@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
+import { config } from './src/config/config.js';
 
 export default defineConfig({
   plugins: [
@@ -9,10 +10,10 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
-    port: process.env.FRONTEND_PORT || process.env.PORT || 5173,
+    port: config.server.port,
     proxy: {
       '/api': {
-        target: process.env.VITE_BACKEND_URL,
+        target: config.api.baseUrl,
         changeOrigin: true,
       },
     },

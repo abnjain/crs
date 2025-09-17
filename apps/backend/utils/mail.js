@@ -1,22 +1,21 @@
 // minimal nodemailer wrapper (works if SMTP env provided)
 import nodemailer from "nodemailer";
-import dotenv from "dotenv"
-dotenv.config();
+import { config } from "../config/config.js";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  host: config.mail.smtpHost,
+  port: config.mail.smtpPort,
   secure: false,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: config.mail.smtpUser, 
+    pass: config.mail.smtpPass
   }
 });
 
 async function sendMail(to, subject, text, html) {
   if (!transporter) return;
   await transporter.sendMail({
-    from: process.env.SMTP_FROM || "noreply@crs.local",
+    from: config.mail.smtpFrom,
     to,
     subject,
     text,

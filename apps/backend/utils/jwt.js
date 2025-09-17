@@ -1,14 +1,13 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
-const SECRET = process.env.JWT_SECRET;
+import { config } from "../config/config.js";
+const SECRET = config.jwt.secret;
 
-function sign(user, opts = { expiresIn: "15m" }) {
-  return jwt.sign({ id: user._id, roles: user.roles }, SECRET, opts);
+function sign(user, opts = { expiresIn: "30m" }, version = user.tokenVersion) {
+  return jwt.sign({ id: user._id, roles: user.roles, version }, SECRET, opts);
 }
 
-function signRefresh(user, opts = { expiresIn: "7d" }) {
-  return jwt.sign({ id: user._id }, SECRET, opts);
+function signRefresh(user, opts = { expiresIn: "7d" }, version = user.tokenVersion) {
+  return jwt.sign({ id: user._id, version }, SECRET, opts);
 }
 
 function verifyJWT(token) {

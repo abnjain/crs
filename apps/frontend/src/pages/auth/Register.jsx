@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import api from "@/config/api";
 import { toast } from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { config } from "@/config/config.js";
 
 export default function Register() {
-  const APP_NAME = import.meta.env.VITE_APP_NAME || "";
+  const APP_NAME = config.app.name || "";
   const navigate = useNavigate();
 
   const {
@@ -44,7 +45,7 @@ export default function Register() {
   };
 
   return (
-    <>  
+    <>
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
@@ -68,7 +69,11 @@ export default function Register() {
               </div>
               <div className="grid gap-2">
                 <Label>Phone</Label>
-                <Input type="text" placeholder="1234567890" {...register("phone")} />
+                <Input type="tel" placeholder="1234567890" maxLength={10}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only numbers
+                  }} 
+                  pattern="[0-9]{10}" {...register("phone")} />
                 {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
               </div>
               <div className="grid gap-2">

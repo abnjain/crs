@@ -31,15 +31,79 @@ export async function attendanceAnalytics(req, res, next) {
   }
 }
 
+// apps/backend/controllers/analyticsController.js
+// Updated performance function
+
 export async function performance(req, res, next) {
   try {
-    if (req.user.role !== 'Admin' && req.user.role !== "SuperAdmin" && req.user.role !== "Teacher") return res.status(403).json({ message: "Only admins and teachers can access here", error: "Forbidden" });
-    const subjectId = req.query.subjectId;
-    // placeholder
-    res.status(200).json({ subjectId, avg: 0, ok: true, message: "Performance data fetched successfully" });
+    const roles = req.user.roles || [];
+    const allowed = ["Admin", "SuperAdmin", "Teacher"];
+    const ok = roles.some(r => allowed.includes(r));
+
+    if (!ok) {
+      return res.status(403).json({
+        message: "Only admins and teachers can access here",
+        error: "Forbidden"
+      });
+    }
+
+    const { subjectId, classId } = req.query;
+
+    // If no subjectId provided, get all subjects for this teacher
+    if (!subjectId) {
+      const teacher = await Teacher.findById(req.user._id).populate('subjects');
+      if (!teacher) {
+        return res.status(404).json({ message: "Teacher not found" });
+      }
+
+      const subjects = teacher.subjects.map(s => ({
+        _id: s._id,
+        name: s.name,
+        code: s.code,
+        avgMarks: 0 // placeholder
+      }));
+
+      return res.status(200).json({ bySubject: subjects, averageMarks: 0, totalStudents: 0, message: "Performance data fetched successfully" });
+    }
+
+    // Get marks for specific subject
+    const match = {
+      subject: subjectId,
+      ...(classId && { class: classId })
+    };
+
+    const marksData = await Marks.aggregate([
+      { $match: match },
+      {
+        $group: {
+          _id: "$student",
+          totalMarks: { $sum: "$marks" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          avgMarks: { $avg: "$totalMarks" },
+          totalStudents: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const result = {
+      bySubject: [{ subject: subjectId, avgMarks: marksData[0]?.avgMarks || 0, totalStudents: marksData[0]?.totalStudents || 0 }],
+      averageMarks: marksData[0]?.avgMarks || 0,
+      totalStudents: marksData[0]?.totalStudents || 0,
+      message: "Performance data fetched successfully"
+    };
+
+    res.status(200).json(result);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch performance data or Internal Server Error", error: err.message });
+    console.error('Performance analytics error:', err);
+    res.status(500).json({
+      message: "Failed to fetch performance data",
+      error: err.message
+    });
     next(err);
   }
 }

@@ -27,4 +27,6 @@ const EnrollmentSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+EnrollmentSchema.index({ studentId: 1, courseId: 1, semester: 1 }, { unique: true });
+
 export default EnrollmentSchema;

@@ -1,24 +1,30 @@
 // src/components/layout/DashboardLayout.jsx
-import { Outlet } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { ThemeToggle } from '../shared/ThemeToggle';
+import React, { useState } from 'react';
+import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
-export default function DashboardLayout() {
+export function DashboardLayout({ children }) {
   const { user } = useAuth();
+  const role = user?.roles || 'Student';
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleToggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar userRole={user?.roles} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 items-center justify-between border-b bg-surface px-6">
-          <h1 className="text-xl font-bold">College Repository System</h1>
-          <ThemeToggle />
-        </header>
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+    <TooltipProvider>
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header onToggleSidebar={handleToggleSidebar} isOpen={sidebarOpen} />
+        <Sidebar userRole={role} isOpen={sidebarOpen} onToggle={handleToggleSidebar} />
+        <main
+          className={`mt-16 pt-6 pb-16 flex-1 overflow-y-auto px-6 bg-background transition-all duration-300
+            ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"} ml-0
+          `}
+        >
+          {children}
         </main>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

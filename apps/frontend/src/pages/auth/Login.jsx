@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { config } from "@/config/config.js";
 
 export default function Login() {
-  const APP_NAME = import.meta.env.VITE_APP_NAME || "";
+  const APP_NAME = config.app.name;
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

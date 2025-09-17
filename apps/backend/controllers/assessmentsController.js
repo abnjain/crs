@@ -1,3 +1,4 @@
+import { config } from "../config/config.js";
 import { Exam, Marks } from "../models/index.js";
 
 export async function createExam(req, res, next) {
@@ -61,7 +62,7 @@ export async function queryMarks(req, res, next) {
 export async function gradesheet(req, res, next) {
   try {
     // Placeholder: return link to generated PDF
-    res.json({ url: `${process.env.FRONTEND_URL || "http://localhost:3000"}/grades/${req.params.studentId}/${req.params.term}.pdf`, message: "Gradesheet Generated Successfully", ok: true });
+    res.json({ url: `${config.server.frontendUrl}/grades/${req.params.studentId}/${req.params.term}.pdf`, message: "Gradesheet Generated Successfully", ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error", error: "Something went wrong" });
