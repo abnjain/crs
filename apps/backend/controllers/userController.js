@@ -5,7 +5,7 @@ export const getMe = async (req, res, next) => {
         if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: "User not found", error: "Not Found" });
-        console.log({ user, ok: true, message: "User fetched successfully" });
+        console.log({ user: { id: user._id, email: user.email }, ok: true, message: "User fetched successfully" });
         res.status(200).json({ user, ok: true, message: "User fetched successfully" });
     } catch (err) {
         console.error(err);
@@ -34,7 +34,7 @@ export const getUserById = async (req, res, next) => {
         if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not found", error: "Not Found" });
-        console.log({ user, ok: true, message: "User fetched successfully" });
+        console.log({ user: { id: user._id, email: user.email }, ok: true, message: "User fetched successfully" });
         res.status(200).json({ user, ok: true, message: "User fetched successfully" });
     } catch (err) {
         console.error(err);
@@ -61,7 +61,7 @@ export const listUsers = async (req, res, next) => {
         if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
         const users = await User.find();
         if (!users || users.length === 0) return res.status(404).json({ message: "No users found", error: "Not Found" });
-        console.log({ users, ok: true, message: "Users fetched successfully" });
+        console.log({ users: users.map(user => ({ email: user.email })), ok: true, message: "Users fetched successfully" });
         res.status(200).json({ users, ok: true, message: "Users fetched successfully" });
     } catch (err) {
         console.error(err);

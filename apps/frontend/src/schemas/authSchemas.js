@@ -30,3 +30,25 @@ export const registerSchema = loginSchema
       });
     }
   });
+
+// ✅ Forgot Password schema
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+// ✅ Reset Password schema
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, { message: "Reset token is required" }),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .superRefine((data, ctx) => {
+    if (data.confirmPassword !== data.password) {
+      ctx.addIssue({
+        path: ["confirmPassword"],
+        code: "custom",
+        message: "Passwords must match",
+      });
+    }
+  });

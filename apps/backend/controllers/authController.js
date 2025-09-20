@@ -16,7 +16,7 @@ export const register = async (req, res) => {
     const user = await User.create({ email, password: hash, name, phone, roles: roles || "Student" });
     const token = sign(user, { expiresIn: "30m" });
     const refresh = signRefresh(user);
-    console.log({ message: "Registered successfully" });
+    console.log({ message: "Registered successfully", user: { email: user.email } });
     return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Registered successfully", ok: true });
   } catch (err) {
     console.error(err);
@@ -37,7 +37,7 @@ export const login = async (req, res) => {
     if (!ok) return res.status(400).json({ message: "Invalid credentials", error: "Invalid Input" });
     const token = sign(user, { expiresIn: "30m" });
     const refresh = signRefresh(user);
-    console.log({ message: "Logged in successfully" });
+    console.log({ message: "Logged in successfully", user: { email: user.email } });
     return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Logged in successfully", ok: true });
   } catch (err) {
     console.error(err);
@@ -75,8 +75,7 @@ export const requestPasswordReset = async (req, res) => {
     const url = `${config.server.frontendUrl}/reset-password?token=${token}`;
     await sendMail(email, "Password reset", `Reset: ${url}`, `<a href="${url}">Reset</a>`);
     console.log("sent", token, url);
-    console.log({ ok: true, message: "If an account with that email exists, a password reset link will be sent." });
-    return res.status(200).json({ ok: true, message: "If an account with that email exists, a password reset link will be sent." });
+    return res.status(200).json({ ok: true, resetPData: { token, url }, message: "If an account with that email exists, a password reset link will be sent." });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Password Request Reset failed or Internal Server Error", error: err.message });

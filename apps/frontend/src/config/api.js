@@ -22,29 +22,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor handles 401 centrally
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-
-//     if (error.response?.status === 401) {
-//       try {
-//         const { data } = await axios.post("/api/auth/refresh", { refreshToken: localStorage.getItem("refreshToken") });
-//         localStorage.setItem("accessToken", data.accessToken);
-//         error.config.headers["Authorization"] = `Bearer ${data.accessToken}`;
-//         return api.request(error.config);
-//       } catch (e) {
-//         // logout
-//         localStorage.clear();
-//         window.location.href = "/login";
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
-
-
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

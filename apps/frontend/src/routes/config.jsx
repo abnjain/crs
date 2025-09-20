@@ -1,25 +1,37 @@
 // src/routes/config.js
-import AdminDashboard from "@/pages/dashboard/AdminDashboard";
-import StudentDashboard from "@/pages/dashboard/StudentDashboard";
-import TeacherDashboard from "@/pages/dashboard/TeacherDashboard";
-import StaffDashboard from "@/pages/dashboard/StaffDashboard";
-import SuperAdminDashboard from "@/pages/dashboard/SuperAdminDashboard";
+import AdminDashboard from "@/pages/dashboard/AdminDashboard.jsx";
+import StudentDashboard from "@/pages/dashboard/StudentDashboard.jsx";
+import TeacherDashboard from "@/pages/dashboard/TeacherDashboard.jsx";
+import StaffDashboard from "@/pages/dashboard/StaffDashboard.jsx";
+import SuperAdminDashboard from "@/pages/dashboard/SuperAdminDashboard.jsx";
 
-import ResearchUpload from "@/pages/dashboard/teacher/ResearchUpload";
-import ExamMarksUpload from "@/pages/dashboard/teacher/ExamMarksUpload";
-import TeacherProfile from "@/pages/dashboard/teacher/TeacherProfile";
-import TeacherSubjects from "@/pages/dashboard/teacher/Subjects";
-import TeacherAttendance from "@/pages/dashboard/teacher/AttendanceChart";
+import ResearchUpload from "@/pages/dashboard/teacher/ResearchUpload.jsx";
+import ExamMarksUpload from "@/pages/dashboard/teacher/ExamMarksUpload.jsx";
+import TeacherProfile from "@/pages/dashboard/teacher/TeacherProfile.jsx";
+import TeacherSubjects from "@/pages/dashboard/teacher/Subjects.jsx";
+import TeacherAttendance from "@/pages/dashboard/teacher/AttendanceChart.jsx";
 
-import StudentCourses from "@/pages/dashboard/student/Courses";
-import StudentLibrary from "@/pages/dashboard/student/Library";
-import StudentPlacement from "@/pages/dashboard/student/Placements";
-import StudentNotices from "@/pages/dashboard/student/Notices";
-import StudentIdCard from "@/pages/dashboard/student/StudentIdCard";
+import StudentCourses from "@/pages/dashboard/student/Courses.jsx";
+import StudentLibrary from "@/pages/dashboard/student/Library.jsx";
+import StudentPlacement from "@/pages/dashboard/student/Placements.jsx";
+import StudentNotices from "@/pages/dashboard/student/Notices.jsx";
+import StudentIdCard from "@/pages/dashboard/student/StudentIdCard.jsx";
 
-import Documents from "@/pages/dashboard/admin/Documents";
+import Documents from "@/pages/dashboard/admin/Documents.jsx";
+
+import ConfirmationPage from "@/pages/ConfirmationPage.jsx";
+
+import TeacherLibraryDashboard from '@/pages/library/TeacherLibraryDashboard.jsx';
+import BookDetails from '@/pages/library/BookDetails.jsx';
 
 export const routesConfig = [
+  // Public
+  { path: '/confirmation', element: <ConfirmationPage /> },
+
+  // Library
+  { path: '/library/teacher', element: <TeacherLibraryDashboard />, },
+  { path: '/library/books/:id', element: <BookDetails />, },
+
   // Admin
   { path: "/dashboard/admin", element: <AdminDashboard />, roles: ["Admin", "SuperAdmin"] },
   { path: "/dashboard/admin/docs", element: <Documents />, roles: ["Admin", "SuperAdmin"] },

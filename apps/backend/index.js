@@ -42,12 +42,12 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 }));
 // for limiting API requests
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
-  max: 100, // 100 requests / IP / window
-  message: "Too many requests, please try again later",
-});
-app.use("/api/v1", apiLimiter);
+// const apiLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 min
+//   max: 100, // 100 requests / IP / window
+//   message: "Too many requests, please try again later",
+// });
+// app.use("/api/v1", apiLimiter);
 // for reading body message in a request (eg. POST request, and limiting it to 5 mb data)
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded or in other words form data

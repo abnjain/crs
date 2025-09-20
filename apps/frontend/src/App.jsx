@@ -2,6 +2,8 @@
 import { RootProviders } from "@/providers/RootProviders";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+import ForgotPassword from '@/pages/auth/ForgotPassword';
+import ResetPassword from '@/pages/auth/ResetPassword';
 import Forbidden from "@/pages/errors/Forbidden";
 import NotFound from "@/pages/errors/NotFound";
 import RoleBasedDashboardRedirect from "@/pages/dashboard/RoleBasedDashboardRedirect";
@@ -17,6 +19,8 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected routes (looped from config) */}
           {routesConfig.map(({ path, element, roles }) => (

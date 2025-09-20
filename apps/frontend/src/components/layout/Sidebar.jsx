@@ -1,9 +1,11 @@
 // src/components/layout/Sidebar.jsx
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Book, GraduationCap, LogOut, Briefcase, Bell } from 'lucide-react';
+import { Home, Book, GraduationCap, LogOut, Briefcase, Bell, Users, BarChart3, FileText, AlertTriangle, ChevronLeft, ChevronRight, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmationDialog from '@/components/shared/ConfirmationDialog';
+import { useState } from 'react';
 
 const navItems = {
   Student: [
@@ -13,6 +15,7 @@ const navItems = {
     { label: 'Placement', icon: Briefcase, path: '/dashboard/student/placement' },
     { label: 'Notices', icon: Bell, path: '/dashboard/student/notices' },
     { label: 'ID Card', icon: GraduationCap, path: '/dashboard/student/idcard' },
+    { label: 'Library', icon: Book, path: '/library' },
   ],
   Teacher: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/teacher' },
@@ -21,13 +24,28 @@ const navItems = {
     { label: 'Marks', icon: GraduationCap, path: '/dashboard/teacher/marks' },
     { label: 'Research', icon: Book, path: '/dashboard/teacher/research' },
     { label: 'Profile', icon: GraduationCap, path: '/dashboard/teacher/profile' },
+    { label: 'Library', icon: Book, path: '/library/teacher' },
   ],
   Admin: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/admin' },
-    { label: 'Manage Students', icon: GraduationCap, path: '/dashboard/admin/students' },
-    { label: 'Manage Teachers', icon: GraduationCap, path: '/dashboard/admin/teachers' },
-    { label: 'Analytics', icon: Book, path: '/dashboard/admin/analytics' },
-    { label: 'Documents', icon: Book, path: '/dashboard/admin/docs' },
+    { label: 'Manage Students', icon: Users, path: '/dashboard/admin/students' },
+    { label: 'Manage Teachers', icon: Users, path: '/dashboard/admin/teachers' },
+    { label: 'Analytics', icon: BarChart3, path: '/dashboard/admin/analytics' },
+    { label: 'Documents', icon: FileText, path: '/dashboard/admin/docs' },
+    { label: 'Library', icon: Book, path: '/library' },
+  ],
+  Staff: [
+    { label: 'Dashboard', icon: Home, path: '/dashboard/staff' },
+    { label: 'Notices', icon: Bell, path: '/dashboard/staff/notices' },
+    { label: 'Reports', icon: BarChart3, path: '/dashboard/staff/reports' },
+    { label: 'Library', icon: Book, path: '/library' },
+  ],
+  SuperAdmin: [
+    { label: 'Dashboard', icon: Home, path: '/dashboard/superadmin' },
+    { label: 'Users', icon: Users, path: '/dashboard/superadmin/users' },
+    { label: 'System Logs', icon: FileText, path: '/dashboard/superadmin/logs' },
+    { label: 'Settings', icon: GraduationCap, path: '/dashboard/superadmin/settings' },
+    { label: 'Library', icon: Book, path: '/library' },
   ],
 };
 
@@ -35,6 +53,20 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
   const { logout } = useAuth();
   const location = useLocation();
   const items = navItems[userRole] || [];
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout(); // Uses existing logout method from AuthContext
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      setIsLoggingOut(false);
+      setIsLogoutDialogOpen(false);
+    }
+  };
 
   return (
     <>
@@ -68,9 +100,8 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
                       <Link to={item.path}>
                         <Button
                           variant={isActive ? "secondary" : "ghost"}
-                          className={`w-full justify-start gap-3 rounded-md ${
-                            !isOpen ? "justify-center p-2" : ""
-                          }`}
+                          className={`w-full justify-start gap-3 rounded-md ${!isOpen ? "justify-center p-2" : ""
+                            }`}
                         >
                           <Icon className="h-4 w-4" />
                           {isOpen && <span className="text-sm">{item.label}</span>}
@@ -85,25 +116,25 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
           </ul>
         </nav>
 
-        {/* Logout */}
-        <div className="p-4">
+        {/* Logout Button */}
+        <div className="p-4 border-t">
           <Tooltip delayDuration={200} disableHoverableContent>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 text-red-500 rounded-md ${
-                  !isOpen ? "justify-center p-2" : ""
-                }`}
-                onClick={logout}
+                className={`w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors ${!isOpen ? "justify-center p-2" : ""
+                  }`}
+                onClick={() => setIsLogoutDialogOpen(true)}
               >
                 <LogOut className="h-4 w-4" />
-                {isOpen && <span className="text-sm">Logout</span>}
+                {isOpen && <span className="text-sm font-medium">Logout</span>}
               </Button>
             </TooltipTrigger>
             {!isOpen && <TooltipContent side="right">Logout</TooltipContent>}
           </Tooltip>
         </div>
       </div>
+
 
       {/* Mobile Drawer */}
       <div
@@ -134,18 +165,32 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
           </ul>
         </nav>
 
-        {/* Logout */}
-        <div className="p-4">
+        {/* Logout in Mobile */}
+        <div className="p-4 border-t">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-red-500 rounded-md"
-            onClick={logout}
+            className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+            onClick={() => setIsLogoutDialogOpen(true)}
           >
             <LogOut className="h-4 w-4" />
-            <span className="text-sm">Logout</span>
+            <span className="text-sm font-medium">Logout</span>
           </Button>
         </div>
       </div>
+
+      {/* Confirmation Dialog for Logout */}
+      <ConfirmationDialog
+        isOpen={isLogoutDialogOpen}
+        onClose={() => setIsLogoutDialogOpen(false)}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        description="Are you sure you want to log out? You will need to sign in again to access your account."
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isLoading={isLoggingOut}
+        variant="destructive"
+        icon={<AlertTriangle className="h-6 w-6 text-destructive mx-auto mb-2" />}
+      />
     </>
   );
 }

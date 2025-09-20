@@ -61,7 +61,12 @@ export default function Login() {
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <div className="grid gap-2">
-                <Label>Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
                 <Input type="password" placeholder="••••••••" {...register("password")} />
                 {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
               </div>
