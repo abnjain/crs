@@ -1,4 +1,5 @@
-import api from '@/config/api';
+// src/services/libraryService.js
+import api from '@/config/api.js';
 
 const libraryService = {
   // Search books (public route, no role needed)
@@ -9,16 +10,22 @@ const libraryService = {
     return res.data.books;
   },
 
+  // Get book details by ID
+  getBookById: async (bookId) => {
+    const res = await api.get(`/library/books/${bookId}`);
+    return res.data;
+  },
+
   // Get teacher’s active loans
   getMyLoans: async () => {
     const res = await api.get('/library/loans');
-    return res.data.loans;
+    return res.data.loans || [];
   },
 
-  // Get teacher’s fine summary
+  // Get user's fine summary
   getMyFines: async () => {
     const res = await api.get('/library/fines');
-    return res.data;
+    return res.data || { total: 0, overdue: 0 };
   },
 
   // Issue book (only Admin/Librarian — Teacher can only view)
@@ -33,6 +40,18 @@ const libraryService = {
     const res = await api.post(`/library/books/${bookId}/return`, { userId });
     return res.data;
   },
+
+  // Add new book (Admin/Librarian only)
+  addBook: async (bookData) => {
+    const res = await api.post('/library/books', bookData);
+    return res.data;
+  },
+  
+  // Get all books (for management)
+  getAllBooks: async () => {
+    const res = await api.get('/library/books');
+    return res.data.books || [];
+  }
 };
 
 export default libraryService;

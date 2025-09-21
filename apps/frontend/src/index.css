@@ -19,7 +19,8 @@
   --color-destructive: oklch(0.577 0.245 27.325);
   --color-border: oklch(0.92 0.004 286.32);
   --color-input: oklch(0.92 0.004 286.32);
-  --color-ring: oklch(0.705 0.015 286.067); /* 👈 THIS IS CRITICAL */
+  --color-ring: oklch(0.705 0.015 286.067);
+  /* 👈 THIS IS CRITICAL */
   --color-chart-1: oklch(0.646 0.222 41.116);
   --color-chart-2: oklch(0.6 0.118 184.704);
   --color-chart-3: oklch(0.398 0.07 227.392);
@@ -40,12 +41,14 @@
   * {
     @apply m-0 p-0 box-border;
   }
+
   body {
     @apply h-full w-full antialiased;
     color: var(--text-color);
     background-color: var(--background-color);
   }
 }
+
 /* ========== YOUR EXISTING THEME =========== */
 
 :root {
@@ -131,13 +134,70 @@
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
-.bg-primary { background-color: var(--primary-color); }
-.bg-secondary { background-color: var(--secondary-color); }
-.bg-tertiary { background-color: var(--tertiary-color); }
-.bg-background { background-color: var(--background-color); }
-.bg-surface { background-color: var(--surface-color); }
-.text-primary { color: var(--primary-color); }
-.text-secondary { color: var(--secondary-color); }
-.text-tertiary { color: var(--tertiary-color); }
-.text-text { color: var(--text-color); }
-.text-secondText { color: var(--second-text-color); }
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-tertiary {
+  background-color: var(--tertiary-color);
+}
+
+.bg-background {
+  background-color: var(--background-color);
+}
+
+.bg-surface {
+  background-color: var(--surface-color);
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-tertiary {
+  color: var(--tertiary-color);
+}
+
+.text-text {
+  color: var(--text-color);
+}
+
+.text-secondText {
+  color: var(--second-text-color);
+}
+
+.alumni-dialog-container::-webkit-scrollbar {
+  width: 6px;
+  display: none;
+  height: 6px;
+}
+
+.alumni-dialog-container::-webkit-scrollbar-track {
+  display: none;
+  background: var(--muted);
+  border-radius: 3px;
+}
+
+.alumni-dialog-container::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 3px;
+  display: none;
+  border: 1px solid var(--muted);
+}
+
+.alumni-dialog-container::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.alumni-dialog-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ring) var(--surface-color);
+}

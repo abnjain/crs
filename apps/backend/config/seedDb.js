@@ -1,13 +1,12 @@
-import { Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User } from '../models/index.js';
+import { Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User, Alumnus } from '../models/index.js';
 import { config } from './config.js';
 
 // Seed function
 export async function seedDB() {
     try {
-        // await mongoose.connect(config.db.uri, { useNewUrlParser: true, useUnifiedTopology: true });
         console.log('Connected to DB');
 
-        // Clear existing data (optional, comment out if not needed)
+        // Clear existing data
         await Promise.all([
             Department.deleteMany({}),
             Course.deleteMany({}),
@@ -26,7 +25,8 @@ export async function seedDB() {
             Notice.deleteMany({}),
             Job.deleteMany({}),
             Application.deleteMany({}),
-            Document.deleteMany({})
+            Document.deleteMany({}),
+            Alumnus.deleteMany({})
         ]);
         console.log('Cleared existing data');
 
@@ -99,7 +99,7 @@ export async function seedDB() {
         const adminUserIds = userIds.slice(24, 27);
         const superAdminUserId = userIds[27];
 
-        // 4. Insert Students (10)
+        // 4. Insert Students (10) - Include new alumni fields
         const students = await Student.insertMany(studentUserIds.map((userId, i) => ({
             user: userId,
             rollNo: `R00${i + 1}`,
@@ -110,7 +110,10 @@ export async function seedDB() {
             dob: new Date(`2000-01-0${i + 1}`),
             address: `Address ${i + 1}`,
             guardian: `Guardian ${i + 1}`,
-            meta: { notes: 'Dummy meta' }
+            meta: { notes: 'Dummy meta' },
+            // Set default alumni status
+            alumniStatus: 'current',
+            graduationDate: null
         })));
         const studentIds = students.map(s => s._id);
 
@@ -207,7 +210,7 @@ export async function seedDB() {
             entries.push({
                 userId: staffUserIds[0],
                 userType: 'Staff',
-                staffId: null, // Assuming no separate Staff model
+                staffId: null,
                 status: 'present',
                 duration: 60,
                 remarks: 'Staff duty'
@@ -258,20 +261,19 @@ export async function seedDB() {
         const insertedExams = await Exam.insertMany(exams);
         const examIds = insertedExams.map(e => e._id);
 
-        // 11. Insert Marks (80) - Updated to use maxMarks and static method
+        // 11. Insert Marks (80)
         const marks = [];
         for (let e = 0; e < examIds.length; e++) {
-            // Fetch exam to get maxMarks
             const exam = await Exam.findById(examIds[e]);
-            const examMaxMarks = exam ? exam.maxMarks : 100; // Fallback
+            const examMaxMarks = exam ? exam.maxMarks : 100;
 
             for (let s = 0; s < 8; s++) {
-                const obtainedMarks = Math.floor(Math.random() * examMaxMarks) + 1; // 1 to maxMarks
+                const obtainedMarks = Math.floor(Math.random() * examMaxMarks) + 1;
                 marks.push({
                     examId: examIds[e],
                     studentId: studentIds[s % studentIds.length],
                     marksObtained: obtainedMarks,
-                    maxMarks: examMaxMarks, // Store directly
+                    maxMarks: examMaxMarks,
                     grade: Math.random() > 0.5 ? 'A' : 'B',
                     enteredBy: teacherIds[e % teacherIds.length]
                 });
@@ -294,11 +296,11 @@ export async function seedDB() {
         }
         await Material.insertMany(materials);
 
-        // 13. Insert Books (20) - Updated for new validation
+        // 13. Insert Books (20)
         const books = [];
         for (let i = 0; i < 20; i++) {
-            const totalCopies = Math.floor(Math.random() * 5) + 1; // 1-5 copies
-            const availableCopies = Math.floor(Math.random() * totalCopies) + 1; // 1 to total
+            const totalCopies = Math.floor(Math.random() * 5) + 1;
+            const availableCopies = Math.floor(Math.random() * totalCopies) + 1;
 
             books.push({
                 isbn: `ISBN${(i + 1).toString().padStart(10, '0')}`,
@@ -308,7 +310,7 @@ export async function seedDB() {
                 publisher: 'Publisher Inc',
                 year: 2020 + (i % 5),
                 copiesTotal: totalCopies,
-                copiesAvailable: availableCopies, // Now properly validated against total
+                copiesAvailable: availableCopies,
                 tags: ['tag1', 'tag2']
             });
         }
@@ -370,11 +372,340 @@ export async function seedDB() {
             { title: 'Research AI', type: 'researches', ownerId: teacherUserIds[3], visibility: { type: 'public' }, currentVersion: { fileKey: 'res1.pdf', size: 4096, uploadedAt: new Date('2025-09-18') }, versions: [], tags: ['ai'] }
         ]);
 
+        // 19. Insert Alumni (8) - Create alumni for first 8 students
+        console.log('Seeding Alumni...');
+        const alumniData = await Alumnus.insertMany([
+            // Alice Student - Software Engineer at TechCorp
+            {
+                name: 'Alice Student',
+                email: 'alice@techcorp.com',
+                phone: '9876543210',
+                studentId: studentIds[0],
+                enrollmentNo: 'E001',
+                batch: '2023',
+                department: 'CSE',
+                degree: 'B.Tech',
+                specialization: 'Computer Science',
+                graduationYear: 2027,
+                currentCompany: 'TechCorp',
+                currentRole: 'Software Engineer',
+                linkedin: 'https://linkedin.com/in/alice-student',
+                location: 'Bangalore, India',
+                about: 'Full-stack developer passionate about AI and machine learning. 2+ years experience in web development.',
+                experiences: [
+                    {
+                        company: 'TechCorp',
+                        role: 'Software Engineer',
+                        startDate: new Date('2027-06-01'),
+                        currentlyWorking: true,
+                        description: 'Developing scalable web applications using React and Node.js'
+                    },
+                    {
+                        company: 'Internship Co.',
+                        role: 'Software Intern',
+                        startDate: new Date('2026-06-01'),
+                        endDate: new Date('2026-12-01'),
+                        currentlyWorking: false,
+                        description: 'Worked on backend development and database optimization'
+                    }
+                ],
+                tags: ['software', 'developer', 'react', 'node.js', 'ai'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Bob Student - Data Scientist at DataAnalytics Inc
+            {
+                name: 'Bob Student',
+                email: 'bob@dataanalytics.com',
+                phone: '9876543211',
+                studentId: studentIds[1],
+                enrollmentNo: 'E002',
+                batch: '2023',
+                department: 'CSE',
+                degree: 'B.Tech',
+                specialization: 'Data Science',
+                graduationYear: 2027,
+                currentCompany: 'DataAnalytics Inc',
+                currentRole: 'Data Scientist',
+                linkedin: 'https://linkedin.com/in/bob-student',
+                location: 'Hyderabad, India',
+                about: 'Data enthusiast specializing in machine learning and predictive analytics.',
+                experiences: [
+                    {
+                        company: 'DataAnalytics Inc',
+                        role: 'Data Scientist',
+                        startDate: new Date('2027-07-01'),
+                        currentlyWorking: true,
+                        description: 'Building ML models for business intelligence and forecasting'
+                    }
+                ],
+                tags: ['data-science', 'machine-learning', 'python', 'analytics'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Charlie Student - Mechanical Design Engineer at MechWorks
+            {
+                name: 'Charlie Student',
+                email: 'charlie@mechworks.com',
+                phone: '9876543212',
+                studentId: studentIds[2],
+                enrollmentNo: 'E003',
+                batch: '2023',
+                department: 'ME',
+                degree: 'B.Tech',
+                specialization: 'Mechanical Engineering',
+                graduationYear: 2027,
+                currentCompany: 'MechWorks Ltd',
+                currentRole: 'Design Engineer',
+                linkedin: 'https://linkedin.com/in/charlie-student',
+                location: 'Chennai, India',
+                about: 'CAD specialist with expertise in product design and manufacturing processes.',
+                experiences: [
+                    {
+                        company: 'MechWorks Ltd',
+                        role: 'Design Engineer',
+                        startDate: new Date('2027-08-01'),
+                        currentlyWorking: true,
+                        description: 'Designing mechanical components using SolidWorks and AutoCAD'
+                    },
+                    {
+                        company: 'Auto Parts Co.',
+                        role: 'Junior Engineer',
+                        startDate: new Date('2027-01-01'),
+                        endDate: new Date('2027-07-31'),
+                        currentlyWorking: false,
+                        description: 'Assisted in automotive part design and testing'
+                    }
+                ],
+                tags: ['mechanical', 'cad', 'solidworks', 'manufacturing'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Dana Student - Civil Engineer at BuildCorp
+            {
+                name: 'Dana Student',
+                email: 'dana@buildcorp.com',
+                phone: '9876543213',
+                studentId: studentIds[3],
+                enrollmentNo: 'E004',
+                batch: '2023',
+                department: 'CE',
+                degree: 'B.Tech',
+                specialization: 'Civil Engineering',
+                graduationYear: 2027,
+                currentCompany: 'BuildCorp',
+                currentRole: 'Site Engineer',
+                linkedin: 'https://linkedin.com/in/dana-student',
+                location: 'Mumbai, India',
+                about: 'Experienced in construction management and structural analysis.',
+                experiences: [
+                    {
+                        company: 'BuildCorp',
+                        role: 'Site Engineer',
+                        startDate: new Date('2027-06-15'),
+                        currentlyWorking: true,
+                        description: 'Managing construction projects and ensuring quality standards'
+                    }
+                ],
+                tags: ['civil', 'construction', 'project-management', 'structural'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Eve Student - Embedded Systems Engineer at ElectroTech
+            {
+                name: 'Eve Student',
+                email: 'eve@electrotech.com',
+                phone: '9876543214',
+                studentId: studentIds[4],
+                enrollmentNo: 'E005',
+                batch: '2023',
+                department: 'ECE',
+                degree: 'B.Tech',
+                specialization: 'Electronics & Communication',
+                graduationYear: 2027,
+                currentCompany: 'ElectroTech Solutions',
+                currentRole: 'Embedded Systems Engineer',
+                linkedin: 'https://linkedin.com/in/eve-student',
+                location: 'Pune, India',
+                about: 'Embedded systems developer with focus on IoT and firmware development.',
+                experiences: [
+                    {
+                        company: 'ElectroTech Solutions',
+                        role: 'Embedded Systems Engineer',
+                        startDate: new Date('2027-07-15'),
+                        currentlyWorking: true,
+                        description: 'Developing firmware for IoT devices and embedded systems'
+                    },
+                    {
+                        company: 'TechStartups',
+                        role: 'Intern',
+                        startDate: new Date('2026-05-01'),
+                        endDate: new Date('2026-08-01'),
+                        currentlyWorking: false,
+                        description: 'Worked on hardware prototyping and testing'
+                    }
+                ],
+                tags: ['embedded', 'iot', 'firmware', 'electronics'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Frank Student - DevOps Engineer at CloudScale
+            {
+                name: 'Frank Student',
+                email: 'frank@cloudscale.com',
+                phone: '9876543215',
+                studentId: studentIds[5],
+                enrollmentNo: 'E006',
+                batch: '2023',
+                department: 'CSE',
+                degree: 'B.Tech',
+                specialization: 'Computer Science',
+                graduationYear: 2027,
+                currentCompany: 'CloudScale Technologies',
+                currentRole: 'DevOps Engineer',
+                linkedin: 'https://linkedin.com/in/frank-student',
+                location: 'Noida, India',
+                about: 'DevOps professional specializing in CI/CD pipelines and cloud infrastructure.',
+                experiences: [
+                    {
+                        company: 'CloudScale Technologies',
+                        role: 'DevOps Engineer',
+                        startDate: new Date('2027-08-01'),
+                        currentlyWorking: true,
+                        description: 'Managing AWS infrastructure and automation pipelines'
+                    }
+                ],
+                tags: ['devops', 'aws', 'ci-cd', 'docker', 'kubernetes'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Grace Student - Project Manager at ConsultPro
+            {
+                name: 'Grace Student',
+                email: 'grace@consultpro.com',
+                phone: '9876543216',
+                studentId: studentIds[6],
+                enrollmentNo: 'E007',
+                batch: '2023',
+                department: 'CSE',
+                degree: 'B.Tech',
+                specialization: 'Information Technology',
+                graduationYear: 2027,
+                currentCompany: 'ConsultPro Services',
+                currentRole: 'Project Manager',
+                linkedin: 'https://linkedin.com/in/grace-student',
+                location: 'Delhi, India',
+                about: 'Agile project manager with experience in software development projects.',
+                experiences: [
+                    {
+                        company: 'ConsultPro Services',
+                        role: 'Project Manager',
+                        startDate: new Date('2027-09-01'),
+                        currentlyWorking: true,
+                        description: 'Leading software development teams and managing client projects'
+                    },
+                    {
+                        company: 'TechConsult',
+                        role: 'Business Analyst',
+                        startDate: new Date('2027-01-01'),
+                        endDate: new Date('2027-08-31'),
+                        currentlyWorking: false,
+                        description: 'Requirements gathering and process documentation'
+                    }
+                ],
+                tags: ['project-management', 'agile', 'scrum', 'business-analysis'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            },
+
+            // Henry Student - Quality Assurance Engineer at QualitySoft
+            {
+                name: 'Henry Student',
+                email: 'henry@qualitysoft.com',
+                phone: '9876543217',
+                studentId: studentIds[7],
+                enrollmentNo: 'E008',
+                batch: '2023',
+                department: 'CSE',
+                degree: 'B.Tech',
+                specialization: 'Software Engineering',
+                graduationYear: 2027,
+                currentCompany: 'QualitySoft Solutions',
+                currentRole: 'QA Engineer',
+                linkedin: 'https://linkedin.com/in/henry-student',
+                location: 'Gurgaon, India',
+                about: 'Quality assurance specialist with expertise in automation testing.',
+                experiences: [
+                    {
+                        company: 'QualitySoft Solutions',
+                        role: 'QA Engineer',
+                        startDate: new Date('2027-06-20'),
+                        currentlyWorking: true,
+                        description: 'Automated testing using Selenium and Cypress'
+                    }
+                ],
+                tags: ['qa', 'testing', 'automation', 'selenium', 'cypress'],
+                createdBy: adminUserIds[0],
+                visibility: 'public'
+            }
+        ]);
+
+        const alumniIds = alumniData.map(a => a._id);
+
+        // FIXED: Update each student individually to link with their corresponding alumni
+        console.log('Linking students to alumni...');
+        
+        // Update students 1-8 to mark as alumni and link to their specific alumni record
+        for (let i = 0; i < 8; i++) {
+            await Student.updateOne(
+                { _id: studentIds[i] },
+                {
+                    $set: {
+                        alumniStatus: 'alumni',
+                        alumniId: alumniIds[i], // Assign specific alumni ID for this student
+                        graduationDate: new Date('2027-05-15')
+                    }
+                }
+            );
+        }
+
+        // Keep students 9-10 as current students
+        for (let i = 8; i < 10; i++) {
+            await Student.updateOne(
+                { _id: studentIds[i] },
+                {
+                    $set: {
+                        alumniStatus: 'current',
+                        graduationDate: null
+                    }
+                }
+            );
+        }
+
+        // Update User emails for alumni (professional emails)
+        console.log('Updating user emails for alumni...');
+        await Promise.all([
+            User.updateOne({ _id: studentUserIds[0] }, { email: 'alice@techcorp.com' }),
+            User.updateOne({ _id: studentUserIds[1] }, { email: 'bob@dataanalytics.com' }),
+            User.updateOne({ _id: studentUserIds[2] }, { email: 'charlie@mechworks.com' }),
+            User.updateOne({ _id: studentUserIds[3] }, { email: 'dana@buildcorp.com' }),
+            User.updateOne({ _id: studentUserIds[4] }, { email: 'eve@electrotech.com' }),
+            User.updateOne({ _id: studentUserIds[5] }, { email: 'frank@cloudscale.com' }),
+            User.updateOne({ _id: studentUserIds[6] }, { email: 'grace@consultpro.com' }),
+            User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
+        ]);
+
+        console.log(`Inserted ${alumniData.length} alumni records and linked ${8} students to their alumni profiles`);
         console.log('Dummy data inserted successfully!');
     } catch (error) {
         console.error('Error seeding DB:', error);
     } finally {
-        // await mongoose.disconnect();
         console.log('Disconnected from DB');
     }
 }

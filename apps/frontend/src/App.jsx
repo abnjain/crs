@@ -4,6 +4,7 @@ import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import ResetPassword from '@/pages/auth/ResetPassword';
+import Logout from "@/pages/auth/Logout";
 import Forbidden from "@/pages/errors/Forbidden";
 import NotFound from "@/pages/errors/NotFound";
 import RoleBasedDashboardRedirect from "@/pages/dashboard/RoleBasedDashboardRedirect";
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/logout" element={<Logout />} />
 
           {/* Protected routes (looped from config) */}
           {routesConfig.map(({ path, element, roles }) => (

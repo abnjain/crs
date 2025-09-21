@@ -11,7 +11,7 @@ router.post("/login", login);
 router.post("/refresh", refreshToken);
 router.post("/reset/request", requestPasswordReset);
 router.post("/reset/confirm", resetPassword);
-router.post("/logout", logout);
+router.post("/logout", role('user', 'teacher', 'staff', 'student', 'admin', 'superadmin'), logout);
 router.post("/otp/send", sendOtp);
 router.post("/otp/verify", verifyOtp);
 

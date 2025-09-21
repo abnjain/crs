@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { config } from "@/config/config.js";
 
 export default function Register() {
-  const APP_NAME = config.app.name || "";
+  const APP_NAME = config.app.name;
   const navigate = useNavigate();
 
   const {

@@ -1,3 +1,4 @@
+// src/config/config.js
 // Different approaches for different environments
 const getConfig = () => {
   // Check if running in browser vs Node.js

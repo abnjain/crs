@@ -21,6 +21,12 @@ import Documents from "@/pages/dashboard/admin/Documents.jsx";
 
 import ConfirmationPage from "@/pages/ConfirmationPage.jsx";
 
+import LibraryDashboard from "@/pages/library/LibraryDashboard";
+
+// import AlumniDashboard from "@/pages/alumni/AlumniDashboard.jsx";
+import AlumniProfile from "@/pages/alumni/AlumniProfile.jsx";
+import AlumniList from "@/pages/alumni/AlumniList.jsx";
+
 import TeacherLibraryDashboard from '@/pages/library/TeacherLibraryDashboard.jsx';
 import BookDetails from '@/pages/library/BookDetails.jsx';
 
@@ -28,9 +34,16 @@ export const routesConfig = [
   // Public
   { path: '/confirmation', element: <ConfirmationPage /> },
 
-  // Library
+  // Alumni Routes
+  // { path: "/alumni", element: <AlumniDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
+  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
+  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
+
+  // Library Routes
+  { path: "/library", element: <LibraryDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
+  { path: "/library/books/:id", element: <BookDetails />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
   { path: '/library/teacher', element: <TeacherLibraryDashboard />, },
-  { path: '/library/books/:id', element: <BookDetails />, },
+  // { path: '/library/books/:id', element: <BookDetails />, },
 
   // Admin
   { path: "/dashboard/admin", element: <AdminDashboard />, roles: ["Admin", "SuperAdmin"] },

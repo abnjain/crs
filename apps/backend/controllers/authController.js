@@ -102,6 +102,8 @@ export const resetPassword = async (req, res) => {
 
 export const logout = async (req, res) => { 
   try {
+    console.log("Logging out user", req.user);
+    
     const user = await User.findById(req.user.id);
     if (user) {
       user.tokenVersion += 1;  // Invalidate all tokens for this user

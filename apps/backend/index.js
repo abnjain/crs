@@ -25,6 +25,8 @@ import analytics from "./routes/analytics.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import libraryRoutes from "./routes/library.routes.js";
 import noticeRoutes from "./routes/notice.routes.js";
+import alumniRoutes from "./routes/alumni.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 import { revokeToken, verifyJWTAuth } from "./utils/auth.js";
 
 
@@ -74,8 +76,6 @@ app.use(morgan("dev"));
 app.use(revokeToken);
 
 
-
-
 // DB connection
 import connectDB from "./config/db.js";
 connectDB();
@@ -106,6 +106,8 @@ app.use(`/api/${version}/docs`, docsRoutes);
 app.use(`/api/${version}/attendance`, attendanceRoutes);
 app.use(`/api/${version}/assesment`, assesmentRoutes);
 app.use(`/api/${version}/analytics`, analytics);
+app.use(`/api/${version}/alumni`, alumniRoutes);
+app.use(`/api/${version}/upload`, uploadRoutes);
 
 // Health Route Middleware
 app.use("/api/health", healthRoutes);

@@ -5,7 +5,7 @@ export const getMe = async (req, res, next) => {
         if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: "User not found", error: "Not Found" });
-        console.log({ user: { id: user._id, email: user.email }, ok: true, message: "User fetched successfully" });
+        console.log({ user: { email: user.email }, message: "User fetched successfully" });
         res.status(200).json({ user, ok: true, message: "User fetched successfully" });
     } catch (err) {
         console.error(err);

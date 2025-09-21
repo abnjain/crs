@@ -33,8 +33,12 @@ export function AuthProvider({ children }) {
       });
       return { user: res.data.user, success: true };
     } catch (err) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh");
+      setUser(null);
+      setToken(null);
       console.error('Failed to fetch user');
-      logout();
+      // logout();
     } finally {
       setIsLoading(false);
     }

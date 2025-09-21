@@ -17,6 +17,7 @@ import SubjectSchema from "./Subject.js";
 import TeacherSchema from "./Teacher.js";
 import TimetableSchema from "./Timetable.js";
 import UserSchema from "./User.js";
+import AlumnusSchema from "./Alumnus.js";
 import { seedDB } from "../config/seedDb.js";
 
 // Utility to safely register models
@@ -43,7 +44,8 @@ const Student = registerModel("Student", StudentSchema);
 const Timetable = registerModel("Timetable", TimetableSchema);
 const Subject = registerModel("Subject", SubjectSchema);
 const Teacher = registerModel("Teacher", TeacherSchema);
+const Alumnus = registerModel("Alumnus", AlumnusSchema);
 
-export { User, Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Student, Subject, Teacher, Timetable };
+export { User, Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Student, Subject, Teacher, Timetable, Alumnus };
 
 // seedDB();

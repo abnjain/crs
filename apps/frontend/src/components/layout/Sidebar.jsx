@@ -1,6 +1,6 @@
 // src/components/layout/Sidebar.jsx
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Book, GraduationCap, LogOut, Briefcase, Bell, Users, BarChart3, FileText, AlertTriangle, ChevronLeft, ChevronRight, } from 'lucide-react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Home, Book, GraduationCap, LogOut, Briefcase, Bell, Users, BarChart3, FileText, AlertTriangle, LibraryBig, User, UserCheck, Settings, BookOpenCheck, NotebookText, ChevronLeft, ChevronRight, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -11,20 +11,19 @@ const navItems = {
   Student: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/student' },
     { label: 'My Courses', icon: GraduationCap, path: '/dashboard/student/courses' },
-    { label: 'Library', icon: Book, path: '/dashboard/student/library' },
     { label: 'Placement', icon: Briefcase, path: '/dashboard/student/placement' },
     { label: 'Notices', icon: Bell, path: '/dashboard/student/notices' },
-    { label: 'ID Card', icon: GraduationCap, path: '/dashboard/student/idcard' },
-    { label: 'Library', icon: Book, path: '/library' },
+    { label: 'ID Card', icon: User, path: '/dashboard/student/idcard' },
   ],
   Teacher: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/teacher' },
-    { label: 'My Subjects', icon: GraduationCap, path: '/dashboard/teacher/subjects' },
-    { label: 'Attendance', icon: Book, path: '/dashboard/teacher/attendance' },
-    { label: 'Marks', icon: GraduationCap, path: '/dashboard/teacher/marks' },
+    { label: 'My Subjects', icon: NotebookText, path: '/dashboard/teacher/subjects' },
+    { label: 'Attendance', icon: UserCheck, path: '/dashboard/teacher/attendance' },
+    { label: 'Marks', icon: BookOpenCheck, path: '/dashboard/teacher/marks' },
     { label: 'Research', icon: Book, path: '/dashboard/teacher/research' },
-    { label: 'Profile', icon: GraduationCap, path: '/dashboard/teacher/profile' },
-    { label: 'Library', icon: Book, path: '/library/teacher' },
+    { label: 'Profile', icon: User, path: '/dashboard/teacher/profile' },
+    { label: 'Library', icon: LibraryBig, path: '/library' },
+    { label: 'Alumni', icon: GraduationCap, path: '/alumni' },
   ],
   Admin: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/admin' },
@@ -32,20 +31,17 @@ const navItems = {
     { label: 'Manage Teachers', icon: Users, path: '/dashboard/admin/teachers' },
     { label: 'Analytics', icon: BarChart3, path: '/dashboard/admin/analytics' },
     { label: 'Documents', icon: FileText, path: '/dashboard/admin/docs' },
-    { label: 'Library', icon: Book, path: '/library' },
   ],
   Staff: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/staff' },
     { label: 'Notices', icon: Bell, path: '/dashboard/staff/notices' },
     { label: 'Reports', icon: BarChart3, path: '/dashboard/staff/reports' },
-    { label: 'Library', icon: Book, path: '/library' },
   ],
   SuperAdmin: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/superadmin' },
     { label: 'Users', icon: Users, path: '/dashboard/superadmin/users' },
     { label: 'System Logs', icon: FileText, path: '/dashboard/superadmin/logs' },
-    { label: 'Settings', icon: GraduationCap, path: '/dashboard/superadmin/settings' },
-    { label: 'Library', icon: Book, path: '/library' },
+    { label: 'Settings', icon: Settings, path: '/dashboard/superadmin/settings' },
   ],
 };
 
@@ -53,6 +49,7 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
   const { logout } = useAuth();
   const location = useLocation();
   const items = navItems[userRole] || [];
+  const navigate = useNavigate();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -60,6 +57,7 @@ export function Sidebar({ userRole, isOpen, onToggle }) {
     setIsLoggingOut(true);
     try {
       await logout(); // Uses existing logout method from AuthContext
+      navigate('/login', { replace: true });
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {
