@@ -7,8 +7,8 @@ const getConfig = () => {
     // For browser, use Vite env variables
     return {
       api: {
-        baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000',
-        version: import.meta.env.VITE_API_VERSION || '/api/v1'
+        baseUrl: import.meta.env.VITE_BACKEND_URL,
+        version: import.meta.env.VITE_API_VERSION
       },
       auth: {
         tokenKey: 'token',
