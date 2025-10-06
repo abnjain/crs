@@ -18,7 +18,6 @@ const navItems = {
   Teacher: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/teacher' },
     { label: 'My Subjects', icon: NotebookText, path: '/dashboard/teacher/subjects' },
-    { label: 'Attendance', icon: UserCheck, path: '/dashboard/teacher/attendance' },
     { label: 'Marks', icon: BookOpenCheck, path: '/dashboard/teacher/marks' },
     { label: 'Research', icon: Book, path: '/dashboard/teacher/research' },
     { label: 'Profile', icon: User, path: '/dashboard/teacher/profile' },

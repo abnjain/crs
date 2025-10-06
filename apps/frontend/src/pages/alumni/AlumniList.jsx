@@ -9,15 +9,8 @@ import AlumniForm from "@/components/alumni/AlumniForm";
 import MessageAlumni from "@/components/alumni/MessageAlumni";
 import ConfirmationDialog from "@/components/shared/ConfirmationDialog";
 import AlumniDetailsDialog from "@/components/alumni/AlumniDetailsDialog";
-import { toast } from "react-hot-toast";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import toast from "react-hot-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pencil, Trash, MessageSquare, Eye, Plus } from "lucide-react";
 import { ModuleLayout } from "@/components/layout/ModuleLayout";
@@ -61,12 +54,12 @@ export default function AlumniList() {
 
   const handleCreate = async (data) => {
     try {
-      await alumniService.create(data);
+      const res = await alumniService.create(data);
       setShowCreateDialog(false);
       fetchAlumni();
-      toast.success("Alumnus created successfully!");
+      toast.success(res.data.message || "Alumnus created!!");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Failed");
     }
   };
 
@@ -77,26 +70,27 @@ export default function AlumniList() {
 
   const handleUpdate = async (data) => {
     try {
-      await alumniService.update(editAlumnus._id, data);
+      const res = await alumniService.update(editAlumnus._id, data);
       setShowEditDialog(false);
       setEditAlumnus(null);
       fetchAlumni();
-      toast.success("Alumnus updated successfully!");
+      toast.success(res.data.message || "Alumnus updated!!");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Failed");
     }
   };
 
   const handleDelete = async () => {
     try {
+      const res = null;
       for (const id of selectedIds) {
-        await alumniService.remove(id);
+        res = await alumniService.remove(id);
       }
-      toast.success("Selected alumni deleted successfully");
+      toast.success(res.data.message || "Selected alumni deleted!!");
       setSelectedIds([]);
       fetchAlumni();
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Failed");
     }
     setShowDeleteConfirm(false);
   };
@@ -109,11 +103,11 @@ export default function AlumniList() {
 
   const handleUpload = async (file) => {
     try {
-      await alumniService.uploadExcel(file);
+      const res = await alumniService.uploadExcel(file);
       fetchAlumni();
-      toast.success("Excel uploaded successfully!");
+      toast.success(res.data.message || "Excel uploaded!!");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Failed");
     }
   };
 
@@ -141,7 +135,7 @@ export default function AlumniList() {
 
             {isFaculty && (
               <div className="flex flex-wrap gap-2 justify-end items-center">
-                {/* Create Dialog */} 
+                {/* Create Dialog */}
                 <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
                   <DialogTrigger asChild>
                     <Button>

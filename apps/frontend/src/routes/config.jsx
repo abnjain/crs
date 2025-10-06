@@ -9,13 +9,12 @@ import ResearchUpload from "@/pages/dashboard/teacher/ResearchUpload.jsx";
 import ExamMarksUpload from "@/pages/dashboard/teacher/ExamMarksUpload.jsx";
 import TeacherProfile from "@/pages/dashboard/teacher/TeacherProfile.jsx";
 import TeacherSubjects from "@/pages/dashboard/teacher/Subjects.jsx";
-import TeacherAttendance from "@/pages/dashboard/teacher/AttendanceChart.jsx";
 
-import StudentCourses from "@/pages/dashboard/student/Courses.jsx";
-import StudentLibrary from "@/pages/dashboard/student/Library.jsx";
-import StudentPlacement from "@/pages/dashboard/student/Placements.jsx";
-import StudentNotices from "@/pages/dashboard/student/Notices.jsx";
-import StudentIdCard from "@/pages/dashboard/student/StudentIdCard.jsx";
+// import StudentCourses from "@/pages/dashboard/student/Courses.jsx";
+// import StudentLibrary from "@/pages/dashboard/student/Library.jsx";
+// import StudentPlacement from "@/pages/dashboard/student/Placements.jsx";
+// import StudentNotices from "@/pages/dashboard/student/Notices.jsx";
+// import StudentIdCard from "@/pages/dashboard/student/StudentIdCard.jsx";
 
 import Documents from "@/pages/dashboard/admin/Documents.jsx";
 
@@ -23,9 +22,11 @@ import ConfirmationPage from "@/pages/ConfirmationPage.jsx";
 
 import LibraryDashboard from "@/pages/library/LibraryDashboard";
 
-// import AlumniDashboard from "@/pages/alumni/AlumniDashboard.jsx";
 import AlumniProfile from "@/pages/alumni/AlumniProfile.jsx";
 import AlumniList from "@/pages/alumni/AlumniList.jsx";
+import AlumniDashboard from "@/pages/alumni/Dashboard";
+import CompleteProfile from "@/pages/alumni/CompleteProfile";
+import EditProfile from "@/pages/alumni/EditProfile";
 
 import TeacherLibraryDashboard from '@/pages/library/TeacherLibraryDashboard.jsx';
 import BookDetails from '@/pages/library/BookDetails.jsx';
@@ -35,9 +36,12 @@ export const routesConfig = [
   { path: '/confirmation', element: <ConfirmationPage /> },
 
   // Alumni Routes
-  // { path: "/alumni", element: <AlumniDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
-  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
-  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin"] },
+  { path: "/dashboard/alumni", element: <AlumniDashboard />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  { path: "/dashboard/alumni/complete-profile", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  { path: "/dashboard/alumni/edit", element: <EditProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  
+  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
 
   // Library Routes
   { path: "/library", element: <LibraryDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
@@ -49,13 +53,13 @@ export const routesConfig = [
   { path: "/dashboard/admin", element: <AdminDashboard />, roles: ["Admin", "SuperAdmin"] },
   { path: "/dashboard/admin/docs", element: <Documents />, roles: ["Admin", "SuperAdmin"] },
 
-  // Student
-  { path: "/dashboard/student", element: <StudentDashboard />, roles: ["Student", "Admin", "SuperAdmin"] },
-  { path: "/dashboard/student/courses", element: <StudentCourses />, roles: ["Student"] },
-  { path: "/dashboard/student/library", element: <StudentLibrary />, roles: ["Student"] },
-  { path: "/dashboard/student/placement", element: <StudentPlacement />, roles: ["Student"] },
-  { path: "/dashboard/student/notices", element: <StudentNotices />, roles: ["Student"] },
-  { path: "/dashboard/student/idcard", element: <StudentIdCard />, roles: ["Student", "Teacher", "Admin", "SuperAdmin"] },
+  // // Student
+  // { path: "/dashboard/student", element: <StudentDashboard />, roles: ["Student", "Admin", "SuperAdmin"] },
+  // { path: "/dashboard/student/courses", element: <StudentCourses />, roles: ["Student"] },
+  // { path: "/dashboard/student/library", element: <StudentLibrary />, roles: ["Student"] },
+  // { path: "/dashboard/student/placement", element: <StudentPlacement />, roles: ["Student"] },
+  // { path: "/dashboard/student/notices", element: <StudentNotices />, roles: ["Student"] },
+  // { path: "/dashboard/student/idcard", element: <StudentIdCard />, roles: ["Student", "Teacher", "Admin", "SuperAdmin"] },
 
   // Teacher
   { path: "/dashboard/teacher", element: <TeacherDashboard />, roles: ["Teacher", "Admin", "SuperAdmin"] },
@@ -63,7 +67,6 @@ export const routesConfig = [
   { path: "/dashboard/teacher/marks", element: <ExamMarksUpload />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/profile", element: <TeacherProfile />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/subjects", element: <TeacherSubjects />, roles: ["Teacher"] },
-  { path: "/dashboard/teacher/attendance", element: <TeacherAttendance />, roles: ["Teacher"] },
 
   // Staff
   { path: "/dashboard/staff", element: <StaffDashboard />, roles: ["Staff", "Admin", "SuperAdmin"] },

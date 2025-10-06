@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -63,15 +63,17 @@ export default function MarksChart() {
   };
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="h-48">
-          <Doughnut data={chartData} options={options} />
-        </div>
-        <p className="text-center mt-2 text-sm text-muted-foreground">
-          Average Marks: {data?.averageMarks || 0}
-        </p>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardContent className="p-4">
+          <div className="h-48">
+            <Doughnut data={chartData} options={options} />
+          </div>
+          <p className="text-center mt-2 text-sm text-muted-foreground">
+            Average Marks: {data?.averageMarks || 0}
+          </p>
+        </CardContent>
+      </Card>
+    </>
   );
 }

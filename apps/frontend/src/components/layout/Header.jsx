@@ -1,31 +1,45 @@
 // src/components/layout/Header.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
+import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose, ArrowLeftToLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 
-export function Header({ onToggleSidebar, isOpen }) {
+export function Header({ onToggleSidebar, isOpen, onBack = null }) {
   const { user, logout } = useAuth();
   const userName = user?.name || user?.email?.split('@')[0] || 'User';
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center justify-between border-b bg-surface px-6 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-40 h-16 flex items-center justify-between  border-b bg-surface px-6 shadow-sm">
         {/* Toggle Icon — ONE AND ONLY ONE ICON */}
         <div className="flex items-center gap-2">
           {/* Desktop & Mobile: Show correct icon based on state */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-md"
-            onClick={onToggleSidebar}
-            aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-          >
-            {isOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
-          </Button>
+          {onBack ?
+            (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-md"
+                onClick={onBack}
+              >
+                <ArrowLeftToLine className="h-5 w-5" />
+              </Button>
+            ) :
+            (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-md"
+                onClick={onToggleSidebar}
+                aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+              >
+                {isOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
+              </Button>
+            )
+          }
         </div>
 
         {/* Logo & Title — hidden on mobile, shown on desktop */}

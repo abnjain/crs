@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
         ...res.data.user,
         roles: Array.isArray(res.data.user.roles) ? res.data.user.roles : [res.data.user.roles].filter(Boolean)
       });
-      return { user: res.data.user, success: true };
+      return { user: res.data.user, success: true, message: res.data.message };
     } catch (err) {
       localStorage.removeItem("token");
       localStorage.removeItem("refresh");
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('refresh', refresh);
       setToken(token);
       await fetchUser(token);
-      return { success: true, user: res.data.user };
+      return { success: true, user: res.data.user, message: res.data.message };
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('refresh', refresh);
       setToken(token);
       await fetchUser(token);
-      return { success: true, user: res.data.user };
+      return { success: true, user: res.data.user, message: res.data.message };
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

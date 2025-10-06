@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 export default function Subjects() {
@@ -43,32 +43,34 @@ export default function Subjects() {
   }
 
   return (
-    <DashboardLayout>
-      <Card>
-        <CardHeader>
-          <CardTitle>Assigned Subjects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Subject Name</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Section</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {subjects.map((sub, i) => (
-                <TableRow key={i}>
-                  <TableCell>{sub.name}</TableCell>
-                  <TableCell>{sub.code}</TableCell>
-                  <TableCell>{sub.section}</TableCell>
+    <>
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>Assigned Subjects</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Subject Name</TableHead>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Section</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </DashboardLayout>
+              </TableHeader>
+              <TableBody>
+                {subjects.map((sub, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{sub.name}</TableCell>
+                    <TableCell>{sub.code}</TableCell>
+                    <TableCell>{sub.section}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    </>
   );
 }

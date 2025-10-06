@@ -19,7 +19,6 @@ import studentRoutes from "./routes/student.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
 import placementsRoutes from "./routes/placements.routes.js";
 import docsRoutes from "./routes/docs.routes.js";
-import attendanceRoutes from "./routes/attendance.routes.js";
 import assesmentRoutes from "./routes/assessments.routes.js";
 import analytics from "./routes/analytics.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -27,6 +26,7 @@ import libraryRoutes from "./routes/library.routes.js";
 import noticeRoutes from "./routes/notice.routes.js";
 import alumniRoutes from "./routes/alumni.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import eventsRoutes from "./routes/events.routes.js";
 import { revokeToken, verifyJWTAuth } from "./utils/auth.js";
 
 
@@ -103,11 +103,11 @@ app.use(`/api/${version}/library`, libraryRoutes);
 app.use(`/api/${version}/placements`, placementsRoutes);
 app.use(`/api/${version}/notices`, noticeRoutes);
 app.use(`/api/${version}/docs`, docsRoutes);
-app.use(`/api/${version}/attendance`, attendanceRoutes);
 app.use(`/api/${version}/assesment`, assesmentRoutes);
 app.use(`/api/${version}/analytics`, analytics);
 app.use(`/api/${version}/alumni`, alumniRoutes);
 app.use(`/api/${version}/upload`, uploadRoutes);
+app.use(`/api/${version}/events`, eventsRoutes);
 
 // Health Route Middleware
 app.use("/api/health", healthRoutes);

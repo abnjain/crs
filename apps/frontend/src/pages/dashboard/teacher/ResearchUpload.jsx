@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 const schema = z.object({
@@ -36,48 +36,50 @@ export default function ResearchUpload() {
       formData.append('description', data.description);
       formData.append('file', data.file[0]);
 
-      await api.post('/teachers/materials', formData, {
+      const res = await api.post('/teachers/materials', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-      toast.success('Material uploaded successfully');
+      toast.success(res.data.message || 'Material uploaded!!');
     } catch (err) {
-      toast.error('Failed to upload material');
+      toast.error(err.response?.data?.message || 'Failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardLayout>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Upload Research/Material</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" {...register('title')} />
-              {errors.title && <p className="text-destructive text-sm">{errors.title.message}</p>}
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" {...register('description')} />
-            </div>
-            <div>
-              <Label htmlFor="file">Upload File</Label>
-              <Input id="file" type="file" {...register('file')} />
-              {errors.file && <p className="text-destructive text-sm">{errors.file.message}</p>}
-            </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Uploading...' : 'Upload'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </DashboardLayout>
+    <>
+      <DashboardLayout>
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Upload Research/Material</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title</Label>
+                <Input id="title" {...register('title')} />
+                {errors.title && <p className="text-destructive text-sm">{errors.title.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" {...register('description')} />
+              </div>
+              <div>
+                <Label htmlFor="file">Upload File</Label>
+                <Input id="file" type="file" {...register('file')} />
+                {errors.file && <p className="text-destructive text-sm">{errors.file.message}</p>}
+              </div>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Uploading...' : 'Upload'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    </>
   );
 }

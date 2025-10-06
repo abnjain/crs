@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { config } from "@/config/config.js";
 
@@ -32,12 +32,12 @@ export default function Login() {
     try {
       const result = await login(data.email, data.password);
       if (result.success) {
-        toast.success("Login successful!");
+        toast.success(result.message || "Login successful!!");
         navigate(from, { replace: true });
       }
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Invalid credentials");
+      toast.error(err?.response?.data || "Invalid creds");
     }
   };
 

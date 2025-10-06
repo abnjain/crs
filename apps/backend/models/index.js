@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import ApplicationSchema from "./Application.js";
-import AttendanceSchema from "./Attendance.js";
 import BookSchema from "./Book.js";
 import CourseSchema from "./Course.js";
 import DepartmentSchema from "./Department.js";
@@ -18,6 +17,7 @@ import TeacherSchema from "./Teacher.js";
 import TimetableSchema from "./Timetable.js";
 import UserSchema from "./User.js";
 import AlumnusSchema from "./Alumnus.js";
+import EventSchema from "./Events.js";
 import { seedDB } from "../config/seedDb.js";
 
 // Utility to safely register models
@@ -28,7 +28,6 @@ const registerModel = (name, schema) => {
 // Register all models here
 const User = registerModel("User", UserSchema);
 const Application = registerModel("Application", ApplicationSchema);
-const Attendance = registerModel("Attendance", AttendanceSchema);
 const Book = registerModel("Book", BookSchema);
 const Course = registerModel("Course", CourseSchema);
 const Department = registerModel("Department", DepartmentSchema);
@@ -45,7 +44,8 @@ const Timetable = registerModel("Timetable", TimetableSchema);
 const Subject = registerModel("Subject", SubjectSchema);
 const Teacher = registerModel("Teacher", TeacherSchema);
 const Alumnus = registerModel("Alumnus", AlumnusSchema);
+const Events = registerModel("Event", EventSchema);
 
-export { User, Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Student, Subject, Teacher, Timetable, Alumnus };
+export { User, Application, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Student, Subject, Teacher, Timetable, Alumnus, Events };
 
 // seedDB();

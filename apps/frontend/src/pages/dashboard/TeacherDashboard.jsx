@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import AttendanceChart from './teacher/AttendanceChart.jsx';
 import MarksChart from './teacher/MarksChart.jsx';
 import UpcomingClasses from './teacher/UpcomingClasses.jsx';
 
@@ -24,10 +23,6 @@ export default function TeacherDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader><CardTitle>Attendance Overview</CardTitle></CardHeader>
-            <CardContent><AttendanceChart /></CardContent>
-          </Card>
           <Card>
             <CardHeader><CardTitle>Marks Overview</CardTitle></CardHeader>
             <CardContent><MarksChart /></CardContent>

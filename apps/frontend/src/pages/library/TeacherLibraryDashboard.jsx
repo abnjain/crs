@@ -8,7 +8,7 @@ import BookList from './BookList';
 import MyLoans from './MyLoans';
 import LibraryQuickActions from './LibraryQuickActions';
 import libraryService from '@/services/libraryService';
-import { toast } from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 export default function TeacherLibraryDashboard() {
   const [activeTab, setActiveTab] = useState('search');
@@ -39,43 +39,45 @@ export default function TeacherLibraryDashboard() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold">Library</h1>
-          <p className="text-sm text-secondText">Search, view, and manage your library resources</p>
+    <>
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold">Library</h1>
+            <p className="text-sm text-secondText">Search, view, and manage your library resources</p>
+          </div>
+
+          <LibraryQuickActions />
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3">
+              <TabsTrigger value="search">
+                <Book className="mr-2 h-4 w-4" /> Search Books
+              </TabsTrigger>
+              <TabsTrigger value="loans">
+                <BookOpen className="mr-2 h-4 w-4" /> My Loans
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="search">
+              <Card className="p-6">
+                <BookSearch onSearch={handleSearch} />
+                {isLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <BookList books={books} onViewDetail={handleViewDetail} />
+                )}
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="loans">
+              <MyLoans />
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <LibraryQuickActions />
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3">
-            <TabsTrigger value="search">
-              <Book className="mr-2 h-4 w-4" /> Search Books
-            </TabsTrigger>
-            <TabsTrigger value="loans">
-              <BookOpen className="mr-2 h-4 w-4" /> My Loans
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="search">
-            <Card className="p-6">
-              <BookSearch onSearch={handleSearch} />
-              {isLoading ? (
-                <div className="flex justify-center py-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : (
-                <BookList books={books} onViewDetail={handleViewDetail} />
-              )}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="loans">
-            <MyLoans />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </>
   );
 }

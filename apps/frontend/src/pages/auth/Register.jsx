@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import api from "@/config/api";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { config } from "@/config/config.js";
 
@@ -29,18 +29,18 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      await api.post("/auth/register", {
+      const res = await api.post("/auth/register", {
         name: data.name,
         email: data.email,
         phone: data.phone,
         password: data.password,
         roles: data.role,
       });
-      toast.success("Account created! Please login.");
+      toast.success(res.data.message || "Please login Now!!");
       navigate("/login");
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Registration failed");
+      toast.error(err.response?.data?.message || "Failed");
     }
   };
 
@@ -72,7 +72,7 @@ export default function Register() {
                 <Input type="tel" placeholder="1234567890" maxLength={10}
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only numbers
-                  }} 
+                  }}
                   pattern="[0-9]{10}" {...register("phone")} />
                 {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
               </div>

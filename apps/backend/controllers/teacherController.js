@@ -137,7 +137,6 @@ export const getMySubjects = async (req, res, next) => {
       section: sub.section,
       course: sub.course ? `${sub.course.name} (${sub.course.code})` : 'N/A',
       totalStudents: 0, // Can be calculated from enrollments
-      avgAttendance: 0 // Can be calculated from attendance data
     }));
 
     return res.status(200).json({

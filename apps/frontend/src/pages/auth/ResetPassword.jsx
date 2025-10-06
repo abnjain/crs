@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import api from "@/config/api";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export default function ResetPassword() {
@@ -44,11 +44,11 @@ export default function ResetPassword() {
 
   const onSubmit = async (data) => {
     try {
-      await api.post("/auth/reset/confirm", {
+      const res = await api.post("/auth/reset/confirm", {
         token: data.token,
         password: data.password,
       });
-      toast.success("Password has been reset successfully! You can now login.");
+      toast.success(res.data.message || "Password has been reset successfully!!");
       navigate("/confirmation");
     } catch (err) {
       console.error(err);
@@ -72,7 +72,7 @@ export default function ResetPassword() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="grid gap-4">
               <input type="hidden" {...register("token")} value={token} />
-              
+
               <div className="grid gap-2">
                 <Label htmlFor="password">New Password</Label>
                 <Input id="password" type="password" placeholder="••••••••" {...register("password")} />

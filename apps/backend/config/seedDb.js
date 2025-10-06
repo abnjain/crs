@@ -1,4 +1,4 @@
-import { Application, Attendance, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User, Alumnus } from '../models/index.js';
+import { Application, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User, Alumnus, Events } from '../models/index.js';
 import { config } from './config.js';
 
 // Seed function
@@ -16,7 +16,6 @@ export async function seedDB() {
             Subject.deleteMany({}),
             Enrollment.deleteMany({}),
             Timetable.deleteMany({}),
-            Attendance.deleteMany({}),
             Exam.deleteMany({}),
             Marks.deleteMany({}),
             Material.deleteMany({}),
@@ -26,7 +25,8 @@ export async function seedDB() {
             Job.deleteMany({}),
             Application.deleteMany({}),
             Document.deleteMany({}),
-            Alumnus.deleteMany({})
+            Alumnus.deleteMany({}),
+            Events.deleteMany({})
         ]);
         console.log('Cleared existing data');
 
@@ -53,43 +53,45 @@ export async function seedDB() {
         const courseIds = courses.map(c => c._id);
 
         // 3. Insert Users (30)
-        const users = await User.insertMany([
-            // 10 Students
-            { email: 'student1@college.edu', password: 'password', name: 'Alice Student', phone: '1234567890', roles: ['Student'] },
-            { email: 'student2@college.edu', password: 'password', name: 'Bob Student', phone: '1234567891', roles: ['Student'] },
-            { email: 'student3@college.edu', password: 'password', name: 'Charlie Student', phone: '1234567892', roles: ['Student'] },
-            { email: 'student4@college.edu', password: 'password', name: 'Dana Student', phone: '1234567893', roles: ['Student'] },
-            { email: 'student5@college.edu', password: 'password', name: 'Eve Student', phone: '1234567894', roles: ['Student'] },
-            { email: 'student6@college.edu', password: 'password', name: 'Frank Student', phone: '1234567895', roles: ['Student'] },
-            { email: 'student7@college.edu', password: 'password', name: 'Grace Student', phone: '1234567896', roles: ['Student'] },
-            { email: 'student8@college.edu', password: 'password', name: 'Henry Student', phone: '1234567897', roles: ['Student'] },
-            { email: 'student9@college.edu', password: 'password', name: 'Ivy Student', phone: '1234567898', roles: ['Student'] },
-            { email: 'student10@college.edu', password: 'password', name: 'Jack Student', phone: '1234567899', roles: ['Student'] },
-            // 5 Teachers
-            { email: 'teacher1@college.edu', password: 'password', name: 'Dr. Smith Teacher', phone: '9876543210', roles: ['Teacher'] },
-            { email: 'teacher2@college.edu', password: 'password', name: 'Prof. Johnson Teacher', phone: '9876543211', roles: ['Teacher'] },
-            { email: 'teacher3@college.edu', password: 'password', name: 'Ms. Lee Teacher', phone: '9876543212', roles: ['Teacher'] },
-            { email: 'teacher4@college.edu', password: 'password', name: 'Mr. Kim Teacher', phone: '9876543213', roles: ['Teacher'] },
-            { email: 'teacher5@college.edu', password: 'password', name: 'Dr. Patel Teacher', phone: '9876543214', roles: ['Teacher'] },
-            // 5 Staff
-            { email: 'staff1@college.edu', password: 'password', name: 'Admin Staff1', phone: '5550000001', roles: ['Staff'] },
-            { email: 'staff2@college.edu', password: 'password', name: 'Admin Staff2', phone: '5550000002', roles: ['Staff'] },
-            { email: 'staff3@college.edu', password: 'password', name: 'Admin Staff3', phone: '5550000003', roles: ['Staff'] },
-            { email: 'staff4@college.edu', password: 'password', name: 'Admin Staff4', phone: '5550000004', roles: ['Staff'] },
-            { email: 'staff5@college.edu', password: 'password', name: 'Admin Staff5', phone: '5550000005', roles: ['Staff'] },
-            // 2 Librarians
-            { email: 'librarian1@college.edu', password: 'password', name: 'Librarian One', phone: '4441111111', roles: ['Librarian'] },
-            { email: 'librarian2@college.edu', password: 'password', name: 'Librarian Two', phone: '4441111112', roles: ['Librarian'] },
-            // 2 Placement
-            { email: 'placement1@college.edu', password: 'password', name: 'Placement Officer1', phone: '3332222221', roles: ['Placement'] },
-            { email: 'placement2@college.edu', password: 'password', name: 'Placement Officer2', phone: '3332222222', roles: ['Placement'] },
-            // 3 Admins
-            { email: 'admin1@college.edu', password: 'password', name: 'Admin One', phone: '2223333331', roles: ['Admin'] },
-            { email: 'admin2@college.edu', password: 'password', name: 'Admin Two', phone: '2223333332', roles: ['Admin'] },
-            { email: 'admin3@college.edu', password: 'password', name: 'Admin Three', phone: '2223333333', roles: ['Admin'] },
-            // 1 SuperAdmin
-            { email: 'superadmin@college.edu', password: 'password', name: 'Super Admin', phone: '1110000001', roles: ['SuperAdmin'] }
-        ]);
+        const users = await User
+            // .find({})
+            .insertMany([
+                // 10 Students
+                { email: 'student1@college.edu', password: 'password', name: 'Alice Student', phone: '1234567890', roles: ['Student'] },
+                { email: 'student2@college.edu', password: 'password', name: 'Bob Student', phone: '1234567891', roles: ['Student'] },
+                { email: 'student3@college.edu', password: 'password', name: 'Charlie Student', phone: '1234567892', roles: ['Student'] },
+                { email: 'student4@college.edu', password: 'password', name: 'Dana Student', phone: '1234567893', roles: ['Student'] },
+                { email: 'student5@college.edu', password: 'password', name: 'Eve Student', phone: '1234567894', roles: ['Student'] },
+                { email: 'student6@college.edu', password: 'password', name: 'Frank Student', phone: '1234567895', roles: ['Student'] },
+                { email: 'student7@college.edu', password: 'password', name: 'Grace Student', phone: '1234567896', roles: ['Student'] },
+                { email: 'student8@college.edu', password: 'password', name: 'Henry Student', phone: '1234567897', roles: ['Student'] },
+                { email: 'student9@college.edu', password: 'password', name: 'Ivy Student', phone: '1234567898', roles: ['Student'] },
+                { email: 'student10@college.edu', password: 'password', name: 'Jack Student', phone: '1234567899', roles: ['Student'] },
+                // 5 Teachers
+                { email: 'teacher1@college.edu', password: 'password', name: 'Dr. Smith Teacher', phone: '9876543210', roles: ['Teacher'] },
+                { email: 'teacher2@college.edu', password: 'password', name: 'Prof. Johnson Teacher', phone: '9876543211', roles: ['Teacher'] },
+                { email: 'teacher3@college.edu', password: 'password', name: 'Ms. Lee Teacher', phone: '9876543212', roles: ['Teacher'] },
+                { email: 'teacher4@college.edu', password: 'password', name: 'Mr. Kim Teacher', phone: '9876543213', roles: ['Teacher'] },
+                { email: 'teacher5@college.edu', password: 'password', name: 'Dr. Patel Teacher', phone: '9876543214', roles: ['Teacher'] },
+                // 5 Staff
+                { email: 'staff1@college.edu', password: 'password', name: 'Admin Staff1', phone: '5550000001', roles: ['Staff'] },
+                { email: 'staff2@college.edu', password: 'password', name: 'Admin Staff2', phone: '5550000002', roles: ['Staff'] },
+                { email: 'staff3@college.edu', password: 'password', name: 'Admin Staff3', phone: '5550000003', roles: ['Staff'] },
+                { email: 'staff4@college.edu', password: 'password', name: 'Admin Staff4', phone: '5550000004', roles: ['Staff'] },
+                { email: 'staff5@college.edu', password: 'password', name: 'Admin Staff5', phone: '5550000005', roles: ['Staff'] },
+                // 2 Librarians
+                { email: 'librarian1@college.edu', password: 'password', name: 'Librarian One', phone: '4441111111', roles: ['Librarian'] },
+                { email: 'librarian2@college.edu', password: 'password', name: 'Librarian Two', phone: '4441111112', roles: ['Librarian'] },
+                // 2 Placement
+                { email: 'placement1@college.edu', password: 'password', name: 'Placement Officer1', phone: '3332222221', roles: ['Placement'] },
+                { email: 'placement2@college.edu', password: 'password', name: 'Placement Officer2', phone: '3332222222', roles: ['Placement'] },
+                // 3 Admins
+                { email: 'admin1@college.edu', password: 'password', name: 'Admin One', phone: '2223333331', roles: ['Admin'] },
+                { email: 'admin2@college.edu', password: 'password', name: 'Admin Two', phone: '2223333332', roles: ['Admin'] },
+                { email: 'admin3@college.edu', password: 'password', name: 'Admin Three', phone: '2223333333', roles: ['Admin'] },
+                // 1 SuperAdmin
+                { email: 'superadmin@college.edu', password: 'password', name: 'Super Admin', phone: '1110000001', roles: ['SuperAdmin'] }
+            ]);
         const userIds = users.map(u => u._id);
         const studentUserIds = userIds.slice(0, 10);
         const teacherUserIds = userIds.slice(10, 15);
@@ -175,77 +177,6 @@ export async function seedDB() {
                 validTo: new Date('2025-12-31')
             }
         ]);
-
-        // 9. Insert Attendances (5 sessions with mixed user types)
-        const attendances = [];
-        for (let i = 0; i < 5; i++) {
-            const sessionId = `SESS-${i + 1}`;
-            const context = i % 2 === 0 ? 'class' : 'meeting';
-            const entries = [];
-            // Student entries (5)
-            for (let j = 0; j < 5; j++) {
-                entries.push({
-                    userId: studentUserIds[j],
-                    userType: 'Student',
-                    studentId: studentIds[j],
-                    subjectId: subjectIds[i % subjectIds.length],
-                    status: Math.random() > 0.5 ? 'present' : 'absent',
-                    duration: 60,
-                    remarks: `Student remark ${j + 1}`
-                });
-            }
-            // Teacher entries (2)
-            for (let j = 0; j < 2; j++) {
-                entries.push({
-                    userId: teacherUserIds[j],
-                    userType: 'Teacher',
-                    teacherId: teacherIds[j],
-                    subjectId: subjectIds[i % subjectIds.length],
-                    status: 'present',
-                    duration: 60,
-                    remarks: `Teacher remark ${j + 1}`
-                });
-            }
-            // Staff entry (1)
-            entries.push({
-                userId: staffUserIds[0],
-                userType: 'Staff',
-                staffId: null,
-                status: 'present',
-                duration: 60,
-                remarks: 'Staff duty'
-            });
-            // Admin entry (1)
-            entries.push({
-                userId: adminUserIds[0],
-                userType: 'Admin',
-                status: 'on-leave',
-                duration: 0,
-                remarks: 'Admin leave'
-            });
-
-            attendances.push({
-                sessionId,
-                context,
-                subjectId: subjectIds[i % subjectIds.length],
-                courseId: courseIds[i % courseIds.length],
-                deptId: deptIds[i % deptIds.length],
-                sessionDate: new Date(`2025-09-${i + 10}`),
-                sessionStart: new Date(`2025-09-${i + 10}T09:00:00`),
-                sessionEnd: new Date(`2025-09-${i + 10}T10:00:00`),
-                location: { type: 'classroom', roomNo: `Room ${i + 1}`, building: 'Main Bldg' },
-                createdBy: teacherUserIds[i % teacherUserIds.length],
-                entries,
-                status: 'closed',
-                meta: { note: 'Dummy session' }
-            });
-        }
-        const insertedAttendances = await Attendance.insertMany(attendances);
-        // Calculate for each
-        for (let att of insertedAttendances) {
-            att.calculateAttendance();
-            await att.save();
-        }
 
         // 10. Insert Exams (10)
         const exams = [];
@@ -660,7 +591,7 @@ export async function seedDB() {
 
         // FIXED: Update each student individually to link with their corresponding alumni
         console.log('Linking students to alumni...');
-        
+
         // Update students 1-8 to mark as alumni and link to their specific alumni record
         for (let i = 0; i < 8; i++) {
             await Student.updateOne(
@@ -688,20 +619,80 @@ export async function seedDB() {
             );
         }
 
-        // Update User emails for alumni (professional emails)
+        // Update User emails for alumni(professional emails)
         console.log('Updating user emails for alumni...');
-        await Promise.all([
-            User.updateOne({ _id: studentUserIds[0] }, { email: 'alice@techcorp.com' }),
-            User.updateOne({ _id: studentUserIds[1] }, { email: 'bob@dataanalytics.com' }),
-            User.updateOne({ _id: studentUserIds[2] }, { email: 'charlie@mechworks.com' }),
-            User.updateOne({ _id: studentUserIds[3] }, { email: 'dana@buildcorp.com' }),
-            User.updateOne({ _id: studentUserIds[4] }, { email: 'eve@electrotech.com' }),
-            User.updateOne({ _id: studentUserIds[5] }, { email: 'frank@cloudscale.com' }),
-            User.updateOne({ _id: studentUserIds[6] }, { email: 'grace@consultpro.com' }),
-            User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
-        ]);
+            await Promise.all([
+                User.updateOne({ _id: studentUserIds[0] }, { email: 'alice@techcorp.com' }),
+                User.updateOne({ _id: studentUserIds[1] }, { email: 'bob@dataanalytics.com' }),
+                User.updateOne({ _id: studentUserIds[2] }, { email: 'charlie@mechworks.com' }),
+                User.updateOne({ _id: studentUserIds[3] }, { email: 'dana@buildcorp.com' }),
+                User.updateOne({ _id: studentUserIds[4] }, { email: 'eve@electrotech.com' }),
+                User.updateOne({ _id: studentUserIds[5] }, { email: 'frank@cloudscale.com' }),
+                User.updateOne({ _id: studentUserIds[6] }, { email: 'grace@consultpro.com' }),
+                User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
+            ]);
 
         console.log(`Inserted ${alumniData.length} alumni records and linked ${8} students to their alumni profiles`);
+
+        const events = await Events.insertMany([
+            {
+                title: 'Tech Fest 2025',
+                description: 'Annual tech festival with workshops, competitions, and exhibitions.',
+                startDate: new Date('2025-10-10T09:00:00'),
+                endDate: new Date('2025-10-12T18:00:00'),
+                location: 'Main Campus Grounds',
+                audience: ['students', 'teachers'],
+                createdBy: adminUserIds[0],
+                tags: ['tech', 'festival', 'workshops'],
+                isPublic: true
+            },
+            {
+                title: 'Alumni Meet 2025',
+                description: 'Gathering of all alumni with networking sessions and keynote speeches.',
+                startDate: new Date('2025-11-05T10:00:00'),
+                endDate: new Date('2025-11-05T16:00:00'),
+                location: 'Auditorium',
+                audience: ['alumni', 'students', 'teachers'],
+                createdBy: adminUserIds[1],
+                tags: ['alumni', 'networking'],
+                isPublic: true
+            },
+            {
+                title: 'Coding Hackathon',
+                description: '24-hour hackathon for CSE and IT students with exciting prizes.',
+                startDate: new Date('2025-10-20T08:00:00'),
+                endDate: new Date('2025-10-21T08:00:00'),
+                location: 'Computer Lab 1',
+                audience: ['students'],
+                createdBy: teacherUserIds[0],
+                tags: ['coding', 'hackathon', 'competition'],
+                isPublic: true
+            },
+            {
+                title: 'Guest Lecture: AI in Healthcare',
+                description: 'Expert talk on AI applications in medical sciences.',
+                startDate: new Date('2025-10-25T14:00:00'),
+                endDate: new Date('2025-10-25T16:00:00'),
+                location: 'Seminar Hall 2',
+                audience: ['students', 'teachers'],
+                createdBy: teacherUserIds[1],
+                tags: ['lecture', 'ai', 'healthcare'],
+                isPublic: true
+            },
+            {
+                title: 'Cultural Night 2025',
+                description: 'Annual cultural night with dance, music, and drama performances.',
+                startDate: new Date('2025-12-15T18:00:00'),
+                endDate: new Date('2025-12-15T22:00:00'),
+                location: 'Open Stage',
+                audience: ['all'],
+                createdBy: adminUserIds[2],
+                tags: ['cultural', 'music', 'dance', 'drama'],
+                isPublic: true
+            }
+        ]);
+
+        console.log(`Inserted ${events.length} dummy events`);
         console.log('Dummy data inserted successfully!');
     } catch (error) {
         console.error('Error seeding DB:', error);

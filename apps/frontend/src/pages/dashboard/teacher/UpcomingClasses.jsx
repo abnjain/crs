@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 export default function UpcomingClasses() {
   const { token } = useAuth();
@@ -41,21 +41,23 @@ export default function UpcomingClasses() {
   }
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <ul className="space-y-2">
-          {classes.length > 0 ? (
-            classes.map((c, i) => (
-              <li key={i} className="p-3 border rounded bg-accent/50">
-                <div className="font-medium">{c.subject} • {c.section}</div>
-                <div className="text-sm text-muted-foreground">{c.time}</div>
-              </li>
-            ))
-          ) : (
-            <p className="text-center text-muted-foreground">No upcoming classes</p>
-          )}
-        </ul>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardContent className="p-4">
+          <ul className="space-y-2">
+            {classes.length > 0 ? (
+              classes.map((c, i) => (
+                <li key={i} className="p-3 border rounded bg-accent/50">
+                  <div className="font-medium">{c.subject} • {c.section}</div>
+                  <div className="text-sm text-muted-foreground">{c.time}</div>
+                </li>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground">No upcoming classes</p>
+            )}
+          </ul>
+        </CardContent>
+      </Card>
+    </>
   );
 }

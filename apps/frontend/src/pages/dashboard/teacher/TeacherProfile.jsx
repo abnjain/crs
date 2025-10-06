@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 const schema = z.object({
@@ -42,56 +42,58 @@ export default function TeacherProfile() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await api.patch('/auth/users/me', data, {
+      const res = await api.patch('/auth/users/me', data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Profile updated successfully');
+      toast.success(res.data.message || 'Profile updated!!');
     } catch (err) {
-      toast.error('Failed to update profile');
+      toast.error(err.response?.data?.message || 'Failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardLayout>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Teacher Profile</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-4 mb-6">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-xl font-semibold">{user?.name}</h2>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
+    <>
+      <DashboardLayout>
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Teacher Profile</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4 mb-6">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={user?.avatar} />
+                <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-xl font-semibold">{user?.name}</h2>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              </div>
             </div>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" {...register('name')} />
-              {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" {...register('email')} />
-              {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-            </div>
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea id="bio" {...register('bio')} />
-              {errors.bio && <p className="text-destructive text-sm">{errors.bio.message}</p>}
-            </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Updating...' : 'Update Profile'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </DashboardLayout>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" {...register('name')} />
+                {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" {...register('email')} />
+                {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea id="bio" {...register('bio')} />
+                {errors.bio && <p className="text-destructive text-sm">{errors.bio.message}</p>}
+              </div>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Profile'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    </>
   );
 }

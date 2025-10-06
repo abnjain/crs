@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
 export default function Upload({
@@ -28,12 +28,13 @@ export default function Upload({
     }
     setIsLoading(true);
     try {
+      const res = null;
       if (multiple) {
-        await onUpload(files);
+        res = await onUpload(files);
       } else {
-        await onUpload(files[0]);
+        res = await onUpload(files[0]);
       }
-      toast.success("Upload successful");
+      toast.success(res.data.message || "Uploaded!!");
       setFiles([]);
     } catch (err) {
       console.error(err);
@@ -44,26 +45,28 @@ export default function Upload({
   };
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <label className="block">
-        <span className="sr-only">{label}</span>
-        <Input
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          onChange={handleChange}
-          disabled={disabled || isLoading}
-          className="hidden"
-          id="file-upload"
-        />
-        <div className="px-3 py-2 border rounded cursor-pointer hover:bg-muted/50" onClick={() => document.getElementById('file-upload').click()}>
-          {files.length > 0 ? `${files.length} file(s) selected` : label}
-        </div>
-      </label>
-      <Button onClick={handleSubmit} disabled={!files.length || isLoading || disabled}>
-        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        {isLoading ? "Uploading..." : "Upload"}
-      </Button>
-    </div>
+    <>
+      <div className={`flex items-center gap-3 ${className}`}>
+        <label className="block">
+          <span className="sr-only">{label}</span>
+          <Input
+            type="file"
+            accept={accept}
+            multiple={multiple}
+            onChange={handleChange}
+            disabled={disabled || isLoading}
+            className="hidden"
+            id="file-upload"
+          />
+          <div className="px-3 py-2 border rounded cursor-pointer hover:bg-muted/50" onClick={() => document.getElementById('file-upload').click()}>
+            {files.length > 0 ? `${files.length} file(s) selected` : label}
+          </div>
+        </label>
+        <Button onClick={handleSubmit} disabled={!files.length || isLoading || disabled}>
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {isLoading ? "Uploading..." : "Upload"}
+        </Button>
+      </div>
+    </>
   );
 }

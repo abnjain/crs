@@ -1,4 +1,5 @@
-import { User, Student, Teacher, Loan, Attendance } from "../models/index.js";
+// apps/backend/controllers/analyticsController.js
+import { User, Student, Teacher, Loan } from "../models/index.js";
 
 export async function overview(req, res, next) {
   try {
@@ -15,24 +16,6 @@ export async function overview(req, res, next) {
     next(err);
   }
 }
-
-export async function attendanceAnalytics(req, res, next) {
-  try {
-    if (req.user.role !== 'Admin' && req.user.role !== "SuperAdmin") return res.status(403).json({ message: "Only admins can access here", error: "Forbidden" });
-    // simple: attendance count per subject for month
-    const { course, month } = req.query;
-    const docs = await Attendance.find({}); // refine as needed
-    if (!docs) return res.status(404).json({ message: "No attendance analytics found", error: "Not Found" });
-    res.status(200).json({ count: docs.length, docs: docs.slice(0, 50), ok: true, message: "Attendance analytics fetched successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch attendance analytics or Internal Server Error", error: err.message });
-    next(err);
-  }
-}
-
-// apps/backend/controllers/analyticsController.js
-// Updated performance function
 
 export async function performance(req, res, next) {
   try {

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import api from "@/config/api";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export default function ForgotPassword() {
@@ -23,14 +23,15 @@ export default function ForgotPassword() {
 
   const onSubmit = async (data) => {
     try {
-      await api.post("/auth/reset/request", {
+      const res = await api.post("/auth/reset/request", {
         email: data.email,
       });
-      toast.success("Password reset link sent! Please check your email.");
+      console.log(res.data.resetPData);
+      toast.success(res.data.message || "Password reset link sent!!");
       navigate("/login");
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to send reset link. Please try again.");
+      toast.error(err.response?.data?.message || "Failed to send reset link.");
     }
   };
 

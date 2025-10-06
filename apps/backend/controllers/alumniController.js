@@ -10,8 +10,12 @@ export const createAlumnus = async (req, res, next) => {
   try {
     const payload = req.body;
     payload.createdBy = req.user?._id;
+    // optional: validate base64 image length or URL format
+    if (payload.profilePhoto && typeof payload.profilePhoto !== "string") {
+      return res.status(400).json({ ok: false, message: "Invalid profile photo" });
+    }
     const alumnus = await mongoose.models.Alumnus.create(payload);
-    res.status(201).json({ ok: true, alumnus });
+    res.status(201).json({ ok: true, alumnus: { name: alumnus.name, email: alumnus.email, createdBy: req.user?._id } });
   } catch (err) { next(err); }
 };
 
@@ -25,7 +29,13 @@ export const getAlumnus = async (req, res, next) => {
 
 export const updateAlumnus = async (req, res, next) => {
   try {
-    const updated = await mongoose.models.Alumnus.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { id } = req.params;
+    const payload = req.body;
+    // optional: validate base64 image length or URL format
+    if (payload.profilePhoto && typeof payload.profilePhoto !== "string") {
+      return res.status(400).json({ ok: false, message: "Invalid profile photo" });
+    }
+    const updated = await mongoose.models.Alumnus.findByIdAndUpdate(id, payload, { new: true });
     res.json({ ok: true, alumnus: updated });
   } catch (err) { next(err); }
 };

@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'; // Adjust path as needed
 const ROLE_DASHBOARD_PATHS = {
     admin: '/dashboard/admin',
     student: '/dashboard/student',
+    alumni: '/dashboard/alumni',
     teacher: '/dashboard/teacher',
     staff: '/dashboard/staff',
     superadmin: '/dashboard/superadmin',
@@ -21,7 +22,10 @@ const RoleBasedDashboardRedirect = () => {
             return;
         }
         const roles = user && user.roles ? user.roles.map(r => r.toLowerCase()) : null;
-        const path = roles && roles.length > 0 ? ROLE_DASHBOARD_PATHS[roles[0]] || '/login' : '/login';
+        const rolePriority = ['alumni','teacher','admin','superadmin','student','staff'];
+        const userRole = rolePriority.find(r => roles.includes(r)) || 'teacher';
+        // const path = roles && roles.length > 0 ? ROLE_DASHBOARD_PATHS[roles[0]] || '/login' : '/login';
+        const path = ROLE_DASHBOARD_PATHS[userRole] || '/login';
         navigate(path, { replace: true });
     }, [user, navigate]);
 

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 // Schema for form validation
@@ -50,55 +50,57 @@ export default function ExamMarksUpload() {
       formData.append('examId', data.examId);
       formData.append('csv', data.csvFile[0]);
 
-      await api.post('/assesment/marks', formData, {
+      const res = await api.post('/assesment/marks', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-      toast.success('Marks uploaded successfully');
+      toast.success(res.data.message || 'Marks uploaded!!');
     } catch (err) {
-      toast.error('Failed to upload marks');
+      toast.error(err.response?.data?.message || 'Failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardLayout>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Upload Exam Marks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Label htmlFor="examId">Select Exam</Label>
-              <Select onValueChange={(value) => setValue('examId', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose exam" />
-                </SelectTrigger>
-                <SelectContent>
-                  {exams.map((exam) => (
-                    <SelectItem key={exam._id} value={exam._id}>
-                      {exam.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.examId && <p className="text-destructive text-sm">{errors.examId.message}</p>}
-            </div>
-            <div>
-              <Label htmlFor="csvFile">Upload CSV</Label>
-              <Input id="csvFile" type="file" accept=".csv" {...register('csvFile')} />
-              {errors.csvFile && <p className="text-destructive text-sm">{errors.csvFile.message}</p>}
-            </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Uploading...' : 'Upload Marks'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </DashboardLayout>
+    <>
+      <DashboardLayout>
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Upload Exam Marks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <Label htmlFor="examId">Select Exam</Label>
+                <Select onValueChange={(value) => setValue('examId', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose exam" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {exams.map((exam) => (
+                      <SelectItem key={exam._id} value={exam._id}>
+                        {exam.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.examId && <p className="text-destructive text-sm">{errors.examId.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="csvFile">Upload CSV</Label>
+                <Input id="csvFile" type="file" accept=".csv" {...register('csvFile')} />
+                {errors.csvFile && <p className="text-destructive text-sm">{errors.csvFile.message}</p>}
+              </div>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Uploading...' : 'Upload Marks'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    </>
   );
 }
