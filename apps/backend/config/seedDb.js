@@ -1,5 +1,6 @@
 import { Application, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User, Alumnus, Events } from '../models/index.js';
 import { config } from './config.js';
+import bcrypt from "bcrypt";
 
 // Seed function
 export async function seedDB() {
@@ -52,46 +53,55 @@ export async function seedDB() {
         ]);
         const courseIds = courses.map(c => c._id);
 
+        const rawUsers = [
+            // 10 Students
+            { email: 'student1@college.edu', password: 'password', name: 'Alice Student', phone: '1234567890', roles: ['Student'] },
+            { email: 'student2@college.edu', password: 'password', name: 'Bob Student', phone: '1234567891', roles: ['Student'] },
+            { email: 'student3@college.edu', password: 'password', name: 'Charlie Student', phone: '1234567892', roles: ['Student'] },
+            { email: 'student4@college.edu', password: 'password', name: 'Dana Student', phone: '1234567893', roles: ['Student'] },
+            { email: 'student5@college.edu', password: 'password', name: 'Eve Student', phone: '1234567894', roles: ['Student'] },
+            { email: 'student6@college.edu', password: 'password', name: 'Frank Student', phone: '1234567895', roles: ['Student'] },
+            { email: 'student7@college.edu', password: 'password', name: 'Grace Student', phone: '1234567896', roles: ['Student'] },
+            { email: 'student8@college.edu', password: 'password', name: 'Henry Student', phone: '1234567897', roles: ['Student'] },
+            { email: 'student9@college.edu', password: 'password', name: 'Ivy Student', phone: '1234567898', roles: ['Student'] },
+            { email: 'student10@college.edu', password: 'password', name: 'Jack Student', phone: '1234567899', roles: ['Student'] },
+            // 5 Teachers
+            { email: 'teacher1@college.edu', password: 'password', name: 'Dr. Smith Teacher', phone: '9876543210', roles: ['Teacher'] },
+            { email: 'teacher2@college.edu', password: 'password', name: 'Prof. Johnson Teacher', phone: '9876543211', roles: ['Teacher'] },
+            { email: 'teacher3@college.edu', password: 'password', name: 'Ms. Lee Teacher', phone: '9876543212', roles: ['Teacher'] },
+            { email: 'teacher4@college.edu', password: 'password', name: 'Mr. Kim Teacher', phone: '9876543213', roles: ['Teacher'] },
+            { email: 'teacher5@college.edu', password: 'password', name: 'Dr. Patel Teacher', phone: '9876543214', roles: ['Teacher'] },
+            // 5 Staff
+            { email: 'staff1@college.edu', password: 'password', name: 'Admin Staff1', phone: '5550000001', roles: ['Staff'] },
+            { email: 'staff2@college.edu', password: 'password', name: 'Admin Staff2', phone: '5550000002', roles: ['Staff'] },
+            { email: 'staff3@college.edu', password: 'password', name: 'Admin Staff3', phone: '5550000003', roles: ['Staff'] },
+            { email: 'staff4@college.edu', password: 'password', name: 'Admin Staff4', phone: '5550000004', roles: ['Staff'] },
+            { email: 'staff5@college.edu', password: 'password', name: 'Admin Staff5', phone: '5550000005', roles: ['Staff'] },
+            // 2 Librarians
+            { email: 'librarian1@college.edu', password: 'password', name: 'Librarian One', phone: '4441111111', roles: ['Librarian'] },
+            { email: 'librarian2@college.edu', password: 'password', name: 'Librarian Two', phone: '4441111112', roles: ['Librarian'] },
+            // 2 Placement
+            { email: 'placement1@college.edu', password: 'password', name: 'Placement Officer1', phone: '3332222221', roles: ['Placement'] },
+            { email: 'placement2@college.edu', password: 'password', name: 'Placement Officer2', phone: '3332222222', roles: ['Placement'] },
+            // 3 Admins
+            { email: 'admin1@college.edu', password: 'password', name: 'Admin One', phone: '2223333331', roles: ['Admin'] },
+            { email: 'admin2@college.edu', password: 'password', name: 'Admin Two', phone: '2223333332', roles: ['Admin'] },
+            { email: 'admin3@college.edu', password: 'password', name: 'Admin Three', phone: '2223333333', roles: ['Admin'] },
+            // 1 SuperAdmin
+            { email: 'superadmin@college.edu', password: 'password', name: 'Super Admin', phone: '1110000001', roles: ['SuperAdmin'] }
+        ]
+
+        const hashedUsers = await Promise.all(
+            rawUsers.map(async (user) => ({
+                ...user,
+                password: await bcrypt.hash(user.password, 10)
+            }))
+        );
+
         // 3. Insert Users (30)
         const users = await User
             // .find({})
-            .insertMany([
-                // 10 Students
-                { email: 'student1@college.edu', password: 'password', name: 'Alice Student', phone: '1234567890', roles: ['Student'] },
-                { email: 'student2@college.edu', password: 'password', name: 'Bob Student', phone: '1234567891', roles: ['Student'] },
-                { email: 'student3@college.edu', password: 'password', name: 'Charlie Student', phone: '1234567892', roles: ['Student'] },
-                { email: 'student4@college.edu', password: 'password', name: 'Dana Student', phone: '1234567893', roles: ['Student'] },
-                { email: 'student5@college.edu', password: 'password', name: 'Eve Student', phone: '1234567894', roles: ['Student'] },
-                { email: 'student6@college.edu', password: 'password', name: 'Frank Student', phone: '1234567895', roles: ['Student'] },
-                { email: 'student7@college.edu', password: 'password', name: 'Grace Student', phone: '1234567896', roles: ['Student'] },
-                { email: 'student8@college.edu', password: 'password', name: 'Henry Student', phone: '1234567897', roles: ['Student'] },
-                { email: 'student9@college.edu', password: 'password', name: 'Ivy Student', phone: '1234567898', roles: ['Student'] },
-                { email: 'student10@college.edu', password: 'password', name: 'Jack Student', phone: '1234567899', roles: ['Student'] },
-                // 5 Teachers
-                { email: 'teacher1@college.edu', password: 'password', name: 'Dr. Smith Teacher', phone: '9876543210', roles: ['Teacher'] },
-                { email: 'teacher2@college.edu', password: 'password', name: 'Prof. Johnson Teacher', phone: '9876543211', roles: ['Teacher'] },
-                { email: 'teacher3@college.edu', password: 'password', name: 'Ms. Lee Teacher', phone: '9876543212', roles: ['Teacher'] },
-                { email: 'teacher4@college.edu', password: 'password', name: 'Mr. Kim Teacher', phone: '9876543213', roles: ['Teacher'] },
-                { email: 'teacher5@college.edu', password: 'password', name: 'Dr. Patel Teacher', phone: '9876543214', roles: ['Teacher'] },
-                // 5 Staff
-                { email: 'staff1@college.edu', password: 'password', name: 'Admin Staff1', phone: '5550000001', roles: ['Staff'] },
-                { email: 'staff2@college.edu', password: 'password', name: 'Admin Staff2', phone: '5550000002', roles: ['Staff'] },
-                { email: 'staff3@college.edu', password: 'password', name: 'Admin Staff3', phone: '5550000003', roles: ['Staff'] },
-                { email: 'staff4@college.edu', password: 'password', name: 'Admin Staff4', phone: '5550000004', roles: ['Staff'] },
-                { email: 'staff5@college.edu', password: 'password', name: 'Admin Staff5', phone: '5550000005', roles: ['Staff'] },
-                // 2 Librarians
-                { email: 'librarian1@college.edu', password: 'password', name: 'Librarian One', phone: '4441111111', roles: ['Librarian'] },
-                { email: 'librarian2@college.edu', password: 'password', name: 'Librarian Two', phone: '4441111112', roles: ['Librarian'] },
-                // 2 Placement
-                { email: 'placement1@college.edu', password: 'password', name: 'Placement Officer1', phone: '3332222221', roles: ['Placement'] },
-                { email: 'placement2@college.edu', password: 'password', name: 'Placement Officer2', phone: '3332222222', roles: ['Placement'] },
-                // 3 Admins
-                { email: 'admin1@college.edu', password: 'password', name: 'Admin One', phone: '2223333331', roles: ['Admin'] },
-                { email: 'admin2@college.edu', password: 'password', name: 'Admin Two', phone: '2223333332', roles: ['Admin'] },
-                { email: 'admin3@college.edu', password: 'password', name: 'Admin Three', phone: '2223333333', roles: ['Admin'] },
-                // 1 SuperAdmin
-                { email: 'superadmin@college.edu', password: 'password', name: 'Super Admin', phone: '1110000001', roles: ['SuperAdmin'] }
-            ]);
+            .insertMany(hashedUsers);
         const userIds = users.map(u => u._id);
         const studentUserIds = userIds.slice(0, 10);
         const teacherUserIds = userIds.slice(10, 15);
@@ -103,6 +113,7 @@ export async function seedDB() {
 
         // 4. Insert Students (10) - Include new alumni fields
         const students = await Student.insertMany(studentUserIds.map((userId, i) => ({
+            _id: userId, // Use same ID as User
             user: userId,
             rollNo: `R00${i + 1}`,
             admissionYear: 2023,
@@ -121,6 +132,7 @@ export async function seedDB() {
 
         // 5. Insert Teachers (5)
         const teachers = await Teacher.insertMany(teacherUserIds.map((userId, i) => ({
+            _id: userId,
             user: userId,
             empCode: `EMP0${i + 1}`,
             deptId: deptIds[i % deptIds.length],
@@ -312,6 +324,7 @@ export async function seedDB() {
                 email: 'alice@techcorp.com',
                 phone: '9876543210',
                 studentId: studentIds[0],
+                _id: studentIds[0],
                 enrollmentNo: 'E001',
                 batch: '2023',
                 department: 'CSE',
@@ -351,6 +364,7 @@ export async function seedDB() {
                 email: 'bob@dataanalytics.com',
                 phone: '9876543211',
                 studentId: studentIds[1],
+                _id: studentIds[1],
                 enrollmentNo: 'E002',
                 batch: '2023',
                 department: 'CSE',
@@ -382,6 +396,7 @@ export async function seedDB() {
                 email: 'charlie@mechworks.com',
                 phone: '9876543212',
                 studentId: studentIds[2],
+                _id: studentIds[2],
                 enrollmentNo: 'E003',
                 batch: '2023',
                 department: 'ME',
@@ -421,6 +436,7 @@ export async function seedDB() {
                 email: 'dana@buildcorp.com',
                 phone: '9876543213',
                 studentId: studentIds[3],
+                _id: studentIds[3],
                 enrollmentNo: 'E004',
                 batch: '2023',
                 department: 'CE',
@@ -452,6 +468,7 @@ export async function seedDB() {
                 email: 'eve@electrotech.com',
                 phone: '9876543214',
                 studentId: studentIds[4],
+                _id: studentIds[4],
                 enrollmentNo: 'E005',
                 batch: '2023',
                 department: 'ECE',
@@ -491,6 +508,7 @@ export async function seedDB() {
                 email: 'frank@cloudscale.com',
                 phone: '9876543215',
                 studentId: studentIds[5],
+                _id: studentIds[5],
                 enrollmentNo: 'E006',
                 batch: '2023',
                 department: 'CSE',
@@ -522,6 +540,7 @@ export async function seedDB() {
                 email: 'grace@consultpro.com',
                 phone: '9876543216',
                 studentId: studentIds[6],
+                _id: studentIds[6],
                 enrollmentNo: 'E007',
                 batch: '2023',
                 department: 'CSE',
@@ -561,6 +580,7 @@ export async function seedDB() {
                 email: 'henry@qualitysoft.com',
                 phone: '9876543217',
                 studentId: studentIds[7],
+                _id: studentIds[7],
                 enrollmentNo: 'E008',
                 batch: '2023',
                 department: 'CSE',
@@ -621,16 +641,16 @@ export async function seedDB() {
 
         // Update User emails for alumni(professional emails)
         console.log('Updating user emails for alumni...');
-            await Promise.all([
-                User.updateOne({ _id: studentUserIds[0] }, { email: 'alice@techcorp.com' }),
-                User.updateOne({ _id: studentUserIds[1] }, { email: 'bob@dataanalytics.com' }),
-                User.updateOne({ _id: studentUserIds[2] }, { email: 'charlie@mechworks.com' }),
-                User.updateOne({ _id: studentUserIds[3] }, { email: 'dana@buildcorp.com' }),
-                User.updateOne({ _id: studentUserIds[4] }, { email: 'eve@electrotech.com' }),
-                User.updateOne({ _id: studentUserIds[5] }, { email: 'frank@cloudscale.com' }),
-                User.updateOne({ _id: studentUserIds[6] }, { email: 'grace@consultpro.com' }),
-                User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
-            ]);
+        await Promise.all([
+            User.updateOne({ _id: studentUserIds[0] }, { email: 'alice@techcorp.com' }),
+            User.updateOne({ _id: studentUserIds[1] }, { email: 'bob@dataanalytics.com' }),
+            User.updateOne({ _id: studentUserIds[2] }, { email: 'charlie@mechworks.com' }),
+            User.updateOne({ _id: studentUserIds[3] }, { email: 'dana@buildcorp.com' }),
+            User.updateOne({ _id: studentUserIds[4] }, { email: 'eve@electrotech.com' }),
+            User.updateOne({ _id: studentUserIds[5] }, { email: 'frank@cloudscale.com' }),
+            User.updateOne({ _id: studentUserIds[6] }, { email: 'grace@consultpro.com' }),
+            User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
+        ]);
 
         console.log(`Inserted ${alumniData.length} alumni records and linked ${8} students to their alumni profiles`);
 

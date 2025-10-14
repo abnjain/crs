@@ -2,7 +2,6 @@
 import mongoose from "mongoose";
 import { Alumnus } from "../models/index.js";
 import xlsx from "xlsx"; // used by excel upload helper
-import { Readable } from "stream";
 
 // CRUD + search + bulk upload + messaging (simple)
 
@@ -14,16 +13,16 @@ export const createAlumnus = async (req, res, next) => {
     if (payload.profilePhoto && typeof payload.profilePhoto !== "string") {
       return res.status(400).json({ ok: false, message: "Invalid profile photo" });
     }
-    const alumnus = await mongoose.models.Alumnus.create(payload);
-    res.status(201).json({ ok: true, alumnus: { name: alumnus.name, email: alumnus.email, createdBy: req.user?._id } });
+    const alumnus = await Alumnus.create(payload);
+    res.status(201).json({ ok: true, message: "Alumni created successfully", alumnus: { name: alumnus.name, email: alumnus.email, createdBy: req.user?._id } });
   } catch (err) { next(err); }
 };
 
 export const getAlumnus = async (req, res, next) => {
   try {
-    const alumnus = await mongoose.models.Alumnus.findById(req.params.id);
+    const alumnus = await Alumnus.findOne({ _id: req.params.id });
     if (!alumnus) return res.status(404).json({ ok: false, message: "Not found" });
-    res.json({ ok: true, alumnus });
+    res.status(200).json({ ok: true, message: "Alumni details fetched successfully", alumnus });
   } catch (err) { next(err); }
 };
 
@@ -35,15 +34,15 @@ export const updateAlumnus = async (req, res, next) => {
     if (payload.profilePhoto && typeof payload.profilePhoto !== "string") {
       return res.status(400).json({ ok: false, message: "Invalid profile photo" });
     }
-    const updated = await mongoose.models.Alumnus.findByIdAndUpdate(id, payload, { new: true });
-    res.json({ ok: true, alumnus: updated });
+    const updated = await Alumnus.findByIdAndUpdate(id, payload, { new: true });
+    res.status(200).json({ ok: true, message: "Alumni updated successfully", alumnus: updated });
   } catch (err) { next(err); }
 };
 
 export const deleteAlumnus = async (req, res, next) => {
   try {
-    await mongoose.models.Alumnus.findByIdAndDelete(req.params.id);
-    res.json({ ok: true, message: "Deleted" });
+    await Alumnus.findByIdAndDelete(req.params.id);
+    res.status(200).json({ ok: true, message: "Alumni Deleted" });
   } catch (err) { next(err); }
 };
 
@@ -59,9 +58,9 @@ export const listAlumni = async (req, res, next) => {
     }
 
     const skip = (Math.max(1, page) - 1) * limit;
-    const total = await mongoose.models.Alumnus.countDocuments(filter);
-    const alumni = await mongoose.models.Alumnus.find(filter).skip(skip).limit(Number(limit)).sort({ createdAt: -1 });
-    res.json({ ok: true, alumni, total });
+    const total = await Alumnus.countDocuments(filter);
+    const alumni = await Alumnus.find(filter).skip(skip).limit(Number(limit)).sort({ createdAt: -1 });
+    res.status(200).json({ ok: true, message: "Alumnus fetched successfully", alumni, total });
   } catch (err) { next(err); }
 };
 
@@ -71,7 +70,7 @@ export const messageAlumni = async (req, res, next) => {
     const { alumniIds = [], subject, body } = req.body;
     // naive: save message to DB or send email — for now, just respond with what would be sent
     // recommend: later wire to nodemailer or internal messaging collection
-    res.json({ ok: true, sentTo: alumniIds.length, subject });
+    res.status(200).json({ ok: true, sentTo: alumniIds.length, subject });
   } catch (err) { next(err); }
 };
 
@@ -102,13 +101,13 @@ export const uploadAlumniExcel = async (req, res, next) => {
           linkedin: row.linkedin || "",
           createdBy: req.user?._id,
         };
-        const saved = await mongoose.models.Alumnus.create(doc);
+        const saved = await Alumnus.create(doc);
         created.push(saved);
       } catch (errRow) {
         // skip row on error
       }
     }
 
-    res.json({ ok: true, created: created.length });
+    res.status(200).json({ ok: true, created: created.length });
   } catch (err) { next(err); }
 };

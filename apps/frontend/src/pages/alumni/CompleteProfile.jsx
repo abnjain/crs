@@ -5,14 +5,16 @@ import { alumniSchema, defaultAlumniValues } from "@/schemas/alumniSelfSchema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import api from "@/config/api";
+import alumniService from "@/services/alumniService";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X } from "lucide-react";
 
 export default function CompleteProfile() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { alumniId, alumniName } = location.state || {};
     const [alumni, setAlumni] = useState();
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         resolver: zodResolver(alumniSchema),
@@ -24,7 +26,7 @@ export default function CompleteProfile() {
     const [photoOption, setPhotoOption] = useState("file");
 
     useEffect(() => {
-        api.get("/auth/users/me")
+        alumniService.get(alumniId)
             .then(res => {
                 setAlumni(res.data.user)
                 const fields = ["enrollmentNo", "batch", "department", "degree", "specialization", "graduationYear", "currentCompany", "currentRole", "currentDesignation", "linkedin", "location", "about"];
@@ -38,7 +40,7 @@ export default function CompleteProfile() {
         try {
             const merge = { ...data, ...alumni }
             data = merge
-            const res = await api.patch(`/alumni/${data._id || ""}`, data);
+            const res = await alumniService.update(`/alumni/${data._id || ""}`, data);
             toast.success(res.data.message || "Profile updated!!");
             navigate("/dashboard/alumni");
         } catch (err) {

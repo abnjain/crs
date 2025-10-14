@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import api from "@/config/api";
+import alumniService from "@/services/alumniService";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function EditProfile() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const state = location.state || {};
+    const { alumniId } = state;
     const { register, handleSubmit, setValue } = useForm();
     const [loading, setLoading] = useState(true);
     const [alumnusId, setAlumnusId] = useState(null);
 
     // Fetch alumni data
     useEffect(() => {
-        api.get("/alumni/me")
+        alumniService.get(alumniId)
             .then(res => {
                 const data = res.data;
                 setAlumnusId(data._id);
@@ -31,8 +34,8 @@ export default function EditProfile() {
 
     const onSubmit = async (data) => {
         try {
-            const res = await api.patch(`/alumni/${alumnusId}`, data);
-            toast.success(res.data.message || "Profile updated!!");
+            const response = await alumniService.update(alumnusId, data);
+            toast.success(response.message);
             navigate("/alumni/dashboard");
         } catch (err) {
             toast.error(err.message || "Failed");

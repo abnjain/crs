@@ -52,7 +52,7 @@ function ToastContent({ t, message, type, duration }) {
 }
 
 export default function CustomToaster() {
-    const defaultDuration = 2000; // 2 seconds
+    const defaultDuration = 5000; // 5 seconds
 
     return (
         <Toaster
@@ -63,7 +63,6 @@ export default function CustomToaster() {
             containerClassName="flex justify-center items-center"
             toastOptions={{
                 duration: defaultDuration,
-                removeDelay: defaultDuration - 2000,
                 className: "rounded-lg shadow-md w-80 p-3 flex items-center",
                 style: {
                     background: "var(--card)",
@@ -71,28 +70,34 @@ export default function CustomToaster() {
                     border: "1px solid var(--border)",
                 },
                 success: {
-                    duration: 2000,
                     iconTheme: {
                         primary: 'var(--success-color)',
                         secondary: 'var(--light-color)',
                     },
                 },
                 error: {
-                    duration: 2000,
                     iconTheme: {
                         primary: 'var(--danger-color)',
                         secondary: 'var(--light-color)',
                     },
                 },
+                custom: {
+                    iconTheme: {
+                        primary: 'var(--info-color)',
+                        secondary: 'var(--light-color)',
+                    },
+                    style: {
+                        background: 'var(--info-color, #E0F2FE)', // fallback color
+                        color: 'var(--text-color, #0369A1)',
+                        border: '1px solid var(--border, #7DD3FC)',
+                    }
+                },
                 loading: {
-                    render: (t) => (
-                        <ToastWithClose
-                            t={t}
-                            message={t.message}
-                            type="loading"
-                            duration={defaultDuration}
-                        />
-                    ),
+                    duration: 3000,
+                    iconTheme: {
+                        primary: 'var(--info-color)',
+                        secondary: 'var(--light-color)',
+                    }
                 },
             }}
         >

@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const TeacherSchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -20,7 +24,7 @@ const TeacherSchema = new mongoose.Schema({
   designation: {
     type: String
   },
-  expertise: [{ 
+  expertise: [{
     type: String,
     default: []
   }],

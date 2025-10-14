@@ -14,15 +14,18 @@ export default function AlumniDashboard() {
     // Fetch logged-in alumnus
     const fetchAlumnus = async () => {
         try {
-            const user = await api.get("/auth/users/me");
+            const user = await api.get("/auth/users/me");            
             const res = await api.get(`/alumni/${user.data.user._id}`);
-            console.log("Alumnus details fetched successfully:", res.data);
-            setAlumnus(res.data);
+            console.log("Alumnus details fetched successfully:", res.data.message);
+            setAlumnus(res.data.alumnus);
 
             // Check mandatory fields
             const mandatoryFields = ["enrollmentNo", "batch", "department", "degree", "graduationYear"];
-            const isIncomplete = mandatoryFields.some(field => !res.data[field]);
-            if (isIncomplete) navigate("/dashboard/alumni/complete-profile");
+            const isIncomplete = mandatoryFields.some(field => !res.data.alumnus[field]);
+            if (isIncomplete) {
+                navigate("/dashboard/alumni/complete-profile", { state: { from: "dashboard", alumniId: user.data.user._id, alumniName: user.data.user.name } });
+                toast.success("Welcome Alumni! Please Complete the Details", { duration: 5000 });
+            } else toast.success("Welcome to Alumni Dashboard!");
         } catch (err) {
             toast.error("Failed to fetch alumni details.");
         }
@@ -58,7 +61,7 @@ export default function AlumniDashboard() {
                         <p><strong>Department:</strong> {alumnus.department}</p>
                         <p><strong>Current Company:</strong> {alumnus.currentCompany || "Not specified"}</p>
                         <p><strong>Current Role:</strong> {alumnus.currentRole || "Not specified"}</p>
-                        <Button className="mt-3" onClick={() => navigate("/alumni/edit")}>
+                        <Button className="mt-3" onClick={() => navigate("/dashboard/alumni/edit", { state: { alumniId: alumnus._id } })}>
                             Edit Profile
                         </Button>
                     </CardContent>
