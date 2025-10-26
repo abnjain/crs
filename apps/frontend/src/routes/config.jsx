@@ -40,8 +40,9 @@ export const routesConfig = [
   { path: "/dashboard/alumni/complete-profile", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   { path: "/dashboard/alumni/edit", element: <EditProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   
-  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
-  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  // Alumni Mangement
+  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Alumni", "Teacher", "Admin", "SuperAdmin"] },
+  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Alumni", "Teacher", "Admin", "SuperAdmin"] },
 
   // Library Routes
   { path: "/library", element: <LibraryDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
@@ -61,16 +62,16 @@ export const routesConfig = [
   // { path: "/dashboard/student/notices", element: <StudentNotices />, roles: ["Student"] },
   // { path: "/dashboard/student/idcard", element: <StudentIdCard />, roles: ["Student", "Teacher", "Admin", "SuperAdmin"] },
 
-  // Teacher
+  // Teacher Routes
   { path: "/dashboard/teacher", element: <TeacherDashboard />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/research", element: <ResearchUpload />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/marks", element: <ExamMarksUpload />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/profile", element: <TeacherProfile />, roles: ["Teacher", "Admin", "SuperAdmin"] },
   { path: "/dashboard/teacher/subjects", element: <TeacherSubjects />, roles: ["Teacher"] },
 
-  // Staff
+  // Staff Routes
   { path: "/dashboard/staff", element: <StaffDashboard />, roles: ["Staff", "Admin", "SuperAdmin"] },
 
-  // SuperAdmin
+  // SuperAdmin Routes
   { path: "/dashboard/superadmin", element: <SuperAdminDashboard />, roles: ["SuperAdmin"] },
 ];

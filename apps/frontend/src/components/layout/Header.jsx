@@ -10,6 +10,10 @@ import { ThemeToggle } from '@/components/shared/ThemeToggle';
 export function Header({ onToggleSidebar, isOpen, onBack = null }) {
   const { user, logout } = useAuth();
   const userName = user?.name || user?.email?.split('@')[0] || 'User';
+  const photo = user?.profilePhoto && (user.profilePhoto.startsWith('data:image/') || user.profilePhoto.startsWith('http'))
+    ? user.profilePhoto
+    : '';
+  const role = user?.roles ? user.roles[user.roles.length - 1] : 'No Role';
 
   return (
     <>
@@ -61,13 +65,13 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
           {/* User Info — Hidden on mobile, shown on desktop */}
           <div className="hidden md:flex flex-col items-end">
             <span className="text-text font-medium">{userName}</span>
-            <p className="text-xs text-secondText capitalize">{user?.roles}</p>
+            <p className="text-xs text-secondText capitalize">{role}</p>
           </div>
 
           {/* Avatar + ThemeToggle — Always visible */}
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatar || ''} alt={user?.name} />
+              <AvatarImage src={photo} alt={user?.name} />
               <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <ThemeToggle />

@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    profilePhoto: {
+        type: String,
+        default: ''
+    },
     resetToken: {
         type: String,
         default: null

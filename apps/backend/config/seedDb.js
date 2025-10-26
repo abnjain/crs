@@ -89,7 +89,7 @@ export async function seedDB() {
             { email: 'admin3@college.edu', password: 'password', name: 'Admin Three', phone: '2223333333', roles: ['Admin'] },
             // 1 SuperAdmin
             { email: 'superadmin@college.edu', password: 'password', name: 'Super Admin', phone: '1110000001', roles: ['SuperAdmin'] }
-        ]
+        ];
 
         const hashedUsers = await Promise.all(
             rawUsers.map(async (user) => ({
@@ -101,7 +101,7 @@ export async function seedDB() {
         // 3. Insert Users (30)
         const users = await User
             // .find({})
-            .insertMany(hashedUsers);
+        .insertMany(hashedUsers);
         const userIds = users.map(u => u._id);
         const studentUserIds = userIds.slice(0, 10);
         const teacherUserIds = userIds.slice(10, 15);
@@ -112,7 +112,9 @@ export async function seedDB() {
         const superAdminUserId = userIds[27];
 
         // 4. Insert Students (10) - Include new alumni fields
-        const students = await Student.insertMany(studentUserIds.map((userId, i) => ({
+        const students = await Student
+            // .find({});
+        .insertMany(studentUserIds.map((userId, i) => ({
             _id: userId, // Use same ID as User
             user: userId,
             rollNo: `R00${i + 1}`,
@@ -317,7 +319,7 @@ export async function seedDB() {
 
         // 19. Insert Alumni (8) - Create alumni for first 8 students
         console.log('Seeding Alumni...');
-        const alumniData = await Alumnus.insertMany([
+        const alumnus = [
             // Alice Student - Software Engineer at TechCorp
             {
                 name: 'Alice Student',
@@ -332,7 +334,8 @@ export async function seedDB() {
                 specialization: 'Computer Science',
                 graduationYear: 2027,
                 currentCompany: 'TechCorp',
-                currentRole: 'Software Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'Software Engineer',
                 linkedin: 'https://linkedin.com/in/alice-student',
                 location: 'Bangalore, India',
                 about: 'Full-stack developer passionate about AI and machine learning. 2+ years experience in web development.',
@@ -372,7 +375,8 @@ export async function seedDB() {
                 specialization: 'Data Science',
                 graduationYear: 2027,
                 currentCompany: 'DataAnalytics Inc',
-                currentRole: 'Data Scientist',
+                currentRole: 'Employee',
+                currentDesignation: 'Data Scientist',
                 linkedin: 'https://linkedin.com/in/bob-student',
                 location: 'Hyderabad, India',
                 about: 'Data enthusiast specializing in machine learning and predictive analytics.',
@@ -404,7 +408,8 @@ export async function seedDB() {
                 specialization: 'Mechanical Engineering',
                 graduationYear: 2027,
                 currentCompany: 'MechWorks Ltd',
-                currentRole: 'Design Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'Design Engineer',
                 linkedin: 'https://linkedin.com/in/charlie-student',
                 location: 'Chennai, India',
                 about: 'CAD specialist with expertise in product design and manufacturing processes.',
@@ -444,7 +449,8 @@ export async function seedDB() {
                 specialization: 'Civil Engineering',
                 graduationYear: 2027,
                 currentCompany: 'BuildCorp',
-                currentRole: 'Site Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'Site Engineer',
                 linkedin: 'https://linkedin.com/in/dana-student',
                 location: 'Mumbai, India',
                 about: 'Experienced in construction management and structural analysis.',
@@ -476,7 +482,8 @@ export async function seedDB() {
                 specialization: 'Electronics & Communication',
                 graduationYear: 2027,
                 currentCompany: 'ElectroTech Solutions',
-                currentRole: 'Embedded Systems Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'Embedded Systems Engineer',
                 linkedin: 'https://linkedin.com/in/eve-student',
                 location: 'Pune, India',
                 about: 'Embedded systems developer with focus on IoT and firmware development.',
@@ -516,7 +523,8 @@ export async function seedDB() {
                 specialization: 'Computer Science',
                 graduationYear: 2027,
                 currentCompany: 'CloudScale Technologies',
-                currentRole: 'DevOps Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'DevOps Engineer',
                 linkedin: 'https://linkedin.com/in/frank-student',
                 location: 'Noida, India',
                 about: 'DevOps professional specializing in CI/CD pipelines and cloud infrastructure.',
@@ -548,7 +556,8 @@ export async function seedDB() {
                 specialization: 'Information Technology',
                 graduationYear: 2027,
                 currentCompany: 'ConsultPro Services',
-                currentRole: 'Project Manager',
+                currentRole: 'Employee',
+                currentDesignation: 'Project Manager',
                 linkedin: 'https://linkedin.com/in/grace-student',
                 location: 'Delhi, India',
                 about: 'Agile project manager with experience in software development projects.',
@@ -588,7 +597,8 @@ export async function seedDB() {
                 specialization: 'Software Engineering',
                 graduationYear: 2027,
                 currentCompany: 'QualitySoft Solutions',
-                currentRole: 'QA Engineer',
+                currentRole: 'Employee',
+                currentDesignation: 'QA Engineer',
                 linkedin: 'https://linkedin.com/in/henry-student',
                 location: 'Gurgaon, India',
                 about: 'Quality assurance specialist with expertise in automation testing.',
@@ -605,7 +615,8 @@ export async function seedDB() {
                 createdBy: adminUserIds[0],
                 visibility: 'public'
             }
-        ]);
+        ];
+        const alumniData = await Alumnus.insertMany(alumnus);
 
         const alumniIds = alumniData.map(a => a._id);
 
@@ -614,14 +625,23 @@ export async function seedDB() {
 
         // Update students 1-8 to mark as alumni and link to their specific alumni record
         for (let i = 0; i < 8; i++) {
+            // Update Student document
             await Student.updateOne(
                 { _id: studentIds[i] },
                 {
                     $set: {
                         alumniStatus: 'alumni',
-                        alumniId: alumniIds[i], // Assign specific alumni ID for this student
+                        alumniId: alumniIds[i],
                         graduationDate: new Date('2027-05-15')
                     }
+                }
+            );
+
+            // Update User document to add Alumni role
+            await User.updateOne(
+                { _id: studentUserIds[i] },
+                {
+                    $addToSet: { roles: 'Alumni' }
                 }
             );
         }
@@ -652,9 +672,10 @@ export async function seedDB() {
             User.updateOne({ _id: studentUserIds[7] }, { email: 'henry@qualitysoft.com' })
         ]);
 
-        console.log(`Inserted ${alumniData.length} alumni records and linked ${8} students to their alumni profiles`);
+        console.log(`Inserted ${alumniData.length} alumni records and linked ${alumniIds.length} students to their alumni profiles`);
 
-        const events = await Events.insertMany([
+        // 20. Insert Events (5)
+        const eventsData = [
             {
                 title: 'Tech Fest 2025',
                 description: 'Annual tech festival with workshops, competitions, and exhibitions.',
@@ -710,7 +731,8 @@ export async function seedDB() {
                 tags: ['cultural', 'music', 'dance', 'drama'],
                 isPublic: true
             }
-        ]);
+        ]
+        const events = await Events.insertMany(eventsData);
 
         console.log(`Inserted ${events.length} dummy events`);
         console.log('Dummy data inserted successfully!');

@@ -7,12 +7,15 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken) {
+    const storedRefreshToken = localStorage.getItem('refresh');
+    if (storedToken && storedRefreshToken) {
       setToken(storedToken);
+      setRefreshToken(storedRefreshToken);
       fetchUser(storedToken);
     } else {
       setIsLoading(false);
@@ -26,7 +29,6 @@ export function AuthProvider({ children }) {
         "Authorization": `Bearer ${tkn}`,
       };
       const res = await api.get('/auth/users/me', { headers });
-      console.log(res.data.message);
       setUser({
         ...res.data.user,
         roles: Array.isArray(res.data.user.roles) ? res.data.user.roles : [res.data.user.roles].filter(Boolean)
@@ -37,7 +39,8 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("refresh");
       setUser(null);
       setToken(null);
-      console.error('Failed to fetch user');
+      setRefreshToken(null);
+      console.error('Failed to fetch user', err);
       // logout();
     } finally {
       setIsLoading(false);
@@ -52,6 +55,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', token);
       localStorage.setItem('refresh', refresh);
       setToken(token);
+      setRefreshToken(refresh);
       await fetchUser(token);
       return { success: true, user: res.data.user, message: res.data.message };
     } catch (error) {
@@ -70,6 +74,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', token);
       localStorage.setItem('refresh', refresh);
       setToken(token);
+      setRefreshToken(refresh);
       await fetchUser(token);
       return { success: true, user: res.data.user, message: res.data.message };
     } catch (error) {
@@ -85,10 +90,12 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.post('/auth/logout');
       console.log(res.data.message);
+      return { success: true, message: res.data.message };
     } catch (error) {
-      console.warn('Logout request failed (maybe already logged out)');
+      console.warn('Logout request failed (maybe already logged out)', error);
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('refresh');
       setToken(null);
       setUser(null);
       setIsLoading(false);
@@ -98,6 +105,9 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     token,
+    refreshToken,
+    setToken,
+    setRefreshToken,
     register,
     login,
     logout,

@@ -73,6 +73,10 @@ const AlumnusSchema = new mongoose.Schema({
         type: String
     },
     currentRole: {
+        type: String,
+        enum: ["Employee", "Employer", "Entrepreneur", "Freelancer", "Unemployed", "Other"]
+    },
+    currentDesignation: {
         type: String
     },
     linkedin: {
@@ -83,10 +87,6 @@ const AlumnusSchema = new mongoose.Schema({
     },
     about: {
         type: String
-    },
-    profilePhoto: {
-        type: String, // can be URL or Base64 string
-        default: "",
     },
     experiences: [WorkExperienceSchema],
     tags: [{

@@ -28,7 +28,7 @@ export default function Upload({
     }
     setIsLoading(true);
     try {
-      const res = null;
+      let res = null;
       if (multiple) {
         res = await onUpload(files);
       } else {

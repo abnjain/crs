@@ -6,18 +6,19 @@ import auth from "../middlewares/auth.js";
 import role from "../middlewares/role.js";
 
 const router = express.Router();
-const upload = multer(); // memory storage (buffer)
+// const upload = multer(); // memory storage (buffer)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit
 
-router.post("/", auth, role(["Admin","SuperAdmin","Alumni","Teacher"]), ctrl.createAlumnus);
+router.post("/", auth, role(["Admin", "SuperAdmin", "Alumni", "Teacher"]), ctrl.createAlumnus);
 router.get("/", auth, ctrl.listAlumni);
 router.get("/:id", auth, ctrl.getAlumnus);
-router.patch("/:id", auth, role(["Admin","SuperAdmin","Alumni","Teacher"]), ctrl.updateAlumnus);
-router.delete("/:id", auth, role(["Admin","SuperAdmin","Alumni","Teacher"]), ctrl.deleteAlumnus);
+router.patch("/:id", auth, role(["Admin", "SuperAdmin", "Alumni", "Teacher"]), upload.single("profilePhoto"), ctrl.updateAlumnus);
+router.delete("/:id", auth, role(["Admin", "SuperAdmin", "Alumni", "Teacher"]), ctrl.deleteAlumnus);
 
 // Message selected alumni (faculty)
-router.post("/message", auth, role(["Teacher","Admin","SuperAdmin"]), ctrl.messageAlumni);
+router.post("/message", auth, role(["Teacher", "Admin", "SuperAdmin"]), ctrl.messageAlumni);
 
 // Bulk excel upload
-router.post("/upload/excel", auth, role(["Teacher","Admin","SuperAdmin"]), upload.single("file"), ctrl.uploadAlumniExcel);
+router.post("/upload/excel", auth, role(["Teacher", "Admin", "SuperAdmin"]), upload.single("file"), ctrl.uploadAlumniExcel);
 
 export default router;

@@ -13,6 +13,7 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to fetch alumni list");
     }
   },
+
   // Get single alumnus
   get: async (id) => {
     try {
@@ -22,6 +23,7 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to fetch alumnus");
     }
   },
+
   // Create new alumnus
   create: async (payload) => {
     try {
@@ -31,15 +33,23 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to create alumnus");
     }
   },
+
   // Update alumnus
   update: async (id, payload) => {
     try {
-      const res = await api.patch(`${BASE}/${id}`, payload);
+      console.log(payload, "Payload --------------- datere");
+
+      const res = await api.patch(`${BASE}/${id}`, payload, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return res.data;
     } catch (err) {
       throw new Error(err.response?.data?.message || "Failed to update alumnus");
     }
   },
+
   // Delete alumnus
   remove: async (id) => {
     try {
@@ -49,6 +59,7 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to delete alumnus");
     }
   },
+
   // Message alumni (single or multiple)
   message: async (payload) => { // payload: { ids: [id1, id2], message: "text" }
     try {
@@ -58,6 +69,7 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to send message");
     }
   },
+
   // Bulk upload via excel
   uploadExcel: async (file) => {
     const formData = new FormData();
@@ -71,6 +83,7 @@ const alumniService = {
       throw new Error(err.response?.data?.message || "Failed to upload excel");
     }
   },
+
 };
 
 export default alumniService;

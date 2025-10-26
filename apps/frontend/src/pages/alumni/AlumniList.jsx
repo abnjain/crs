@@ -82,7 +82,7 @@ export default function AlumniList() {
 
   const handleDelete = async () => {
     try {
-      const res = null;
+      let res = null;
       for (const id of selectedIds) {
         res = await alumniService.remove(id);
       }
