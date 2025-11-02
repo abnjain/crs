@@ -83,7 +83,7 @@ npm run dev
 
 Access module APIs (for example):
 ```
-/api/v1/faculty
+/api/v1/teachers
 
 /api/v1/alumni
 
@@ -93,14 +93,8 @@ Access module APIs (for example):
 ```
 
 
-## License
+## License  
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
 
-This project is licensed under the free to use License.
 
-```
-
-If you like, I can **generate a version with badges**, or a **detailed API/end-point section** (for each of the four modules) for the README.md. Would you like that?
-::contentReference[oaicite:3]{index=3}
-
-```
 
