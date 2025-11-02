@@ -61,40 +61,36 @@ git clone https://github.com/abnjain/crs.git
 ```
 
 
-Navigate into the project folder and install dependencies both apps:
+Navigate into the root project folder and install dependencies both apps:
 ```
-cd apps/backend
+npm run install-all
 ```
-```
-npm install
-```
-```
-cd apps/frontend
-```
+or
 ```
 npm install
 ```
 
-Start the development server:
+To run both the servers simultaneously: 
 ```
 npm run dev
 ```
 
-
 Access module APIs (for example):
 ```
+/api/v1/auth
 /api/v1/teachers
-
-/api/v1/alumni
-
-/api/v1/events
-
+/api/v1/admin
 /api/v1/library
+/api/v1/docs
+/api/v1/alumni
+/api/v1/upload
+/api/v1/events
 ```
 
 
 ## License  
 This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
 
 
 
