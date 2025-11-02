@@ -70,10 +70,22 @@ or
 npm install
 ```
 
+To uninstall and reinstall packages:
+```
+npm run reinstall
+```
+or
+```
+npm run uninstall
+```
+
+
 To run both the servers simultaneously: 
 ```
 npm run dev
 ```
+
+
 
 Access module APIs (for example):
 ```
@@ -90,6 +102,7 @@ Access module APIs (for example):
 
 ## License  
 This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
 
 
 
