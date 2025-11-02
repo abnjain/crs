@@ -1,6 +1,6 @@
 # Central Repository System (CRS)
 
-A centralized college-management system with modules for **Faculty**, **Alumni**, **Events**, and **Library** — built with secure RBAC, reusable components, with versioned APIs, well-defined/industry-wide-used folder structure and automated containerized deployment.  
+A centralized college-management system with modules for **Faculty**, **Alumni**, **Events**, and **Library** — built with secure RBAC, reusable components, with versioned APIs, well-defined/industry-wide-used folder structure and automated containerized deployment — Having MVC and Microservices Architecture. 
 
 
 ---
@@ -73,22 +73,22 @@ This system aims to provide a unified platform for college administrative and ac
 
 
 ## Modules
-####SuperAdmin
+###### SuperAdmin
 Manages the complete Ecosystem.
 
-#### Admin
+###### Admin
 Manages self profile and credentials, can manage the resources even revoke and eastablish role/permission assignments.
 
-#### Faculty
+###### Faculty
 Manages faculty profiles and credentials, academic contributions, resources and role/permission assignments.
 
-#### Alumni
+###### Alumni
 Handles alumni information, professional details, networking, and engagement activities.
 
-#### Events
+###### Events
 Covers scheduling, creation and management of college events, registration and tracking.
 
-#### Library
+###### Library
 Provides inventory and borrowing management of physical/digital resources, search/filter capabilities, and usage tracking.
 
 
@@ -113,14 +113,19 @@ git clone https://github.com/abnjain/crs.git
 ```
 
 
-Navigate into the project folder and install dependencies:
+Navigate into the project folder and install dependencies both apps:
 ```
-cd crs
+cd apps/backend
 ```
 ```
 npm install
 ```
-
+```
+cd apps/frontend
+```
+```
+npm install
+```
 
 Start the development server:
 ```
@@ -138,5 +143,6 @@ Access module APIs (for example):
 
 /api/v1/library
 ```
+
 
 
