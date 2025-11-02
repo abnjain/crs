@@ -21,7 +21,7 @@ This system aims to provide a unified platform for college administrative and ac
 ---
 
 ## Folder Structure  
-`
+```
 ├───apps
 │   ├───backend
 │   │   ├───config
@@ -66,29 +66,29 @@ This system aims to provide a unified platform for college administrative and ac
     │       └───templates
     ├───k3s
     └───nginx
-    `
+```
     
 
 ---
 
 
 ## Modules
-SuperAdmin
+####SuperAdmin
 Manages the complete Ecosystem.
 
-Admin
+#### Admin
 Manages self profile and credentials, can manage the resources even revoke and eastablish role/permission assignments.
 
-Faculty
+#### Faculty
 Manages faculty profiles and credentials, academic contributions, resources and role/permission assignments.
 
-Alumni
+#### Alumni
 Handles alumni information, professional details, networking, and engagement activities.
 
-Events
+#### Events
 Covers scheduling, creation and management of college events, registration and tracking.
 
-Library
+#### Library
 Provides inventory and borrowing management of physical/digital resources, search/filter capabilities, and usage tracking.
 
 
@@ -97,9 +97,9 @@ Provides inventory and borrowing management of physical/digital resources, searc
 
 ## Technical Stack & Deployment
 
-Backend and Frontend: Built primarily in JavaScript (using Nodejs, Reactjs, Shadcn, Tailwind).
-Deployment: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
-Security: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
+**Backend and Frontend**: Built primarily in JavaScript (using Nodejs, Reactjs, Shadcn, Tailwind).
+**Deployment**: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
+**Security**: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
 
 
 ---
@@ -138,4 +138,5 @@ Access module APIs (for example):
 
 /api/v1/library
 ```
+
 
