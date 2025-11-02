@@ -21,7 +21,6 @@ This system aims to provide a unified platform for college administrative and ac
 ---
 
 ## Folder Structure  
-```text
 ├───apps
 │   ├───backend
 │   │   ├───config
@@ -66,9 +65,10 @@ This system aims to provide a unified platform for college administrative and ac
     │       └───templates
     ├───k3s
     └───nginx
-```
+    
 
 ---
+
 
 ## Modules
 Faculty
@@ -83,7 +83,9 @@ Covers scheduling, creation and management of college events, registration and t
 Library
 Provides inventory and borrowing management of physical/digital resources, search/filter capabilities, and usage tracking.
 
+
 ---
+
 
 ## Technical Stack & Deployment
 
@@ -91,7 +93,9 @@ Backend and Frontend: Built primarily in JavaScript.
 Deployment: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
 Security: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
 
+
 ---
+
 
 ### Getting Started
 
@@ -120,3 +124,4 @@ Access module APIs (for example):
 /api/events
 
 /api/library
+
