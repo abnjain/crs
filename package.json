@@ -1,15 +1,43 @@
 {
   "name": "crs-monorepo",
+  "version": "1.0.0",
+  "description": "A centralized college management system with modules for Faculty, Alumni, Events, and Library — built with secure RBAC, reusable components, and automated containerized deployment.",
   "private": true,
   "workspaces": [
     "apps/*"
-  ],    
+  ],
   "scripts": {
-    "dev:backend": "yarn workspace backend start:dev",
-    "dev:frontend": "yarn workspace frontend start",
-    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\""
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev": "concurrently -n FRONTEND,BACKEND -c \"cyan,green\" \"npm run dev:frontend\" \"npm run dev:backend\"",
+
+    "build:backend": "npm run build --workspace=backend || echo 'No backend build step defined'",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+
+    "start:backend": "npm run start --workspace=backend",
+    "start:frontend": "npm run preview --workspace=frontend",
+    "start": "npm run build && concurrently -n FRONTEND,BACKEND -c \"cyan,green\" \"npm run start:frontend\" \"npm run start:backend\"",
+    
+    "preview": "cd --workspaces=frontend && vite preview",
+
+    "reinstall": "rm -rf node_modules apps/*/node_modules && npm install",
+    "uninstall": "rm -rf node_modules apps/*/node_modules",
+    "install-all": "npm install"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
-  }
+    "concurrently": "^9.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abnjain/crs.git"
+  },
+  "keywords": ["react", "nodejs", "docker", "kubernetes", "deployment", "js", "docker-compose", "webapp", "college-management-system"],
+  "author": "abnjain",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/abnjain/crs/issues"
+  },
+  "homepage": "https://github.com/abnjain/crs#readme"
 }

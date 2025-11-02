@@ -139,5 +139,5 @@ app.use((err, req, res, next) => {
 
 const PORT = config.server.port;
 app.listen(PORT, () => {
-  console.log(`Backend running on PORT ${PORT}`);
+  config.server.env = "development" ? console.log(`Backend running on Server http://localhost:${PORT}`) : console.log(`Backend running on PORT ${PORT}`);
 });
