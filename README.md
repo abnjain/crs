@@ -1,7 +1,7 @@
 # Central Repository System (CRS)
 
-A centralized college-management system with modules for **Faculty**, **Alumni**, **Events**, and **Library** — built with secure RBAC, reusable components, and automated containerized deployment.  
-_(As described in the project overview of this repo.)_ :contentReference[oaicite:0]{index=0}
+A centralized college-management system with modules for **Faculty**, **Alumni**, **Events**, and **Library** — built with secure RBAC, reusable components, with versioned APIs, well-defined/industry-wide-used folder structure and automated containerized deployment.  
+
 
 ---
 
@@ -21,6 +21,7 @@ This system aims to provide a unified platform for college administrative and ac
 ---
 
 ## Folder Structure  
+`
 ├───apps
 │   ├───backend
 │   │   ├───config
@@ -65,12 +66,19 @@ This system aims to provide a unified platform for college administrative and ac
     │       └───templates
     ├───k3s
     └───nginx
+    `
     
 
 ---
 
 
 ## Modules
+SuperAdmin
+Manages the complete Ecosystem.
+
+Admin
+Manages self profile and credentials, can manage the resources even revoke and eastablish role/permission assignments.
+
 Faculty
 Manages faculty profiles and credentials, academic contributions, resources and role/permission assignments.
 
@@ -89,7 +97,7 @@ Provides inventory and borrowing management of physical/digital resources, searc
 
 ## Technical Stack & Deployment
 
-Backend and Frontend: Built primarily in JavaScript.
+Backend and Frontend: Built primarily in JavaScript (using Nodejs, Reactjs, Shadcn, Tailwind).
 Deployment: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
 Security: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
 
@@ -100,28 +108,34 @@ Security: Role-Based Access Control (RBAC) to ensure secure access based on user
 ### Getting Started
 
 Clone the repository:
-
+```
 git clone https://github.com/abnjain/crs.git
+```
 
 
 Navigate into the project folder and install dependencies:
-
+```
 cd crs
+```
+```
 npm install
+```
 
 
 Start the development server:
-
+```
 npm run dev
+```
 
 
 Access module APIs (for example):
+```
+/api/v1/faculty
 
-/api/faculty
+/api/v1/alumni
 
-/api/alumni
+/api/v1/events
 
-/api/events
-
-/api/library
+/api/v1/library
+```
 
