@@ -1,6 +1,6 @@
 // apps/backend/controllers/alumniController.js
 import mongoose from "mongoose";
-import { Alumnus } from "../models/index.js";
+import { Alumnus, User } from "../models/index.js";
 import xlsx from "xlsx"; // used by excel upload helper
 
 // CRUD + search + bulk upload + messaging (simple)
@@ -37,7 +37,7 @@ export const getAlumnus = async (req, res) => {
 export const updateAlumnus = async (req, res) => {
   try {
     const { id } = req.params;
-    const payload = req.body;
+    let payload = req.body;
     const file = req.file;
     if (file) {
       // Convert uploaded file to base64 (or save to disk/cloud and set URL)
@@ -49,7 +49,7 @@ export const updateAlumnus = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ ok: false, message: "Alumni not found" });
     }
-    const user = req.file ? await Alumnus.findByIdAndUpdate(id, { profilePhoto: payload.profilePhoto }, { new: true }) : null;
+    const user = file ? await User.findByIdAndUpdate(id, { profilePhoto: payload.profilePhoto }, { new: true }) : null;
     if (!user) return res.status(404).json({ ok: false, message: "User not found or Profile Photo not updated." });
     return res.status(200).json({ ok: true, message: "Alumni updated successfully", alumnus: updated });
   } catch (err) {
