@@ -87,7 +87,7 @@ User profile (auth required):
   - Body: `roles` (string|array, req)
 - GET `/users` — List users
 - POST `/revoke-all` — Revoke all tokens (roles: admin, superadmin)
-
+<!-- 
 ### Students (`/students`)
 - POST `/` — Create student (roles: Admin, SuperAdmin)
   - Body: `userId` (string, req), `rollNo` (string, req), `admissionYear` (number), `section` (string)
@@ -100,7 +100,7 @@ User profile (auth required):
   - Params: `enrollmentNo` (string, req)
 - POST `/:enrollmentNo/idcard` — Generate ID card (roles: Admin, SuperAdmin)
   - Params: `enrollmentNo` (string, req)
-  - Body: `name` (string), `course` (string), `year` (string|number)
+  - Body: `name` (string), `course` (string), `year` (string|number) -->
 
 ### Teachers (`/teachers`)
 - POST `/` — Create teacher (roles: Teacher, Admin, SuperAdmin)
@@ -155,7 +155,7 @@ User profile (auth required):
 - GET `/fines` — Current user's fines (auth)
   - Query: `studentId` (string)
 
-### Documents (`/docs`)
+<!-- ### Documents (`/docs`)
 - POST `/` — Create document (roles: Teacher, Admin, SuperAdmin)
   - Body: `title` (string, req), `content` (string, req), plus optional fields
 - GET `/` — List documents (auth)
@@ -167,9 +167,9 @@ User profile (auth required):
   - Body: `fileKey` (string, req), `size` (number, req)
 - PATCH `/:docId/visibility` — Update visibility (roles: Admin, SuperAdmin)
   - Params: `docId` (string, req)
-  - Body: `visibility` (string, req)
+  - Body: `visibility` (string, req) -->
 
-### Placements (`/placements`)
+<!-- ### Placements (`/placements`)
 - POST `/jobs` — Create job (roles: Admin, SuperAdmin)
   - Body: job fields (e.g., `title`, `company`, `location`, `description`, ...)
 - GET `/jobs` — List jobs (auth)
@@ -178,9 +178,9 @@ User profile (auth required):
   - Params: `jobId` (string, req)
   - Body: `jobId` (string, req), `resumeKey` (string, req)
 - GET `/applications` — List applications (auth)
-  - Query: `studentId` (string)
+  - Query: `studentId` (string) -->
 
-### Assessments (`/assessments`)
+<!-- ### Assessments (`/assessments`)
 - POST `/exams` — Create exam (roles: Teacher, Admin, SuperAdmin)
   - Body: `title` (string, req), `subjectId` (string, req), `date` (ISO string, req), `duration` (number|string, req), `totalMarks` (number, req)
 - GET `/exams` — List exams (auth)
@@ -190,26 +190,26 @@ User profile (auth required):
 - GET `/marks` — Query marks (auth)
   - Query: `studentId` (string), `examId` (string)
 - GET `/gradesheet/:studentId/:term` — Get gradesheet (auth)
-  - Params: `studentId` (string, req), `term` (string|number, req)
+  - Params: `studentId` (string, req), `term` (string|number, req) -->
 
-### Notices (`/notices`)
+<!-- ### Notices (`/notices`)
 - POST `/` — Create notice (roles: Admin, Staff, SuperAdmin)
   - Body: notice fields (e.g., `title`, `body`, `audience`, `publishAt`, `expiresAt`, `pinned`, `priority`)
 - GET `/` — List notices (auth)
 - POST `/messages` — Send notice message (auth) [placeholder]
 - GET `/messages/thread/:userId` — Get message thread (auth) [placeholder]
-  - Params: `userId` (string, req)
+  - Params: `userId` (string, req) -->
 
 ### Uploads (`/upload`)
 - POST `/` — Upload a file [multipart: `file`]
   - Files: `file` (single)
   - Body (optional): `type` (string) to route processing
 
-### Analytics (`/analytics`)
+<!-- ### Analytics (`/analytics`)
 - GET `/overview` — System overview (roles: Admin, SuperAdmin)
 - GET `/performance` — Performance metrics (roles: Teacher, Admin, SuperAdmin)
   - Query: `subjectId` (string), `classId` (string)
-- GET `/library` — Library analytics (roles: Admin, SuperAdmin)
+- GET `/library` — Library analytics (roles: Admin, SuperAdmin) -->
 
 ### Admin (`/admin`)
 - POST `/users` — Create user (roles: Admin, SuperAdmin)
