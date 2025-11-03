@@ -44,6 +44,9 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
               </Button>
             )
           }
+          <Button variant="destructive" size="icon" className="h-8 w-8 rounded-md" onClick={() => logout()}>
+            <LogOut className="h-5 w-5" />
+          </Button>
         </div>
 
         {/* Logo & Title — hidden on mobile, shown on desktop */}
