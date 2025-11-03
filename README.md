@@ -8,9 +8,9 @@ A centralized college-management system with modules for **Faculty**, **Alumni**
 
 1. [Overview](#overview)  
 2. [Modules](#modules)  
-3. [API Routes](#api-routes)  
 4. [Technical Stack & Deployment](#technical-stack--deployment)  
 5. [Getting Started](#getting-started)  
+3. [API Routes](#api-routes)  
 6. [License](#license)  
 
 ---
@@ -50,6 +50,72 @@ Covers scheduling, creation and management of college events, registration and t
 
 Provides inventory and borrowing management of physical/digital resources, search/filter capabilities, and usage tracking.
 
+
+---
+
+## Technical Stack & Deployment
+
+- **Backend and Frontend**: Built primarily in JavaScript (using Nodejs, Reactjs, Shadcn, Tailwind).
+- **Deployment**: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
+- **Security**: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
+
+---
+
+### Getting Started
+
+Clone the repository:
+
+```
+git clone https://github.com/abnjain/crs.git
+```
+
+Navigate into the root project folder and install dependencies both apps:
+
+```
+npm run install-all
+```
+
+or
+
+```
+npm install
+```
+
+To uninstall and reinstall packages (works in git bash or linux/unix variants) :
+
+```
+npm run reinstall
+```
+
+or
+
+```
+npm run uninstall
+```
+
+To run both the servers simultaneously:
+
+```
+npm run dev
+```
+
+To build the packages:
+
+```
+npm run build
+```
+
+To preview build the packages:
+
+```
+npm run preview
+```
+
+To start the server after the complete built packages:
+
+```
+npm run start
+```
 ---
 
 ## API Routes
@@ -221,70 +287,7 @@ User profile (auth required):
 
 ---
 
-## Technical Stack & Deployment
-
-- **Backend and Frontend**: Built primarily in JavaScript (using Nodejs, Reactjs, Shadcn, Tailwind).
-- **Deployment**: Containerised using Docker (and orchestration tools) for automated, repeatable deployments.
-- **Security**: Role-Based Access Control (RBAC) to ensure secure access based on user roles.
-
----
-
-### Getting Started
-
-Clone the repository:
-
-```
-git clone https://github.com/abnjain/crs.git
-```
-
-Navigate into the root project folder and install dependencies both apps:
-
-```
-npm run install-all
-```
-
-or
-
-```
-npm install
-```
-
-To uninstall and reinstall packages (works in git bash or linux/unix variants) :
-
-```
-npm run reinstall
-```
-
-or
-
-```
-npm run uninstall
-```
-
-To run both the servers simultaneously:
-
-```
-npm run dev
-```
-
-To build the packages:
-
-```
-npm run build
-```
-
-To preview build the packages:
-
-```
-npm run preview
-```
-
-To start the server after the complete built packages:
-
-```
-npm run start
-```
-
 ## License  
 
 This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
