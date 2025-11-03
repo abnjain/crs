@@ -8,11 +8,13 @@ import { ModuleLayout } from "@/components/layout/ModuleLayout";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Briefcase, Building, Mail, Phone, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AlumniDashboard() {
     const [alumni, setAlumni] = useState(null);
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const fetchAlumni = async () => {
@@ -77,7 +79,7 @@ export default function AlumniDashboard() {
                         <div className="absolute -bottom-12 left-6 md:-bottom-16 md:left-8">
                             <Avatar className="h-20 w-20 md:h-28 md:w-28 border-4 border-white shadow-xl">
                                 <AvatarImage
-                                    src={alumni.profilePhoto}
+                                    src={user.profilePhoto}
                                     alt={`${alumni.name}'s profile`}
                                 />
                                 <AvatarFallback className="bg-gray-200">

@@ -11,10 +11,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { config } from "@/config/config.js";
+import { useEffect } from "react";
 
 export default function Login() {
   const APP_NAME = config.app.name;
-  const { login } = useAuth();
+  const { login, isAuthenticated, userId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,6 +28,13 @@ export default function Login() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
+
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      toast.success("Already logged in!");
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, userId, navigate, from]);
 
   const onSubmit = async (data) => {
     try {
@@ -53,11 +61,11 @@ export default function Login() {
             <CardTitle className="text-2xl text-center">Login to {APP_NAME} CRS</CardTitle>
             <CardDescription className="text-center">Enter your credentials</CardDescription>
           </CardHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} autoComplete="on">
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
                 <Label>Email</Label>
-                <Input type="email" placeholder="name@example.com" {...register("email")} />
+                <Input type="email" placeholder="name@example.com" autoComplete="email" {...register("email")} />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
               <div className="grid gap-2">
@@ -67,7 +75,7 @@ export default function Login() {
                     Forgot password?
                   </Link>
                 </div>
-                <Input type="password" placeholder="••••••••" {...register("password")} />
+                <Input type="password" placeholder="••••••••" autoComplete="current-password" {...register("password")} />
                 {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
               </div>
             </CardContent>
