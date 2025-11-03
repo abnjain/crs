@@ -1,6 +1,7 @@
 import { Application, Book, Course, Department, Document, Enrollment, Exam, Job, Loan, Marks, Material, Notice, Subject, Student, Teacher, Timetable, User, Alumnus, Events } from '../models/index.js';
 import { config } from './config.js';
 import bcrypt from "bcrypt";
+import axios from 'axios';
 
 // Seed function
 export async function seedDB() {
@@ -31,7 +32,7 @@ export async function seedDB() {
         ]);
         console.log('Cleared existing data');
 
-        // 1. Insert Departments (4)
+        // 1. Insert Departments(4)
         const departments = await Department.insertMany([
             { code: 'CSE', name: 'Computer Science & Engineering' },
             { code: 'ME', name: 'Mechanical Engineering' },
@@ -101,7 +102,7 @@ export async function seedDB() {
         // 3. Insert Users (30)
         const users = await User
             // .find({})
-        .insertMany(hashedUsers);
+            .insertMany(hashedUsers);
         const userIds = users.map(u => u._id);
         const studentUserIds = userIds.slice(0, 10);
         const teacherUserIds = userIds.slice(10, 15);
@@ -114,22 +115,22 @@ export async function seedDB() {
         // 4. Insert Students (10) - Include new alumni fields
         const students = await Student
             // .find({});
-        .insertMany(studentUserIds.map((userId, i) => ({
-            _id: userId, // Use same ID as User
-            user: userId,
-            rollNo: `R00${i + 1}`,
-            admissionYear: 2023,
-            courseId: courseIds[i % courseIds.length],
-            enrollmentNo: `E00${i + 1}`,
-            section: i % 2 === 0 ? 'A' : 'B',
-            dob: new Date(`2000-01-0${i + 1}`),
-            address: `Address ${i + 1}`,
-            guardian: `Guardian ${i + 1}`,
-            meta: { notes: 'Dummy meta' },
-            // Set default alumni status
-            alumniStatus: 'current',
-            graduationDate: null
-        })));
+            .insertMany(studentUserIds.map((userId, i) => ({
+                _id: userId, // Use same ID as User
+                user: userId,
+                rollNo: `R00${i + 1}`,
+                admissionYear: 2023,
+                courseId: courseIds[i % courseIds.length],
+                enrollmentNo: `E00${i + 1}`,
+                section: i % 2 === 0 ? 'A' : 'B',
+                dob: new Date(`2000-01-0${i + 1}`),
+                address: `Address ${i + 1}`,
+                guardian: `Guardian ${i + 1}`,
+                meta: { notes: 'Dummy meta' },
+                // Set default alumni status
+                alumniStatus: 'current',
+                graduationDate: null
+            })));
         const studentIds = students.map(s => s._id);
 
         // 5. Insert Teachers (5)
@@ -675,66 +676,81 @@ export async function seedDB() {
         console.log(`Inserted ${alumniData.length} alumni records and linked ${alumniIds.length} students to their alumni profiles`);
 
         // 20. Insert Events (5)
-        const eventsData = [
-            {
-                title: 'Tech Fest 2025',
-                description: 'Annual tech festival with workshops, competitions, and exhibitions.',
-                startDate: new Date('2025-10-10T09:00:00'),
-                endDate: new Date('2025-10-12T18:00:00'),
-                location: 'Main Campus Grounds',
-                audience: ['students', 'teachers'],
-                createdBy: adminUserIds[0],
-                tags: ['tech', 'festival', 'workshops'],
-                isPublic: true
-            },
-            {
-                title: 'Alumni Meet 2025',
-                description: 'Gathering of all alumni with networking sessions and keynote speeches.',
-                startDate: new Date('2025-11-05T10:00:00'),
-                endDate: new Date('2025-11-05T16:00:00'),
-                location: 'Auditorium',
-                audience: ['alumni', 'students', 'teachers'],
-                createdBy: adminUserIds[1],
-                tags: ['alumni', 'networking'],
-                isPublic: true
-            },
-            {
-                title: 'Coding Hackathon',
-                description: '24-hour hackathon for CSE and IT students with exciting prizes.',
-                startDate: new Date('2025-10-20T08:00:00'),
-                endDate: new Date('2025-10-21T08:00:00'),
-                location: 'Computer Lab 1',
-                audience: ['students'],
-                createdBy: teacherUserIds[0],
-                tags: ['coding', 'hackathon', 'competition'],
-                isPublic: true
-            },
-            {
-                title: 'Guest Lecture: AI in Healthcare',
-                description: 'Expert talk on AI applications in medical sciences.',
-                startDate: new Date('2025-10-25T14:00:00'),
-                endDate: new Date('2025-10-25T16:00:00'),
-                location: 'Seminar Hall 2',
-                audience: ['students', 'teachers'],
-                createdBy: teacherUserIds[1],
-                tags: ['lecture', 'ai', 'healthcare'],
-                isPublic: true
-            },
-            {
-                title: 'Cultural Night 2025',
-                description: 'Annual cultural night with dance, music, and drama performances.',
-                startDate: new Date('2025-12-15T18:00:00'),
-                endDate: new Date('2025-12-15T22:00:00'),
-                location: 'Open Stage',
-                audience: ['all'],
-                createdBy: adminUserIds[2],
-                tags: ['cultural', 'music', 'dance', 'drama'],
-                isPublic: true
-            }
-        ]
-        const events = await Events.insertMany(eventsData);
+        try {
+            // Fetch 10 random images from Picsum
+            const { data: picsumImages } = await axios.get("https://picsum.photos/v2/list?page=1&limit=20");
 
-        console.log(`Inserted ${events.length} dummy events`);
+            // Generate events data with random photos
+            const eventsData = [
+                {
+                    title: 'Tech Fest 2025',
+                    description: 'Annual tech festival with workshops, competitions, and exhibitions.',
+                    startDate: new Date('2025-10-10T09:00:00'),
+                    endDate: new Date('2025-10-12T18:00:00'),
+                    location: 'Main Campus Grounds',
+                    audience: ['alumni', 'teachers'],
+                    createdBy: adminUserIds[0],
+                    tags: ['tech', 'festival', 'workshops'],
+                    isPublic: true,
+                    photos: [picsumImages[0].download_url, picsumImages[1].download_url, picsumImages[18].download_url, picsumImages[19].download_url],
+                },
+                {
+                    title: 'Alumni Meet 2025',
+                    description: 'Gathering of all alumni with networking sessions and keynote speeches.',
+                    startDate: new Date('2025-11-05T10:00:00'),
+                    endDate: new Date('2025-11-05T16:00:00'),
+                    location: 'Auditorium',
+                    audience: ['alumni', 'teachers'],
+                    createdBy: adminUserIds[1],
+                    tags: ['alumni', 'networking'],
+                    isPublic: true,
+                    photos: [picsumImages[2].download_url, picsumImages[3].download_url, picsumImages[15].download_url, picsumImages[16].download_url],
+                },
+                {
+                    title: 'Coding Hackathon',
+                    description: '24-hour hackathon for CSE and IT alumni with exciting prizes.',
+                    startDate: new Date('2025-10-20T08:00:00'),
+                    endDate: new Date('2025-10-21T08:00:00'),
+                    location: 'Computer Lab 1',
+                    audience: ['alumni'],
+                    createdBy: teacherUserIds[0],
+                    tags: ['coding', 'hackathon', 'competition'],
+                    isPublic: true,
+                    photos: [picsumImages[4].download_url, picsumImages[5].download_url],
+                },
+                {
+                    title: 'Guest Lecture: AI in Healthcare',
+                    description: 'Expert talk on AI applications in medical sciences.',
+                    startDate: new Date('2025-10-25T14:00:00'),
+                    endDate: new Date('2025-10-25T16:00:00'),
+                    location: 'Seminar Hall 2',
+                    audience: ['alumni', 'teachers'],
+                    createdBy: teacherUserIds[1],
+                    tags: ['lecture', 'ai', 'healthcare'],
+                    isPublic: true,
+                    photos: [picsumImages[12].download_url, picsumImages[13].download_url, picsumImages[14].download_url, picsumImages[15].download_url],
+                },
+                {
+                    title: 'Cultural Night 2025',
+                    description: 'Annual cultural night with dance, music, and drama performances.',
+                    startDate: new Date('2025-12-15T18:00:00'),
+                    endDate: new Date('2025-12-15T22:00:00'),
+                    location: 'Open Stage',
+                    audience: ['all'],
+                    createdBy: adminUserIds[2],
+                    tags: ['cultural', 'music', 'dance', 'drama'],
+                    isPublic: true,
+                    photos: [picsumImages[8].download_url, picsumImages[9].download_url, picsumImages[10].download_url, picsumImages[11].download_url],
+                },
+            ];
+
+            const events = await Events.insertMany(eventsData);
+            console.log("✅ Events inserted successfully:", events.length);
+            console.log(`Inserted ${events.length} dummy events`);
+        } catch (error) {
+            console.error("❌ Error inserting events:", error.message);
+        }
+
         console.log('Dummy data inserted successfully!');
     } catch (error) {
         console.error('Error seeding DB:', error);

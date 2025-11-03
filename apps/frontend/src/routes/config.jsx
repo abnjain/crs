@@ -38,7 +38,7 @@ export const routesConfig = [
   // Alumni Routes
   { path: "/dashboard/alumni", element: <AlumniDashboard />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   { path: "/dashboard/alumni/complete-profile", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
-  { path: "/dashboard/alumni/edit", element: <EditProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
+  { path: "/dashboard/alumni/edit", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   
   // Alumni Mangement
   { path: "/alumni", element: <AlumniList />, roles: ["Student", "Alumni", "Teacher", "Admin", "SuperAdmin"] },

@@ -7,6 +7,8 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,6 +31,8 @@ export function AuthProvider({ children }) {
         "Authorization": `Bearer ${tkn}`,
       };
       const res = await api.get('/auth/users/me', { headers });
+      setUserId(res.data.user._id);
+      setUserName(res.data.user.name);
       setUser({
         ...res.data.user,
         roles: Array.isArray(res.data.user.roles) ? res.data.user.roles : [res.data.user.roles].filter(Boolean)
@@ -104,6 +108,8 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
+    userId,
+    userName,
     token,
     refreshToken,
     setToken,

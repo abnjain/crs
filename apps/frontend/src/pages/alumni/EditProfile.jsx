@@ -6,25 +6,27 @@ import { Button } from "@/components/ui/button";
 import alumniService from "@/services/alumniService";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function EditProfile() {
     const navigate = useNavigate();
     const location = useLocation();
     const state = location.state || {};
-    const { alumniId } = state;
+    let { alumniId } = state;
+    const { userId } = useAuth();
     const { register, handleSubmit, setValue } = useForm();
     const [loading, setLoading] = useState(true);
     const [alumnusId, setAlumnusId] = useState(null);
 
     // Fetch alumni data
     useEffect(() => {
+        alumniId = alumniId || userId; 
         alumniService.get(alumniId)
             .then(res => {
-                const data = res.data;
+                const data = res.alumni;
                 setAlumnusId(data._id);
                 const fields = [
-                    "name", "enrollmentNo", "batch", "department", "degree", "specialization",
-                    "graduationYear", "currentCompany", "currentRole", "linkedin", "location", "about", "tags"
+                    "name", "enrollmentNo", "batch", "department", "degree", "specialization", "graduationYear", "currentCompany", "currentRole", "linkedin", "location", "about", "tags"
                 ];
                 fields.forEach(f => setValue(f, data[f] || ""));
                 setLoading(false);

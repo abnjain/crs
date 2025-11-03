@@ -6,7 +6,7 @@ const connectDB = async () => {
     const uri = config.db.uri;
     const conn = await mongoose.connect(uri)
       .then(conn => {
-        console.log("✅ MongoDB Connected:", conn.connection.host);
+        config.server.env = "development" ? console.log("✅ MongoDB Connected:", "\n", uri) : console.log("✅ MongoDB Connected");
       });
   } catch (err) {
     console.error("❌ MongoDB connection failed", err);

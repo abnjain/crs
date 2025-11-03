@@ -15,8 +15,8 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function CompleteProfile() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { alumniId, alumniName } = location.state || {};
-    const { token, refreshToken } = useAuth();
+    let { alumniId, alumniName } = location.state || {};
+    const { userId, userName, token, refreshToken } = useAuth();
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm({
         resolver: zodResolver(alumniSchema),
         defaultValues: defaultAlumniValues,
@@ -25,6 +25,10 @@ export default function CompleteProfile() {
     const [loading, setLoading] = useState(true);
     const [previewSrc, setPreviewSrc] = useState(null);
     const [photoOption, setPhotoOption] = useState("file");
+
+    const isEditMode = location.pathname.includes("edit");
+    alumniId = alumniId || userId;
+    alumniName = alumniName || userName.split(" ")[0];
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,7 +85,7 @@ export default function CompleteProfile() {
             }
             const res = await alumniService.update(alumniId, formData);
             toast.success(res.message || "Profile updated!!");
-            navigate("/dashboard/alumni", {replace: true});
+            navigate("/dashboard/alumni", { replace: true });
         } catch (err) {
             console.error("Update error:", err);
             toast.error(err.response?.data?.message || err.message || "Failed to update profile");
@@ -93,7 +97,7 @@ export default function CompleteProfile() {
     return (
         <div className="flex justify-center p-6">
             <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg space-y-4 selection:text-foreground selection:bg-background">
-                <h2 className="text-2xl text-center font-semibold">Please Complete Your Profile First</h2>
+                <h2 className="text-2xl text-center font-semibold">{alumniName ? isEditMode ? `Heyy ${alumniName}, Update your information below.` : `Heyy ${alumniName}, Please complete your profile to continue.` : "Edit Here"}</h2>
 
                 {/* Enrollment Number */}
                 <div className="grid gap-2">
@@ -171,25 +175,23 @@ export default function CompleteProfile() {
                 {/* Profile Photo */}
                 <div className="grid gap-2">
                     <Label>Your Profile Photo <span className="text-[var(--danger-color)]">*</span></Label>
-                    <div className="flex flex-col gap-2">
-                        {/* Option Selector */}
-                        <div className="flex gap-4 items-center">
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="radio"
-                                    name="photoOption"
-                                    value="file"
-                                    checked={photoOption === "file"}
-                                    onChange={() => {
-                                        setPhotoOption("file");
-                                        setValue("profilePhoto", "", { shouldValidate: true });
-                                        setPreviewSrc(null);
-                                        setSelectedFileName("Choose a file...");
-                                    }}
-                                />
-                                Upload File
-                            </label>
-                            <label className="flex items-center gap-2">
+                    {/* <div className="flex flex-col gap-2"> */}
+                    {/* Option Selector */}
+                    {/* <div className="flex gap-4 items-center"> */}
+                    <label className="flex items-center gap-2">
+                        <input
+                            name="photoOption"
+                            // value="file"
+                            checked={photoOption === "file"}
+                            onChange={() => {
+                                setPhotoOption("file");
+                                setValue("profilePhoto", "", { shouldValidate: true });
+                                setPreviewSrc(null);
+                                setSelectedFileName("Choose a file...");
+                            }}
+                        />
+                    </label>
+                    {/* <label className="flex items-center gap-2">
                                 <input
                                     type="radio"
                                     name="photoOption"
@@ -203,64 +205,67 @@ export default function CompleteProfile() {
                                     }}
                                 />
                                 Enter URL
-                            </label>
-                        </div>
+                            </label> */}
+                    {/* </div> */}
 
-                        {/* File Upload */}
-                        {photoOption === "file" && (
-                            <div className="w-full flex items-center justify-between relative">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    id="profilePhoto"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        setSelectedFileName(file ? file.name : "Choose a file...");
-                                        if (file) {
-                                            const reader = new FileReader();
-                                            reader.onload = () => setValue("profilePhoto", reader.result, { shouldValidate: true });
-                                            reader.readAsDataURL(file);
-                                            setPreviewSrc(URL.createObjectURL(file));
-                                        } else {
-                                            setPreviewSrc(null);
-                                            setValue("profilePhoto", "", { shouldValidate: true });
-                                        }
-                                    }}
+                    {/* File Upload */}
+                    {photoOption === "file" && (
+                        <div className="w-full flex items-center justify-between relative">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                id="profilePhoto"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    setSelectedFileName(file ? file.name : "Choose a file...");
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = () => setValue("profilePhoto", reader.result, { shouldValidate: true });
+                                        reader.readAsDataURL(file);
+                                        setPreviewSrc(URL.createObjectURL(file));
+                                    } else {
+                                        setPreviewSrc(null);
+                                        setValue("profilePhoto", "", { shouldValidate: true });
+                                    }
+                                }}
+                            />
+                            <div className="flex w-96 items-center justify-between px-4 py-2 border border-gray-300 rounded-md bg-white hover:border-primary transition">
+                                <span className="text-gray-500 truncate">{selectedFileName}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => document.getElementById("profilePhoto")?.click()}
+                                    className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary/80 transition"
+                                >
+                                    Browse
+                                </button>
+                            </div>
+                            {previewSrc && (
+                                <img
+                                    src={previewSrc}
+                                    alt={selectedFileName}
+                                    className="h-20 w-20 object-cover rounded-full border"
                                 />
-                                <div className="flex w-96 items-center justify-between px-4 py-2 border border-gray-300 rounded-md bg-white hover:border-primary transition">
-                                    <span className="text-gray-500 truncate">{selectedFileName}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => document.getElementById("profilePhoto")?.click()}
-                                        className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary/80 transition"
-                                    >
-                                        Browse
-                                    </button>
-                                </div>
+                            )}
+                            <div className="relative flex items-center gap-2">
+                                {/* File input here */}
                                 {previewSrc && (
-                                    <img
-                                        src={previewSrc}
-                                        alt={selectedFileName}
-                                        className="h-20 w-20 object-cover rounded-full border border-gray-300"
-                                    />
-                                )}
-                                {previewSrc ? (
                                     <X
-                                        onClick={() => {
+                                        onClick={(e) => {
+                                            e.stopPropagation();
                                             setSelectedFileName("Choose a file...");
                                             setPreviewSrc(null);
                                             setValue("profilePhoto", "", { shouldValidate: true });
                                         }}
+                                        className="absolute cursor-pointer text-gray-500 hover:text-red-500"
                                     />
-                                ) : (
-                                    <X className="opacity-0" />
                                 )}
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {/* URL Input */}
-                        {photoOption === "url" && (
+                    {/* URL Input */}
+                    {/* {photoOption === "url" && (
                             <Input
                                 type="text"
                                 placeholder="Enter image URL"
@@ -271,9 +276,9 @@ export default function CompleteProfile() {
                                     setPreviewSrc(value || null);
                                 }}
                             />
-                        )}
-                        {errors.profilePhoto && <p className="text-red-500 text-sm">{errors.profilePhoto.message}</p>}
-                    </div>
+                        )} */}
+                    {errors.profilePhoto && <p className="text-red-500 text-sm">{errors.profilePhoto.message}</p>}
+                    {/* </div> */}
                 </div>
 
                 {/* LinkedIn */}
