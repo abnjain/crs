@@ -7,7 +7,7 @@ export const config = {
     jwt: {
         secret: process.env.JWT_SECRET || 'default-secret',  // Fallback for dev
         refreshSecret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
-        accessExpiry: process.env.JWT_ACCESS_EXPIRY || '30m',
+        accessExpiry: process.env.JWT_ACCESS_EXPIRY || '1h',
         refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d'
     },
     db: {

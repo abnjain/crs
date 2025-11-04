@@ -11,6 +11,7 @@ import RoleBasedDashboardRedirect from "@/pages/dashboard/RoleBasedDashboardRedi
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { routesConfig } from "@/routes/config";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import HealthCheck from "./pages/HealthCheck";
 
 function App() {
   return (
@@ -50,6 +51,9 @@ function App() {
           {/* Error Pages */}
           <Route path="/forbidden" element={<Forbidden />} />
           <Route path="*" element={<NotFound />} />
+
+          {/* Health Route */}
+          <Route path="/health" element={<HealthCheck/>} />
         </Routes>
       </BrowserRouter>
     </RootProviders>

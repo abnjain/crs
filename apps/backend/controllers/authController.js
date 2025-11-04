@@ -14,7 +14,7 @@ export const register = async (req, res) => {
     if (exists) return res.status(400).json({ message: "Account already exists", error: "Invalid Input" });
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hash, name, phone, roles: roles || "Student" });
-    const token = sign(user, { expiresIn: "1h" });
+    const token = sign(user);
     const refresh = signRefresh(user);
     console.log({ message: "Registered successfully", user: { email: user.email } });
     return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Registered successfully", ok: true });
@@ -35,7 +35,7 @@ export const login = async (req, res) => {
     if (!user) return res.status(400).json({ message: "Invalid credentials", error: "Invalid Input" });
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) return res.status(400).json({ message: "Invalid credentials", error: "Invalid Input" });
-    const token = sign(user, { expiresIn: "1h" });
+    const token = sign(user);
     const refresh = signRefresh(user);
     console.log({ message: "Logged in successfully", user: { email: user.email } });
     return res.status(200).json({ user: { id: user._id, email: user.email, roles: user.roles }, token, refresh, message: "Logged in successfully", ok: true });
@@ -54,7 +54,7 @@ export const refreshToken = async (req, res) => {
     const user = await User.findById(payload.id);
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    const token = sign(user, { expiresIn: "1h" });
+    const token = sign(user);
     return res.status(200).json({ token, ok: true });
   } catch (err) {
     return res.status(401).json({ message: "Invalid refresh token", error: err.message });
