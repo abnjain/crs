@@ -10,13 +10,33 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground dark:text-muted-foreground [a&]:hover:bg-primary/90",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground dark:text-primary-foreground [a&]:hover:bg-secondary/90",
+          "bg-primary text-primary-foreground shadow-xs",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-danger text-white shadow-xs focus-visible:ring-danger/20 dark:focus-visible:ring-danger/40 dark:bg-danger/60",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+          "border bg-background shadow-xs dark:bg-input/30 dark:border-input dark",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-xs",
+        link: "text-primary underline-offset-4",
+        // 🚀 New Variants
+        success:
+          "bg-green-600 text-white shadow-xs focus-visible:ring-green-500/40",
+        warning:
+          "bg-amber-500 text-black shadow-xs focus-visible:ring-amber-400/40",
+        info:
+          "bg-sky-500 text-white shadow-xs focus-visible:ring-sky-400/40",
+        gradient:
+          "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white shadow-md",
+        subtle:
+          "bg-muted text-muted-foreground shadow-xs dark:bg-input/20",
+        danger:
+          "bg-[var(--danger-color)] text-white shadow-xs(--danger-color)]/90 focus-visible:ring-[var(--danger-color)]/20 dark:focus-visible:ring-[var(--danger-color)]/40 dark:bg-[var(--danger-color)]/60",
+      },
+      size: {
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        icon: "size-9",
       },
     },
     defaultVariants: {

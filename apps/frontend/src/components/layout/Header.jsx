@@ -1,11 +1,13 @@
 // src/components/layout/Header.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose, ArrowLeftToLine } from 'lucide-react';
+import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose, ArrowLeftToLine, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmationDialog from '../shared/ConfirmationDialog';
 
 export function Header({ onToggleSidebar, isOpen, onBack = null }) {
   const { user, logout } = useAuth();
@@ -14,6 +16,21 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
     ? user.profilePhoto
     : '';
   const role = user?.roles ? user.roles[user.roles.length - 1] : 'No Role';
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout(); // Uses existing logout method from AuthContext
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      setIsLoggingOut(false);
+      setIsLogoutDialogOpen(false);
+    }
+  };
 
   return (
     <>
@@ -44,9 +61,14 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
               </Button>
             )
           }
-          <Button variant="destructive" size="icon" className="h-8 w-8 rounded-md" onClick={() => logout()}>
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <Tooltip delayDuration={200} disableHoverableContent>
+            <TooltipTrigger>
+              <Button variant="destructive" size="icon" className="h-8 w-8 rounded-md" onClick={() => setIsLogoutDialogOpen(true)}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+              <TooltipContent side="bottom">Logout</TooltipContent>
+            </TooltipTrigger>
+          </Tooltip>
         </div>
 
         {/* Logo & Title — hidden on mobile, shown on desktop */}
@@ -81,6 +103,19 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
           </div>
         </div>
       </header>
+      {/* Confirmation Dialog for Logout */}
+      <ConfirmationDialog
+        isOpen={isLogoutDialogOpen}
+        onClose={() => setIsLogoutDialogOpen(false)}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        description="Are you sure you want to log out? You will need to sign in again to access your account."
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        isLoading={isLoggingOut}
+        variant="destructive"
+        icon={<AlertTriangle className="h-6 w-6 text-destructive mx-auto mb-2" />}
+      />
     </>
   );
 }

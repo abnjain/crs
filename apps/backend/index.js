@@ -77,7 +77,7 @@ app.use(revokeToken);
 
 
 // DB connection
-import connectDB from "./config/db.js";
+import { connectDB } from "./config/db.js";
 connectDB();
 
 // Simple test route
@@ -110,6 +110,7 @@ app.use(`/api/${version}/upload`, uploadRoutes);
 app.use(`/api/${version}/events`, eventsRoutes);
 
 // Health Route Middleware
+app.use("/health", healthRoutes);
 app.use("/api/health", healthRoutes);
 app.use(`/api/${version}/health`, healthRoutes);
 

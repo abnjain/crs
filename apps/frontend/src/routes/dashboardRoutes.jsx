@@ -18,37 +18,16 @@ import TeacherSubjects from "@/pages/dashboard/teacher/Subjects.jsx";
 
 import Documents from "@/pages/dashboard/admin/Documents.jsx";
 
-import ConfirmationPage from "@/pages/ConfirmationPage.jsx";
-
-import LibraryDashboard from "@/pages/library/LibraryDashboard";
-
-import AlumniProfile from "@/pages/alumni/AlumniProfile.jsx";
-import AlumniList from "@/pages/alumni/AlumniList.jsx";
 import AlumniDashboard from "@/pages/alumni/Dashboard";
 import CompleteProfile from "@/pages/alumni/CompleteProfile";
 import EditProfile from "@/pages/alumni/EditProfile";
 
-import TeacherLibraryDashboard from '@/pages/library/TeacherLibraryDashboard.jsx';
-import BookDetails from '@/pages/library/BookDetails.jsx';
-
-export const routesConfig = [
-  // Public
-  { path: '/confirmation', element: <ConfirmationPage /> },
+export const dashRoutesConfig = [
 
   // Alumni Routes
   { path: "/dashboard/alumni", element: <AlumniDashboard />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   { path: "/dashboard/alumni/complete-profile", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
   { path: "/dashboard/alumni/edit", element: <CompleteProfile />, roles: ["Student", "Alumni", "Admin", "SuperAdmin"] },
-  
-  // Alumni Mangement
-  { path: "/alumni", element: <AlumniList />, roles: ["Student", "Alumni", "Teacher", "Admin", "SuperAdmin"] },
-  { path: "/alumni/:id", element: <AlumniProfile />, roles: ["Student", "Alumni", "Teacher", "Admin", "SuperAdmin"] },
-
-  // Library Routes
-  { path: "/library", element: <LibraryDashboard />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
-  { path: "/library/books/:id", element: <BookDetails />, roles: ["Student", "Teacher", "Staff", "Admin", "SuperAdmin", "Librarian"] },
-  { path: '/library/teacher', element: <TeacherLibraryDashboard />, },
-  // { path: '/library/books/:id', element: <BookDetails />, },
 
   // Admin
   { path: "/dashboard/admin", element: <AdminDashboard />, roles: ["Admin", "SuperAdmin"] },

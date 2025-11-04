@@ -9,6 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Briefcase, Building, Mail, Phone, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import AlumniDetailsDialog from "@/components/alumni/AlumniDetailsDialog";
 
 export default function AlumniDashboard() {
     const [alumni, setAlumni] = useState(null);
@@ -16,6 +17,13 @@ export default function AlumniDashboard() {
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+    const [selectedAlumnus, setSelectedAlumnus] = useState(null);
+
+    const handleView = (alumnus) => {
+        setSelectedAlumnus(alumnus);
+        setShowDetailsDialog(true);
+    };
 
     const fetchAlumni = async () => {
         try {
@@ -99,15 +107,28 @@ export default function AlumniDashboard() {
                                     {alumni.department} • Batch {alumni.batch}
                                 </p>
                             </div>
-                            <Button
-                                variant="link"
-                                className="h-9 px-4 text-sm md:text-base"
-                                onClick={() => navigate("/dashboard/alumni/edit", {
-                                    state: { alumniId: alumni._id }
-                                })}
-                            >
-                                Edit Profile
-                            </Button>
+                            <div>
+                                <Button
+                                    variant="link"
+                                    className="h-9 px-4 text-sm md:text-base"
+                                    onClick={() => navigate("/dashboard/alumni/edit", {
+                                        state: { alumniId: alumni._id }
+                                    })}
+                                >
+                                    Edit Profile
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    className="h-9 px-4 text-sm md:text-base"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleView(alumni);
+                                    }}
+                                >
+                                    View Complete Profile
+                                </Button>
+
+                            </div>
                         </div>
                     </CardHeader>
 
@@ -133,7 +154,7 @@ export default function AlumniDashboard() {
                             variant="link"
                             size="sm"
                             className="text-sm"
-                            onClick={() => navigate("/dashboard/alumni/events")}
+                            onClick={() => navigate("/events")}
                         >
                             View All
                         </Button>
@@ -176,6 +197,12 @@ export default function AlumniDashboard() {
                     </div>
                 </div>
             </div>
-        </ModuleLayout>
+            <AlumniDetailsDialog
+                isOpen={showDetailsDialog}
+                onClose={() => setShowDetailsDialog(false)}
+                alumnus={selectedAlumnus}
+                user={user}
+            />
+        </ModuleLayout >
     );
 }

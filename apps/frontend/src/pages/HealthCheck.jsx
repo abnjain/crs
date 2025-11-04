@@ -32,6 +32,12 @@ const HealthCheck = () => {
     fetchHealth();
   }, []);
 
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "N/A";
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-6">
       <Card className="w-full max-w-lg shadow-xl">
@@ -46,7 +52,7 @@ const HealthCheck = () => {
               <XCircle className="text-red-500" size={22} />
             )}
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={fetchHealth}>
+          <Button variant="gradient" size="sm" onClick={fetchHealth}>
             <RefreshCw size={16} className={loading ? "animate-spin mr-1" : "mr-1"} />
             Refresh
           </Button>
@@ -64,44 +70,50 @@ const HealthCheck = () => {
               <div className="flex justify-between">
                 <span className="font-medium">Status:</span>
                 <Badge
-                  className={
-                    health.status === "ok" ? "bg-green-500" : "bg-yellow-500"
-                  }
+                  variant={health.ok ? "success" : "destructive"}
                 >
-                  {health.status}
+                  {health.ok ? "Healthy" : "Unhealthy"}
                 </Badge>
               </div>
 
               <div className="flex justify-between">
                 <span className="font-medium">Database:</span>
                 <Badge
-                  className={
-                    health.database === "connected"
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                  }
+                  variant={health.db === "connected" ? "success" : "destructive"}
+                  className="capitalize"
                 >
-                  {health.database}
+                  {health.db}
                 </Badge>
               </div>
 
               <div className="flex justify-between">
                 <span className="font-medium">Message:</span>
-                <span className="text-sm text-slate-700">
-                  {health.message}
-                </span>
+                <span className="text-sm text-slate-700">{health.message}</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="font-medium">Uptime:</span>
-                <span className="text-sm text-slate-700">
-                  {Math.round(health.uptime)}s
-                </span>
+                <span className="text-sm text-slate-700">{health.uptime}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium">Downtime:</span>
+                <span className="text-sm text-slate-700">{health.downtime}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium">Last Restart:</span>
+                <span className="text-sm text-slate-700">{formatDate(health.lastRestart)}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-medium">Last Shutdown:</span>
+                <span className="text-sm text-slate-700">{formatDate(health.lastShutdown)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="font-medium">Timestamp:</span>
-                <span className="text-sm text-slate-700">{health.timestamp}</span>
+                <span className="text-sm text-slate-700">{formatDate(health.timestamp)}</span>
               </div>
             </div>
           ) : !loading && !error ? (

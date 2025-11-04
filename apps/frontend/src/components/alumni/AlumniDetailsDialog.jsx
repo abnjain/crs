@@ -4,18 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {  Briefcase,  MapPin, GraduationCap, Calendar, Globe, Mail, Phone, Hash, User,  Award } from "lucide-react";
+import { Briefcase, MapPin, GraduationCap, Calendar, Globe, Mail, Phone, Hash, User, Award, User2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
+export default function AlumniDetailsDialog({ isOpen, onClose, alumnus, user }) {
   if (!alumnus) return null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     try {
-      return new Date(dateString).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
     } catch {
       return "Invalid Date";
@@ -57,14 +58,29 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
         <div className="flex-1 overflow-y-auto space-y-6 pb-4">
           {/* Profile Overview */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Award className="h-5 w-5" />
-                Profile Overview
-              </CardTitle>
-              <CardDescription className="text-sm">
-                Contact and basic information
-              </CardDescription>
+            <CardHeader className="pb-3 flex justify-between items-center">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Award className="h-5 w-5" />
+                  Profile Overview
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Contact and basic information
+                </CardDescription>
+              </div>
+              <div>
+                {user.profilePhoto && (
+                  <Avatar className="h-20 w-20 md:h-28 md:w-28 border-4 border-white shadow-xl">
+                    <AvatarImage
+                      src={user.profilePhoto}
+                      alt={`${alumnus.name}'s profile`}
+                    />
+                    <AvatarFallback className="bg-gray-200">
+                      <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,10 +131,10 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
                 {alumnus.linkedin ? (
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 text-muted-foreground" />
-                    <a 
-                      href={alumnus.linkedin} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={alumnus.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-primary hover:underline text-sm font-medium"
                     >
                       View LinkedIn Profile
@@ -175,13 +191,13 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
                         <div className="text-sm text-muted-foreground mb-2">
                           {exp.company || "Company not specified"}
                         </div>
-                        
+
                         {/* Date Range */}
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                           <Calendar className="h-3 w-3" />
                           <span>{formatRange(exp.startDate, exp.endDate, exp.currentlyWorking)}</span>
                         </div>
-                        
+
                         {/* Description */}
                         {exp.description && (
                           <p className="text-sm leading-relaxed text-muted-foreground max-w-none">
@@ -189,7 +205,7 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
                           </p>
                         )}
                       </div>
-                      
+
                       {/* Current Position Badge */}
                       {exp.currentlyWorking && (
                         <Badge className="self-start mt-1 bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/50">
@@ -218,9 +234,9 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus }) {
               <CardContent className="pt-0">
                 <div className="flex flex-wrap gap-2">
                   {alumnus.tags.map((tag, idx) => (
-                    <Badge 
-                      key={idx} 
-                      variant="secondary" 
+                    <Badge
+                      key={idx}
+                      variant="secondary"
                       className="text-xs px-2 py-1"
                     >
                       {tag}

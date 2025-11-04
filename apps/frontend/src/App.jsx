@@ -9,7 +9,8 @@ import Forbidden from "@/pages/errors/Forbidden";
 import NotFound from "@/pages/errors/NotFound";
 import RoleBasedDashboardRedirect from "@/pages/dashboard/RoleBasedDashboardRedirect";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
-import { routesConfig } from "@/routes/config";
+import { routesConfig } from "./routes/routes";
+import { dashRoutesConfig } from "@/routes/dashboardRoutes";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import HealthCheck from "./pages/HealthCheck";
 
@@ -26,7 +27,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
 
           {/* Protected routes (looped from config) */}
-          {routesConfig.map(({ path, element, roles }) => (
+          {dashRoutesConfig.map(({ path, element, roles }) => (
             <Route
               key={path}
               path={path}
@@ -34,6 +35,22 @@ function App() {
                 <ProtectedRoute allowedRoles={roles}>
                   {element}
                 </ProtectedRoute>
+              }
+            />
+          ))}
+
+          {routesConfig.map(({ path, element, roles }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                roles ? (
+                  <ProtectedRoute allowedRoles={roles}>
+                    {element}
+                  </ProtectedRoute>
+                ) : (
+                  element
+                )
               }
             />
           ))}
@@ -53,7 +70,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
 
           {/* Health Route */}
-          <Route path="/health" element={<HealthCheck/>} />
+          <Route path="/health" element={<HealthCheck />} />
         </Routes>
       </BrowserRouter>
     </RootProviders>

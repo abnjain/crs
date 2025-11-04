@@ -1,4 +1,5 @@
 import fs from "fs";
+import { dbConnectionStatus } from "../config/db.js";
 
 const DOWNTIME_FILE = "./downtime.json";
 let lastRestart = Date.now();
@@ -46,6 +47,7 @@ export const ping = (req, res) => {
 
     res.status(200).json({
       ok: true,
+      db: dbConnectionStatus, // Placeholder: Replace with actual DB health check if needed
       message: "😊 Ping successful",
       uptime: formatDuration(uptimeSeconds),
       downtime: formatDuration(downtimeSeconds),

@@ -1,6 +1,6 @@
 // src/components/layout/Sidebar.jsx
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Book, GraduationCap, LogOut, Briefcase, Bell, Users, BarChart3, FileText, AlertTriangle, LibraryBig, User, UserCheck, Settings, BookOpenCheck, NotebookText, ChevronLeft, ChevronRight, } from 'lucide-react';
+import { Home, Book, GraduationCap, LogOut, Briefcase, Bell, Users, BarChart3, FileText, AlertTriangle, LibraryBig, User, UserCheck, Settings, BookOpenCheck, NotebookText, CalendarIcon, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -23,6 +23,7 @@ const navItems = {
     { label: 'Profile', icon: User, path: '/dashboard/teacher/profile' },
     { label: 'Library', icon: LibraryBig, path: '/library' },
     { label: 'Alumni', icon: GraduationCap, path: '/alumni' },
+    { label: 'Events', icon: CalendarIcon, path: '/events' },
   ],
   Admin: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/admin' },
