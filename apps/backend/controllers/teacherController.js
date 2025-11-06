@@ -1,6 +1,32 @@
+// apps/backend/controllers/teacherController.js
 import { Teacher, User, Material, Timetable, Subject } from "../models/index.js";
 
-export const createTeacher = async (req, res, next) => {
+export const getTeacher = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
+    const users = await Teacher.find({});
+    const teachers = users.filter(usr => usr.roles.includes("Teacher"));
+    if (!teachers || teachers.length === 0) return res.status(404).json({ message: "No Teachers found", error: "Not Found" });
+    return res.status(200).json({ users: teachers, ok: true, message: "Users fetched successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Can't Find Teacher or Internal Server Error", error: err.message });
+  }
+};
+
+export const getTeacherById = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
+    const teacher = await Teacher.findById(req.params.id);
+    if (!teacher) return res.status(404).json({ message: "No teacher found", error: "Not Found" });
+    return res.status(200).json({ teacher, ok: true, message: "Teacher fetched successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Can't Find Teacher or Internal Server Error", error: err.message });
+  }
+};
+
+export const createTeacher = async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: "Invalid Input", message: "User ID, Employee Code, Department ID, and Designation are required" });
     const { userId, empCode, deptId, designation } = req.body;
@@ -14,7 +40,7 @@ export const createTeacher = async (req, res, next) => {
 };
 
 // teacher uploads material - basic placeholder
-export const uploadMaterial = async (req, res, next) => {
+export const uploadMaterial = async (req, res) => {
   try {
     if (!req.body) return res.status(400).json({ error: "Invalid Input", message: "Subject ID, Title, and File Key are required" });
     const { subjectId, title, fileKey } = req.body;
@@ -29,10 +55,9 @@ export const uploadMaterial = async (req, res, next) => {
 };
 
 
-// apps/backend/controllers/teacherController.js
 // Add this new function for upcoming classes
 
-export const getUpcomingClasses = async (req, res, next) => {
+export const getUpcomingClasses = async (req, res) => {
   try {
     const roles = req.user.roles || [];
     if (!roles.includes("Teacher")) {
@@ -101,7 +126,7 @@ export const getUpcomingClasses = async (req, res, next) => {
 // apps/backend/controllers/teacherController.js
 // Add this function for my subjects
 
-export const getMySubjects = async (req, res, next) => {
+export const getMySubjects = async (req, res) => {
   try {
     const roles = req.user.roles || [];
     const allowed = ["Admin", "SuperAdmin", "Teacher"];
@@ -113,7 +138,7 @@ export const getMySubjects = async (req, res, next) => {
         error: "Forbidden"
       });
     }
-    
+
     const teacher = await Teacher.findById(req.user.id)
       .populate({
         path: 'subjects',

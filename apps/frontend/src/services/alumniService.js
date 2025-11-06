@@ -37,8 +37,6 @@ const alumniService = {
   // Update alumnus
   update: async (id, payload) => {
     try {
-      console.log(payload, "Payload --------------- datere");
-
       const res = await api.patch(`${BASE}/${id}`, payload, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`,

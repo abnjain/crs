@@ -4,7 +4,8 @@ import role from "../middlewares/role.js";
 import * as ctrl from "../controllers/eventsController.js";
 import multer from "multer";
 
-const upload = multer();
+// const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 
 router.post("/", auth, role(["Admin","SuperAdmin","Staff","Teacher"]), upload.array("photos"), ctrl.createEvent);

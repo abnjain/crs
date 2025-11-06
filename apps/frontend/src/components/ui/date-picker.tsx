@@ -13,6 +13,12 @@ import {
 export function DateRangePicker({ className, onChange, value }) {
   const [date, setDate] = React.useState(value || { from: null, to: null });
 
+  React.useEffect(() => {
+    if (value?.from !== date?.from || value?.to !== date?.to) {
+      setDate(value);
+    }
+  }, [value]);
+
   const handleSelect = (selected) => {
     setDate(selected);
     if (onChange) onChange(selected);
@@ -24,7 +30,7 @@ export function DateRangePicker({ className, onChange, value }) {
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            variant={"ghost"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
               !date && "text-muted-foreground"
@@ -47,7 +53,6 @@ export function DateRangePicker({ className, onChange, value }) {
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}

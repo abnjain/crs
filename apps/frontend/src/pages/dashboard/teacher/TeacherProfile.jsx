@@ -13,6 +13,8 @@ import api from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { getTeacher, getTeacherById } from '@/services/teacherService';
+import { fi } from 'date-fns/locale';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -23,6 +25,7 @@ const schema = z.object({
 
 export default function TeacherProfile() {
   const { user, token } = useAuth();
+  const [teacherDets, setTeacherDets] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -30,12 +33,30 @@ export default function TeacherProfile() {
   });
 
   useEffect(() => {
-    if (user) {
-      reset({
-        name: user.name,
-        email: user.email,
-        bio: user.bio || '',
-      });
+    try {
+      if (user) {
+        getTeacherById(user._id)
+          .then(res => {
+            setTeacherDets(res.data.teacher);
+            toast.success("Teacher details fetched successfully");
+          })
+          .catch(err => {
+            console.error("Failed to fetch teacher details:", err);
+            toast.error("Failed to fetch teacher details");
+          });
+        console.log(teacherDets, user, "--------------------user");
+
+        reset({
+          name: user.name,
+          email: user.email,
+          bio: user.bio || '',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to fetch teacher details");
+    } finally {
+      setLoading(false);
     }
   }, [user, reset]);
 

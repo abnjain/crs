@@ -57,7 +57,6 @@ export const listUsers = async (req, res, next) => {
         if (!req.user || !req.user.id) return res.status(401).json({ error: "Unauthorized", message: "User not authenticated" });
         const users = await User.find();
         if (!users || users.length === 0) return res.status(404).json({ message: "No users found", error: "Not Found" });
-        console.log({ users: users.map(user => ({ email: user.email })), ok: true, message: "Users fetched successfully" });
         return res.status(200).json({ users, ok: true, message: "Users fetched successfully" });
     } catch (err) {
         console.error(err);

@@ -11,7 +11,7 @@ import ConfirmationDialog from '../shared/ConfirmationDialog';
 
 export function Header({ onToggleSidebar, isOpen, onBack = null }) {
   const { user, logout } = useAuth();
-  const userName = user?.name || user?.email?.split('@')[0] || 'User';
+  const userName = user?.name ? user?.name?.split(' ').slice(0, 2).join(' ') : "" || 'User';
   const photo = user?.profilePhoto && (user.profilePhoto.startsWith('data:image/') || user.profilePhoto.startsWith('http'))
     ? user.profilePhoto
     : '';

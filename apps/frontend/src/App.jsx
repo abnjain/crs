@@ -39,6 +39,7 @@ function App() {
             />
           ))}
 
+          {/* Common routes (looped from config) */}
           {routesConfig.map(({ path, element, roles }) => (
             <Route
               key={path}
