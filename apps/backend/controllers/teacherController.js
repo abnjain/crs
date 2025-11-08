@@ -54,9 +54,6 @@ export const uploadMaterial = async (req, res) => {
   }
 };
 
-
-// Add this new function for upcoming classes
-
 export const getUpcomingClasses = async (req, res) => {
   try {
     const roles = req.user.roles || [];
@@ -122,9 +119,6 @@ export const getUpcomingClasses = async (req, res) => {
     });
   }
 };
-
-// apps/backend/controllers/teacherController.js
-// Add this function for my subjects
 
 export const getMySubjects = async (req, res) => {
   try {

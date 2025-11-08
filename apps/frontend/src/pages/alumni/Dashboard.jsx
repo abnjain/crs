@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ModuleLayout } from "@/components/layout/ModuleLayout";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Briefcase, Building, Mail, Phone, User } from "lucide-react";
+import { Briefcase, Building, Mail, Phone, User, User2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import AlumniDetailsDialog from "@/components/alumni/AlumniDetailsDialog";
@@ -91,7 +91,7 @@ export default function AlumniDashboard() {
                                     alt={`${alumni.name}'s profile`}
                                 />
                                 <AvatarFallback className="bg-gray-200">
-                                    <User className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />
+                                    {user?.name?.charAt(0) || <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />}
                                 </AvatarFallback>
                             </Avatar>
                         </div>

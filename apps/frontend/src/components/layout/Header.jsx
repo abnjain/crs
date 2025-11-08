@@ -1,7 +1,7 @@
 // src/components/layout/Header.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose, ArrowLeftToLine, AlertTriangle } from 'lucide-react';
+import { User, Bell, LogOut, PanelLeftOpen, PanelLeftClose, ArrowLeftToLine, AlertTriangle, User2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -97,7 +97,9 @@ export function Header({ onToggleSidebar, isOpen, onBack = null }) {
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               <AvatarImage src={photo} alt={user?.name} />
-              <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+              <AvatarFallback>
+                {user?.name?.charAt(0) || <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />}
+              </AvatarFallback>
             </Avatar>
             <ThemeToggle />
           </div>

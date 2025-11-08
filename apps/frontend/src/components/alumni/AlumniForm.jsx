@@ -9,19 +9,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
 import { alumniSchema, transformData, initializeForm } from "@/schemas/alumniSchema.js";
+import { useWatch } from "react-hook-form";
+import { X as XIcon } from "lucide-react";
 
 export default function AlumniForm({ onSubmit, defaultValues = {}, isEdit = false }) {
   // Use ref to track if we've already initialized the form
   const hasInitialized = useRef(false);
   const isEditRef = useRef(isEdit);
-
-  const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
+  
+  const { register, handleSubmit, control, formState: { errors }, reset, setValue, getValues } = useForm({
     resolver: zodResolver(isEdit ? alumniSchema.partial().extend({
       name: alumniSchema.shape.name // Keep name required for edit too
     }) : alumniSchema),
     defaultValues: initializeForm(defaultValues),
   });
-
+  
+  const tagsValueRaw = useWatch({ control, name: "tags", defaultValue: "" });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experiences",
@@ -59,6 +62,39 @@ export default function AlumniForm({ onSubmit, defaultValues = {}, isEdit = fals
         err.message ||
         "An unexpected error occurred";
       toast.error(errorMessage);
+    }
+  };
+
+  // normalize into array of trimmed tags
+  const tagsArray = React.useMemo(() => {
+    if (!tagsValueRaw) return [];
+    if (Array.isArray(tagsValueRaw)) return tagsValueRaw.map(t => String(t).trim()).filter(Boolean);
+    if (typeof tagsValueRaw === "string") {
+      return tagsValueRaw
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+    // fallback: convert whatever to string and split
+    return String(tagsValueRaw)
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+  }, [tagsValueRaw]);
+
+  // helper to remove tag (updates the form's tags string)
+  // if your form expects an array instead, you can modify accordingly.
+  const removeTag = (idx) => {
+    // if tags stored as array in form, submit array; if string, update string.
+    const current = tagsValueRaw;
+    if (Array.isArray(current)) {
+      const next = current.filter((_, i) => i !== idx);
+      reset({ ...getValues(), tags: next }); // use reset or setValue depending on your needs
+    } else {
+      // treat as string
+      const next = tagsArray.filter((_, i) => i !== idx).join(", ");
+      // setValue is simpler than reset:
+      setValue("tags", next, { shouldValidate: true, shouldDirty: true });
     }
   };
 
@@ -415,15 +451,41 @@ export default function AlumniForm({ onSubmit, defaultValues = {}, isEdit = fals
           <Label htmlFor="tags" className="text-sm font-medium">
             Skills & Tags<span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="tags"
-            placeholder="e.g., JavaScript, React, Node.js, Full Stack Development, Leadership"
-            className="mt-1"
-            {...register("tags")}
-          />
+
+          <div className="mt-1 min-h-[44px] p-2 border rounded-md flex flex-wrap gap-2 items-center">
+            {tagsArray.length === 0 && (
+              <span className="text-sm text-muted-foreground">No tags yet</span>
+            )}
+
+            {tagsArray.map((tag, idx) => (
+              <span
+                key={tag + idx}
+                className="flex items-center gap-2 px-2 py-1 border border-gray-300 rounded-md text-sm bg-transparent"
+              >
+                <span>{tag}</span>
+                <button
+                  type="button"
+                  onClick={() => removeTag(idx)}
+                  className="opacity-70 hover:opacity-100"
+                  aria-label={`Remove ${tag}`}
+                >
+                  <XIcon className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+
+            <Input
+              id="tags"
+              placeholder="Type skills separated by commas"
+              className="flex-1 min-w-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:outline-none"
+              {...register("tags")}
+            />
+          </div>
+
           <p className="text-xs text-muted-foreground">
             Separate multiple skills/tags with commas (max 20)
           </p>
+
           {errors.tags && (
             <p className="text-destructive text-xs mt-1">{errors.tags.message}</p>
           )}

@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { getTeacher, getTeacherById } from '@/services/teacherService';
 import { fi } from 'date-fns/locale';
+import { User2 } from 'lucide-react';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -85,7 +86,9 @@ export default function TeacherProfile() {
             <div className="flex items-center space-x-4 mb-6">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={user?.avatar} />
-                <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+                <AvatarFallback>
+                  {user?.name?.charAt(0) || <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <h2 className="text-xl font-semibold">{user?.name}</h2>

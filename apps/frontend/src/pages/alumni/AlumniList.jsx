@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pencil, Trash, MessageSquare, Eye, Plus } from "lucide-react";
 import { ModuleLayout } from "@/components/layout/ModuleLayout";
+import { userService } from "@/services/userService";
 
 export default function AlumniList() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export default function AlumniList() {
   const [editAlumnus, setEditAlumnus] = useState(null);
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [alumniUserDets, setAlumniUserDets] = useState({});
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [selectedAlumnus, setSelectedAlumnus] = useState(null);
 
@@ -37,7 +39,7 @@ export default function AlumniList() {
   const fetchAlumni = async () => {
     try {
       const data = await alumniService.list();
-      setAlumni(data.alumni || []);
+      setAlumni(data.alumnus || []);
     } catch (err) {
       toast.error(err.message);
     }
@@ -111,8 +113,10 @@ export default function AlumniList() {
     }
   };
 
-  const handleView = (alumnus) => {
+  const handleView = async (alumnus) => {
     setSelectedAlumnus(alumnus);
+    const res = await userService.getUserById(alumnus._id);    
+    setAlumniUserDets(res.data.user);
     setShowDetailsDialog(true);
   };
 
@@ -348,6 +352,7 @@ export default function AlumniList() {
             isOpen={showDetailsDialog}
             onClose={() => setShowDetailsDialog(false)}
             alumnus={selectedAlumnus}
+            user={alumniUserDets}
           />
         </div>
       </ModuleLayout>

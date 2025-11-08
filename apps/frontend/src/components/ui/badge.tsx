@@ -14,7 +14,7 @@ const badgeVariants = cva(
         destructive:
           "bg-danger text-white shadow-xs focus-visible:ring-danger/20 dark:focus-visible:ring-danger/40 dark:bg-danger/60",
         outline:
-          "border bg-background shadow-xs dark:bg-input/30 dark:border-input dark",
+          "border bg-transparent border-1 border-black shadow-xs dark:bg-input/30 dark:border-black dark",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs",
         link: "text-primary underline-offset-4",

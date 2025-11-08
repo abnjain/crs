@@ -8,7 +8,7 @@ import { Briefcase, MapPin, GraduationCap, Calendar, Globe, Mail, Phone, Hash, U
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function AlumniDetailsDialog({ isOpen, onClose, alumnus, user }) {
-  if (!alumnus) return null;
+  if (!alumnus || !user) return null;
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -69,17 +69,15 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus, user }) 
                 </CardDescription>
               </div>
               <div>
-                {user.profilePhoto && (
-                  <Avatar className="h-20 w-20 md:h-28 md:w-28 border-4 border-white shadow-xl">
-                    <AvatarImage
-                      src={user.profilePhoto}
-                      alt={`${alumnus.name}'s profile`}
-                    />
-                    <AvatarFallback className="bg-gray-200">
-                      <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
+                {<Avatar className="h-20 w-20 md:h-28 md:w-28 border-4 border-white shadow-xl">
+                  <AvatarImage
+                    src={user.profilePhoto}
+                    alt={`${alumnus.name}'s profile`}
+                  />
+                  <AvatarFallback className="bg-gray-200 text-5xl">
+                    {user?.name?.charAt(0) || <User2 className="h-10 w-10 text-gray-500 md:h-14 md:w-14" />}
+                  </AvatarFallback>
+                </Avatar>}
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -208,7 +206,7 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus, user }) 
 
                       {/* Current Position Badge */}
                       {exp.currentlyWorking && (
-                        <Badge className="self-start mt-1 bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/50">
+                        <Badge variant="default" className="self-start mt-1 text-white">
                           Current Position
                         </Badge>
                       )}
@@ -236,7 +234,7 @@ export default function AlumniDetailsDialog({ isOpen, onClose, alumnus, user }) 
                   {alumnus.tags.map((tag, idx) => (
                     <Badge
                       key={idx}
-                      variant="secondary"
+                      variant="outline"
                       className="text-xs px-2 py-1"
                     >
                       {tag}
