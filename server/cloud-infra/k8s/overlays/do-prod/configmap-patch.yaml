@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crs-app-config
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  COOKIE_SECURE: "true"
+  UPLOAD_PROVIDER: "s3"
+  S3_ENDPOINT: "https://your-region.digitaloceanspaces.com"
+  CORS_ORIGINS: "https://do.crs.example.com"

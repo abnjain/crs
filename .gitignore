@@ -1,0 +1,56 @@
+# ============================================================
+# CRS Portal — Root .gitignore
+# ============================================================
+
+# === Node / npm ===
+node_modules/
+
+# === Build outputs ===
+server/dist/
+server/build/
+client/dist/
+client/dist-ssr/
+
+# === Logs ===
+*.log
+logs/
+
+# === Environment files ===
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+*.env
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Editor / IDE ===
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-workspace
+*.sublime-project
+ Cursor/
+.cursorrules
+
+# === Misc ===
+*.local
+*.tsbuildinfo
+*.tsx.tsbuildinfo
+
+# === Architecture docs (not code) ===
+CRS_Architecture.html
+crs-dashboard*.html
+nginx.conf.example
+
+# === Cursor agent transcripts ===
+agent-transcripts/
+.cursor

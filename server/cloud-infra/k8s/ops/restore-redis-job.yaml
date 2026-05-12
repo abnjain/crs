@@ -1,0 +1,80 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-restore
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        crs-access: db
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      volumes:
+        - name: backup
+          persistentVolumeClaim:
+            claimName: crs-backups
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data-redis-0
+      initContainers:
+        - name: fetch
+          image: minio/mc:latest
+          envFrom:
+            - configMapRef:
+                name: crs-app-config
+            - secretRef:
+                name: crs-app-secrets
+          env:
+            - name: RESTORE_FILE
+              value: "replace-me.rdb"
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              if [ -z "$S3_BUCKET" ]; then
+                echo "S3_BUCKET not set; using local backup file"
+                exit 0
+              fi
+              if [ -z "$S3_ENDPOINT" ]; then
+                endpoint="s3.amazonaws.com"
+              else
+                endpoint="$S3_ENDPOINT"
+              fi
+              endpoint=${endpoint#https://}
+              endpoint=${endpoint#http://}
+              export MC_HOST_backup="https://${S3_ACCESS_KEY_ID}:${S3_SECRET_ACCESS_KEY}@${endpoint}"
+              mc mb --ignore-existing backup/$S3_BUCKET
+              mc cp backup/$S3_BUCKET/redis/$RESTORE_FILE /backup/$RESTORE_FILE
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+      containers:
+        - name: restore
+          image: alpine:3.20
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: RESTORE_FILE
+              value: "replace-me.rdb"
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              if [ ! -f "/backup/$RESTORE_FILE" ]; then
+                echo "Backup file not found: /backup/$RESTORE_FILE"
+                exit 1
+              fi
+              cp /backup/$RESTORE_FILE /redis-data/dump.rdb
+              echo "Restore file copied. Restart the redis pod to load the new snapshot."
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: redis-data
+              mountPath: /redis-data

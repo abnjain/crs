@@ -1,0 +1,171 @@
+/* ============================================================
+   DIALOG / MODAL - Modular Tailwind-compatible
+   ============================================================ */
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.dialog-content {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-content--wide {
+  max-width: min(640px, 100vw - 2 * var(--space-6));
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dialog-header--end {
+  justify-content: flex-end;
+}
+
+.dialog-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+}
+
+.dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.dialog-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+}
+
+.dialog-close:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.dialog-body {
+  padding: var(--space-6);
+  flex: 1;
+  min-height: 0;
+}
+
+/* Reusable structured details (definition list) inside dialog bodies */
+.dialog-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin: 0;
+}
+
+.dialog-detail-row {
+  display: grid;
+  grid-template-columns: minmax(5.75rem, 8.75rem) 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (max-width: 440px) {
+  .dialog-detail-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+.dialog-detail-term {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+}
+
+.dialog-detail-desc {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
+  word-break: break-word;
+}
+
+.dialog-detail-desc code {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  background: var(--bg-subtle);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+
+.dialog-detail-extra {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.dialog-detail-extra-label {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+}
+
+.dialog-detail-pre {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.dialog-detail-empty {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}

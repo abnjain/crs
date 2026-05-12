@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crs-app-config
+data:
+  NODE_ENV: "development"
+  LOG_LEVEL: "debug"
+  COOKIE_SECURE: "false"
+  CORS_ORIGINS: "https://dev.aws.crs.example.com"

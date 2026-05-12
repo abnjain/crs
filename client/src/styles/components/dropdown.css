@@ -1,0 +1,189 @@
+/* Dropdown — uses variable.css tokens */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.dropdown-trigger:hover:not(:disabled) {
+  border-color: var(--border-base);
+}
+
+.dropdown-trigger-text {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.dropdown-trigger:hover:not(:disabled) .dropdown-trigger-text {
+  color: var(--text-primary);
+}
+
+.dropdown-trigger svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.dropdown-trigger:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.dropdown-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  right: 0;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dropdown-panel--flip {
+  top: auto;
+  bottom: calc(100% + var(--space-1));
+}
+
+.dropdown-search-wrap {
+  flex-shrink: 0;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dropdown-search {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.dropdown-search::placeholder {
+  color: var(--text-muted);
+}
+
+.dropdown-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 280px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-1);
+  scrollbar-gutter: stable;
+}
+
+.dropdown-item {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dropdown-item.active {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.dropdown-item.selected {
+  background: var(--primary-subtle);
+  color: var(--primary);
+  font-weight: var(--weight-semibold);
+}
+
+.dropdown-empty {
+  padding: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* System Configuration — default signup role (dark surfaces, theme text) */
+.dropdown--role-select .dropdown-trigger {
+  min-height: var(--tap-target-md, 40px);
+  padding: var(--space-3) var(--space-4);
+}
+
+[data-theme='dark'] .dropdown--role-select .dropdown-trigger,
+[data-theme='dark'] .dropdown--role-select .dropdown-panel {
+  background: var(--bg-muted);
+  border-color: var(--border-base);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .dropdown--role-select .dropdown-trigger-text {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .dropdown--role-select .dropdown-item {
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] .dropdown--role-select .dropdown-item:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme='system'] .dropdown--role-select .dropdown-trigger,
+  [data-theme='system'] .dropdown--role-select .dropdown-panel {
+    background: var(--bg-muted);
+    border-color: var(--border-base);
+    color: var(--text-primary);
+  }
+
+  [data-theme='system'] .dropdown--role-select .dropdown-trigger-text {
+    color: var(--text-primary);
+  }
+
+  [data-theme='system'] .dropdown--role-select .dropdown-item {
+    color: var(--text-primary);
+  }
+
+  [data-theme='system'] .dropdown--role-select .dropdown-item:hover {
+    background: var(--bg-subtle);
+    color: var(--text-primary);
+  }
+}

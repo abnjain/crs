@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crs-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crs-api
+  template:
+    metadata:
+      labels:
+        app: crs-api
+        crs-access: db
+    spec:
+      serviceAccountName: crs-api
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: ghcr.io/your-org/crs-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          envFrom:
+            - configMapRef:
+                name: crs-app-config
+            - secretRef:
+                name: crs-app-secrets
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health/ready
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health/live
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /api/v1/health/live
+              port: 5000
+            failureThreshold: 30
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: uploads
+              mountPath: /var/uploads
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: crs-uploads
+        - name: tmp
+          emptyDir: {}

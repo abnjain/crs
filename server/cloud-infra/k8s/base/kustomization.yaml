@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - serviceaccount.yaml
+  - configmap-app.yaml
+  - secret-app.yaml
+  - networkpolicy.yaml
+  - pvc-uploads.yaml
+  - deployment-api.yaml
+  - service-api.yaml
+  - deployment-web.yaml
+  - service-web.yaml
+  - ingress.yaml
+  - hpa-api.yaml
+  - pdb-api.yaml
+  - data/mongo-secret.yaml
+  - data/mongo-service.yaml
+  - data/mongo-statefulset.yaml
+  - data/redis-secret.yaml
+  - data/redis-service.yaml
+  - data/redis-statefulset.yaml
+  - data/backup-pvc.yaml
+  - data/backup-mongo-cronjob.yaml
+  - data/backup-redis-cronjob.yaml

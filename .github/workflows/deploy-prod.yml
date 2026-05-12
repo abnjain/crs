@@ -1,0 +1,121 @@
+name: Deploy Prod
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_API: ghcr.io/${{ github.repository_owner }}/crs-api
+  IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/crs-web
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+      - name: Client lint and build
+        working-directory: client
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+      - name: Server build
+        working-directory: server
+        run: |
+          npm ci
+          npm run build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: server
+          file: server/Dockerfile
+          push: true
+          sbom: true
+          provenance: true
+          tags: |
+            ${{ env.IMAGE_API }}:prod-${{ github.sha }}
+            ${{ env.IMAGE_API }}:prod
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          context: client
+          file: client/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_URL=/api
+          sbom: true
+          provenance: true
+          tags: |
+            ${{ env.IMAGE_WEB }}:prod-${{ github.sha }}
+            ${{ env.IMAGE_WEB }}:prod
+      - name: Scan API image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.IMAGE_API }}:prod-${{ github.sha }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+      - name: Scan web image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.IMAGE_WEB }}:prod-${{ github.sha }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.30.0
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > ~/.kube/config
+      - name: Apply manifests
+        env:
+          K8S_OVERLAY_PROD: ${{ secrets.K8S_OVERLAY_PROD }}
+        run: |
+          kubectl apply -k "$K8S_OVERLAY_PROD"
+      - name: Update images
+        env:
+          K8S_NAMESPACE_PROD: ${{ secrets.K8S_NAMESPACE_PROD }}
+        run: |
+          kubectl -n "$K8S_NAMESPACE_PROD" set image deployment/crs-api api=${{ env.IMAGE_API }}:prod-${{ github.sha }}
+          kubectl -n "$K8S_NAMESPACE_PROD" set image deployment/crs-web web=${{ env.IMAGE_WEB }}:prod-${{ github.sha }}
+      - name: Wait for rollout
+        env:
+          K8S_NAMESPACE_PROD: ${{ secrets.K8S_NAMESPACE_PROD }}
+        run: |
+          kubectl -n "$K8S_NAMESPACE_PROD" rollout status deployment/crs-api
+          kubectl -n "$K8S_NAMESPACE_PROD" rollout status deployment/crs-web

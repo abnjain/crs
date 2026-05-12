@@ -1,0 +1,238 @@
+/* ============================================================
+   variables.css — CRS Design System (SCSIT DAVV Indore theme)
+   Derived from official SCSIT logo palette.
+   Primary:  Institutional Blue  #1E5FA8
+   Accent:   Gold / Amber        #C9922A
+   Support:  Warm off-white base
+   ============================================================ */
+
+:root {
+  /* --- Typography --- */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.08em;
+
+  /* --- Spacing (4px base) --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* --- Radius --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* --- Layout --- */
+  --container-max: 1200px;
+  --container-pad: clamp(1.5rem, 5vw, 4rem);
+
+  /* --- Z-index --- */
+  --z-header: 400;
+
+  /* --- Transitions --- */
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 320ms ease;
+}
+
+/* ============================================================
+   LIGHT THEME (default)
+   Primary palette: SCSIT logo institutional blue + gold
+   ============================================================ */
+[data-theme="light"],
+:root {
+  /* Backgrounds */
+  --bg-base: #F8F7F4;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F0EEE9;
+  --bg-muted: #E6E3DC;
+  --bg-inverse: #0D2D54;
+
+  /* Borders */
+  --border-subtle: #E2DED6;
+  --border-base: #CCC8BE;
+  --border-strong: #A8A39A;
+
+  /* Text */
+  --text-primary: #0D2245;
+  --text-secondary: #3A4A5C;
+  --text-muted: #6B7A8D;
+  --text-disabled: #A8B0BB;
+  --text-inverse: #F8F7F4;
+
+  /* Primary — Institutional Blue */
+  --primary: #1E5FA8;
+  --primary-hover: #175096;
+  --primary-active: #0F3D7A;
+  --primary-subtle: #EBF2FB;
+  --primary-muted: #BEDAF5;
+  --primary-text: #FFFFFF;
+
+  /* Accent — Gold / Amber */
+  --accent: #C9922A;
+  --accent-hover: #B47E20;
+  --accent-subtle: #FDF4E3;
+  --accent-muted: #F0D49A;
+  --accent-text: #3A2200;
+
+  /* Secondary palette */
+  --color-red: #C62828;
+  --color-green: #4A8A1E;
+  --color-orange: #D4641A;
+
+  /* Status */
+  --success: #2D6A4F;
+  --success-subtle: #EAF4EE;
+  --warning: #7A5200;
+  --warning-subtle: #FEF6DC;
+  --error: #8B1A1A;
+  --error-subtle: #FEECEC;
+  --info: #1E5FA8;
+  --info-subtle: #EBF2FB;
+
+  /* Header */
+  --header-bg: #FFFFFF;
+  --header-border: #E2DED6;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(30, 95, 168, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(30, 95, 168, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 24px rgba(30, 95, 168, 0.1), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 48px rgba(30, 95, 168, 0.12);
+}
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
+[data-theme="dark"] {
+  --bg-base: #0A1828;
+  --bg-surface: #0F2038;
+  --bg-subtle: #152844;
+  --bg-muted: #1A3052;
+  --bg-inverse: #EBF2FB;
+
+  --border-subtle: #1A3052;
+  --border-base: #223D65;
+  --border-strong: #2E5285;
+
+  --text-primary: #EBF2FB;
+  --text-secondary: #A8C4E0;
+  --text-muted: #6A8FAD;
+  --text-disabled: #3A5A7A;
+  --text-inverse: #0A1828;
+
+  --primary: #5B9BD5;
+  --primary-hover: #78ADE0;
+  --primary-active: #9EC4EA;
+  --primary-subtle: #0F2A48;
+  --primary-muted: #1A3D62;
+  --primary-text: #040E1C;
+
+  --accent: #E0A83A;
+  --accent-hover: #EDBA56;
+  --accent-subtle: #1E1400;
+  --accent-muted: #3A2800;
+  --accent-text: #1E1400;
+
+  --color-red: #E07070;
+  --color-green: #6DB85A;
+  --color-orange: #E08850;
+
+  --success: #4CAF82;
+  --success-subtle: #0A2018;
+  --warning: #D4A030;
+  --warning-subtle: #1E1400;
+  --error: #E07070;
+  --error-subtle: #200A0A;
+  --info: #5B9BD5;
+  --info-subtle: #0A1E38;
+
+  --header-bg: #0F2038;
+  --header-border: #1A3052;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] {
+    --bg-base: #0A1828;
+    --bg-surface: #0F2038;
+    --bg-subtle: #152844;
+    --bg-muted: #1A3052;
+    --bg-inverse: #EBF2FB;
+    --border-subtle: #1A3052;
+    --border-base: #223D65;
+    --border-strong: #2E5285;
+    --text-primary: #EBF2FB;
+    --text-secondary: #A8C4E0;
+    --text-muted: #6A8FAD;
+    --text-disabled: #3A5A7A;
+    --text-inverse: #0A1828;
+    --primary: #5B9BD5;
+    --primary-hover: #78ADE0;
+    --primary-active: #9EC4EA;
+    --primary-subtle: #0F2A48;
+    --primary-muted: #1A3D62;
+    --primary-text: #040E1C;
+    --accent: #E0A83A;
+    --accent-hover: #EDBA56;
+    --accent-subtle: #1E1400;
+    --accent-muted: #3A2800;
+    --accent-text: #1E1400;
+    --color-red: #E07070;
+    --color-green: #6DB85A;
+    --color-orange: #E08850;
+    --success: #4CAF82;
+    --success-subtle: #0A2018;
+    --warning: #D4A030;
+    --warning-subtle: #1E1400;
+    --error: #E07070;
+    --error-subtle: #200A0A;
+    --info: #5B9BD5;
+    --info-subtle: #0A1E38;
+    --header-bg: #0F2038;
+    --header-border: #1A3052;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+}

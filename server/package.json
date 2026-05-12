@@ -1,0 +1,50 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "CRS Backend - Central Repository System API",
+  "license": "ISC",
+  "author": "abnjain",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "create-user": "tsx src/scripts/createUser.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "tsx src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.894.0",
+    "@aws-sdk/s3-request-presigner": "^3.894.0",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "axios": "^1.13.5",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.9.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.1",
+    "socket.io": "^4.8.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.3.0",
+    "@types/nodemailer": "^8.0.0",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crs-ingress
+spec:
+  rules:
+    - host: dev.do.crs.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: crs-api
+                port:
+                  number: 80
+          - path: /socket.io
+            pathType: Prefix
+            backend:
+              service:
+                name: crs-api
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: crs-web
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - dev.do.crs.example.com
+      secretName: crs-do-dev-tls

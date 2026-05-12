@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+spec:
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            crs-access: db
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: crs-backups
+          initContainers:
+            - name: dump
+              image: redis:7-alpine
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: crs-redis-secret
+                      key: REDIS_PASSWORD
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+                  ts=$(date +%Y%m%d-%H%M%S)
+                  redis-cli -h redis -a "$REDIS_PASSWORD" --rdb /backup/redis-$ts.rdb
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            - name: upload
+              image: minio/mc:latest
+              envFrom:
+                - configMapRef:
+                    name: crs-app-config
+                - secretRef:
+                    name: crs-app-secrets
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+                  if [ -z "$S3_BUCKET" ]; then
+                    echo "S3_BUCKET not set; skipping upload"
+                    exit 0
+                  fi
+                  if [ -z "$S3_ENDPOINT" ]; then
+                    endpoint="s3.amazonaws.com"
+                  else
+                    endpoint="$S3_ENDPOINT"
+                  fi
+                  endpoint=${endpoint#https://}
+                  endpoint=${endpoint#http://}
+                  export MC_HOST_backup="https://${S3_ACCESS_KEY_ID}:${S3_SECRET_ACCESS_KEY}@${endpoint}"
+                  latest=$(ls -1t /backup/redis-*.rdb 2>/dev/null | head -n 1)
+                  if [ -z "$latest" ]; then
+                    echo "No backup file found"
+                    exit 1
+                  fi
+                  mc mb --ignore-existing backup/$S3_BUCKET
+                  mc cp "$latest" backup/$S3_BUCKET/redis/
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
