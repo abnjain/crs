@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_target:
-        description: Deploy target
+        description: Deploy target (k8s skips Render hook)
         required: false
         default: render
         type: choice
@@ -20,16 +20,16 @@ permissions:
 
 env:
   # CI-only local tag. Render prod builds ./Dockerfile on the deploy hook — no registry push.
-  IMAGE_UNIFIED_CI: crs-unified:latest
+  IMAGE_UNIFIED_CI: crs-unified:ci
 
 jobs:
-  validate_target:
+  ci:
     runs-on: ubuntu-latest
     outputs:
-      deploy_target: ${{ steps.resolve.outputs.deploy_target }}
+      deploy_target: ${{ steps.resolve_target.outputs.deploy_target }}
     steps:
       - name: Resolve DEPLOY_TARGET
-        id: resolve
+        id: resolve_target
         env:
           INPUT_TARGET: ${{ github.event.inputs.deploy_target }}
           TARGET_VAR: ${{ vars.DEPLOY_TARGET }}
@@ -59,11 +59,6 @@ jobs:
               exit 1
               ;;
           esac
-
-  ci:
-    runs-on: ubuntu-latest
-    needs: validate_target
-    steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node
@@ -100,18 +95,14 @@ jobs:
             VITE_API_URL=/api
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy_render:
-    runs-on: ubuntu-latest
-    needs: [validate_target, ci]
-    if: needs.validate_target.outputs.deploy_target == 'render'
-    steps:
       - name: Trigger Render deploy
+        if: steps.resolve_target.outputs.deploy_target != 'k8s'
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
+          echo "Deploy target: ${{ steps.resolve_target.outputs.deploy_target }}"
           if [ -z "$RENDER_DEPLOY_HOOK" ]; then
-            echo "RENDER_DEPLOY_HOOK secret is required when DEPLOY_TARGET=render"
+            echo "RENDER_DEPLOY_HOOK secret is required for Render deploy"
             echo "Render Dashboard → crs service → Settings → Deploy Hook → copy URL"
             exit 1
           fi
@@ -121,8 +112,8 @@ jobs:
 
   deploy_k8s:
     runs-on: ubuntu-latest
-    needs: [validate_target, ci]
-    if: needs.validate_target.outputs.deploy_target == 'k8s'
+    needs: ci
+    if: ${{ needs.ci.result == 'success' && needs.ci.outputs.deploy_target == 'k8s' }}
     permissions:
       contents: read
       packages: write
