@@ -103,7 +103,7 @@ export function ProfileDetails({ user, alumni, alumniSectionLoading }: ProfileDe
                       try {
                         await onCancelDeletion(user.id);
                         // nothing else here; parent should refresh
-                      } catch (err) {
+                      } catch {
                         // swallow; parent should surface error via toast
                       }
                     }}

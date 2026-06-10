@@ -4,6 +4,7 @@
  * ============================================================
  */
 
+import { useRef } from 'react';
 import type { MessageDTO } from '../../services/messaging.service';
 
 export interface MessageBubbleProps {
@@ -18,18 +19,20 @@ export interface MessageBubbleProps {
 export function MessageBubble({ message, isSelf, selectable, selected, onToggleSelect, onLongPress }: MessageBubbleProps) {
   const hidden = message.deletedForViewer || (message.isDeleted && !isSelf);
   const body = hidden ? 'Message deleted' : message.content;
-  // long press handling
-  let timer: ReturnType<typeof setTimeout> | null = null;
+  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   function startPress() {
     if (!onLongPress) return;
-    timer = setTimeout(() => onLongPress(message.id), 500);
+    pressTimerRef.current = setTimeout(() => onLongPress(message.id), 500);
   }
+
   function cancelPress() {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
     }
   }
+
   return (
     <div
       className={`msg-bubble-row ${isSelf ? 'msg-self' : 'msg-peer'}`}

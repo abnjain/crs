@@ -1,9 +1,12 @@
 export { AuthContext, useAuth, getPrimaryRole, normalizeRoles } from './AuthContext';
 export { AuthProvider } from './AuthProvider';
-export { ThemeProvider, useTheme } from './ThemeContext';
-export { MessagingProvider, useMessaging } from './MessagingContext';
-export { NotificationProvider, useNotifications } from './NotificationContext';
+export { ThemeContext, useTheme } from './ThemeContext';
+export { ThemeProvider } from './ThemeProvider';
+export { MessagingContext, useMessaging } from './MessagingContext';
+export { MessagingProvider } from './MessagingProvider';
+export { NotificationContext, useNotifications } from './NotificationContext';
+export { NotificationProvider } from './NotificationProvider';
 export type { AuthContextType, User, UserRole } from './AuthContext';
-export type { ThemeMode } from './ThemeContext';
+export type { ThemeMode, ThemeContextType } from './ThemeContext';
 export type { MessagingContextValue } from './MessagingContext';
 export type { NotificationContextValue } from './NotificationContext';

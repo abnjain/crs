@@ -205,7 +205,7 @@ export function MessagesPage() {
     }
   }
 
-  async function handleStartConversation(userId: string, _userName: string) {
+  async function handleStartConversation(userId: string) {
     try {
       const res = await messagingService.createDirectConversation(userId);
       navigate(`/dashboard/messages/${res.conversationId}`);

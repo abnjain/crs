@@ -144,7 +144,7 @@ export function EventDetailPage() {
     setRsvping(true);
     try {
       if (isRsvped) {
-        const res = await eventService.cancelRsvp(event.id);
+        await eventService.cancelRsvp(event.id);
         setEvent((prev) =>
           prev ? { ...prev, attendees: prev.attendees.filter((a) => a !== user?.id) } : prev
         );

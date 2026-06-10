@@ -86,7 +86,7 @@ export function ListingFilter({
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const pw = p.getBoundingClientRect().width;
-      let left = Math.min(Math.max(margin, r.left), vw - pw - margin);
+      const left = Math.min(Math.max(margin, r.left), vw - pw - margin);
 
       const ph = p.offsetHeight;
       const spaceAbove = r.top - margin;

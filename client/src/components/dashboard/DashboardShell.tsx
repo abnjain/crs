@@ -12,6 +12,7 @@ import {
 import { DashboardSidebar } from '../common/DashboardSidebar';
 import { MainLayout } from '../layout/MainLayout';
 import { getSectionsForRoles } from '../../config/dashboardNav';
+import { navigateToExternalUrl } from '../../utils/navigation';
 import type { UserRole } from '../../context/AuthContext';
 
 type DashboardShellProps = {
@@ -36,10 +37,14 @@ export function DashboardShell({
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 900px)');
     if (!mq.matches) return;
-    setCollapsed(true);
+    const frame = requestAnimationFrame(() => setCollapsed(true));
+    return () => cancelAnimationFrame(frame);
   }, [location.pathname]);
 
-  const roles = user?.roles ?? (user?.role ? [user.role] : ['alumni']);
+  const roles = useMemo(
+    () => user?.roles ?? (user?.role ? [user.role] : ['alumni']),
+    [user]
+  );
   const role = (user?.role ?? 'alumni') as UserRole;
   const { totalUnread } = useMessaging();
   const { unreadCount, recent, refreshRecent, markAllRead, markRead } = useNotifications();
@@ -107,7 +112,7 @@ export function DashboardShell({
       if (link.startsWith('/')) {
         navigate(link);
       } else {
-        window.location.href = link;
+        navigateToExternalUrl(link);
       }
       setNotifOpen(false);
     }

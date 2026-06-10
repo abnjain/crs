@@ -4,7 +4,7 @@
  * ============================================================
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { DashboardShell } from '../../components/dashboard/DashboardShell';
 import { BroadcastDialog } from '../../components/messaging/BroadcastDialog';
@@ -20,36 +20,41 @@ export function AdminMessagingPage() {
   } | null>(null);
   const [threads, setThreads] = useState<AdminConversationRow[]>([]);
   const [q, setQ] = useState('');
+  const qRef = useRef(q);
+  qRef.current = q;
   const [loading, setLoading] = useState(false);
 
-  async function loadStats() {
+  const loadStats = useCallback(async () => {
     try {
       const s = await messagingService.adminStats();
       setStats(s);
     } catch {
       toast.error('Failed to load stats');
     }
-  }
+  }, []);
 
-  async function loadThreads() {
+  const loadThreads = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await messagingService.adminListConversations({ q: q.trim() || undefined, limit: 50 });
+      const res = await messagingService.adminListConversations({
+        q: qRef.current.trim() || undefined,
+        limit: 50,
+      });
       setThreads(res.conversations);
     } catch {
       toast.error('Failed to load conversations');
     } finally {
       setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    void loadStats();
   }, []);
 
   useEffect(() => {
+    void loadStats();
+  }, [loadStats]);
+
+  useEffect(() => {
     if (tab === 'threads') void loadThreads();
-  }, [tab]);
+  }, [tab, loadThreads]);
 
   return (
     <DashboardShell pageTitle="Messaging admin">

@@ -52,8 +52,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const res = await authService.login({ email, password });
       setUser(toUser(res));
       void authService.csrf().catch(() => undefined);
-    } catch (error) {
-      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +84,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(toUser({ user: res.user }));
         void authService.csrf().catch(() => undefined);
         return { pendingApproval: false };
-      } catch (error) {
-        throw error;
       } finally {
         setIsLoading(false);
       }

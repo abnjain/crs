@@ -49,8 +49,6 @@ export function Dropdown({
   const resizeRafRef = useRef(0);
   const refineRafRef = useRef(0);
   const instanceId = useId();
-  const activeOptionId =
-    activeIndex >= 0 ? `dropdown-option-${instanceId}-${activeIndex}` : undefined;
 
   const selected = options.find((o) => o.value === value);
   const filtered = useMemo(() => {
@@ -63,34 +61,36 @@ export function Dropdown({
     );
   }, [options, query, searchable]);
 
+  const resolvedActiveIndex = useMemo(() => {
+    if (!open || filtered.length === 0) return -1;
+    if (activeIndex >= 0 && activeIndex < filtered.length) return activeIndex;
+    const selectedIndex = filtered.findIndex((opt) => opt.value === value);
+    return selectedIndex >= 0 ? selectedIndex : 0;
+  }, [open, filtered, activeIndex, value]);
+
+  const activeOptionId =
+    resolvedActiveIndex >= 0 ? `dropdown-option-${instanceId}-${resolvedActiveIndex}` : undefined;
+
+  const closeDropdown = useCallback(() => {
+    setOpen(false);
+    setQuery('');
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        closeDropdown();
       }
     };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
-  }, [open]);
+  }, [open, closeDropdown]);
 
   useEffect(() => {
-    if (!open) {
-      setActiveIndex(-1);
-      return;
-    }
-    if (filtered.length === 0) {
-      setActiveIndex(-1);
-      return;
-    }
-    const selectedIndex = filtered.findIndex((opt) => opt.value === value);
-    setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
-  }, [open, filtered, value]);
-
-  useEffect(() => {
-    if (!open || activeIndex < 0) return;
-    optionRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
-  }, [open, activeIndex]);
+    if (!open || resolvedActiveIndex < 0) return;
+    optionRefs.current[resolvedActiveIndex]?.scrollIntoView({ block: 'nearest' });
+  }, [open, resolvedActiveIndex]);
 
   const recalcPlacement = useCallback(() => {
     const triggerEl = triggerRef.current;
@@ -149,10 +149,9 @@ export function Dropdown({
     if (!open) {
       cancelAnimationFrame(refineRafRef.current);
       cancelAnimationFrame(resizeRafRef.current);
-      setFlipUp(false);
       return;
     }
-    recalcPlacement();
+    const placementFrame = requestAnimationFrame(() => recalcPlacement());
     const onRelayout = () => {
       cancelAnimationFrame(resizeRafRef.current);
       resizeRafRef.current = requestAnimationFrame(() => {
@@ -163,6 +162,7 @@ export function Dropdown({
     window.addEventListener('resize', onRelayout);
     window.addEventListener('scroll', onRelayout, true);
     return () => {
+      cancelAnimationFrame(placementFrame);
       cancelAnimationFrame(resizeRafRef.current);
       cancelAnimationFrame(refineRafRef.current);
       window.removeEventListener('resize', onRelayout);
@@ -170,11 +170,13 @@ export function Dropdown({
     };
   }, [open, searchable, filtered.length, query, recalcPlacement]);
 
-  const handleSelect = (opt: DropdownOption) => {
-    onChange(opt.value, opt);
-    setOpen(false);
-    setQuery('');
-  };
+  const handleSelect = useCallback(
+    (opt: DropdownOption) => {
+      onChange(opt.value, opt);
+      closeDropdown();
+    },
+    [onChange, closeDropdown]
+  );
 
   const moveActive = useCallback(
     (delta: number) => {
@@ -220,22 +222,22 @@ export function Dropdown({
           if (event.key === ' ' && isInput) break;
           if (!open) break;
           event.preventDefault();
-          if (activeIndex >= 0 && activeIndex < filtered.length) {
-            handleSelect(filtered[activeIndex]);
+          if (resolvedActiveIndex >= 0 && resolvedActiveIndex < filtered.length) {
+            handleSelect(filtered[resolvedActiveIndex]);
           }
           break;
         }
         case 'Escape':
           if (open) {
             event.preventDefault();
-            setOpen(false);
+            closeDropdown();
           }
           break;
         default:
           break;
       }
     },
-    [activeIndex, filtered, handleSelect, moveActive, open]
+    [filtered, handleSelect, moveActive, open, closeDropdown, resolvedActiveIndex]
   );
 
   return (
@@ -276,7 +278,7 @@ export function Dropdown({
       {open && (
         <div
           ref={panelRef}
-          className={`dropdown-panel${flipUp ? ' dropdown-panel--flip' : ''}`}
+          className={`dropdown-panel${open && flipUp ? ' dropdown-panel--flip' : ''}`}
         >
           {searchable && (
             <div className="dropdown-search-wrap">
@@ -310,7 +312,7 @@ export function Dropdown({
                   ref={(el) => {
                     optionRefs.current[index] = el;
                   }}
-                  className={`dropdown-item${opt.value === value ? ' selected' : ''}${index === activeIndex ? ' active' : ''}`}
+                  className={`dropdown-item${opt.value === value ? ' selected' : ''}${index === resolvedActiveIndex ? ' active' : ''}`}
                   role="option"
                   aria-selected={opt.value === value}
                   onMouseEnter={() => setActiveIndex(index)}
