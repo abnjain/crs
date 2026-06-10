@@ -51,6 +51,11 @@ CRS_Architecture.html
 crs-dashboard*.html
 nginx.conf.example
 
+# Render / Docker deploy secrets
+docker/jwt-private.pem
+docker/jwt-public.pem
+docker/render.env
+
 # === Cursor agent transcripts ===
 agent-transcripts/
 .cursor

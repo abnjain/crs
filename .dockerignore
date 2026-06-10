@@ -1,0 +1,15 @@
+.git
+.github
+.cursor
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/dist
+**/uploads
+server/cloud-infra
+*.md
+*.pem
+jwt-*.pem
+docker/render.env
+.DS_Store

@@ -1,0 +1,61 @@
+# Render Blueprint — CRS single-container deploy
+# Deploy: connect repo in Render Dashboard or `render blueprint apply`
+# DNS: CNAME crs.abnjain.me → <service>.onrender.com (after service is created)
+
+services:
+  - type: web
+    name: crs
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    region: singapore
+    branch: main
+    healthCheckPath: /api/v1/health
+    autoDeploy: false
+    numInstances: 1
+    disk:
+      name: crs-uploads
+      mountPath: /var/uploads
+      sizeGB: 1
+    domains:
+      - crs.abnjain.me
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PREFIX
+        value: /api
+      - key: API_INTERNAL_PORT
+        value: "5000"
+      - key: UPLOAD_DIR
+        value: /var/uploads
+      - key: UPLOAD_PROVIDER
+        value: local
+      - key: CORS_ORIGINS
+        value: https://crs.abnjain.me
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: lax
+      - key: JWT_ALG
+        value: RS256
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: LOG_LEVEL
+        value: info
+      - key: AUDIT_CONSOLE_LOGS
+        value: "false"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX
+        value: "100"
+      - key: RATE_LIMIT_AUTH_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_AUTH_MAX
+        value: "20"
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_PRIVATE_KEY
+        sync: false
+      - key: JWT_PUBLIC_KEY
+        sync: false

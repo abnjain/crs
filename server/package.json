@@ -11,6 +11,7 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "create-user": "tsx src/scripts/createUser.ts",
+    "create-user:prod": "node dist/scripts/createUser.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "tsx src/scripts/seed.ts"
   },
