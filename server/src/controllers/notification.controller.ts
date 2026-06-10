@@ -88,7 +88,7 @@ export async function markAllNotificationsRead(req: Request, res: Response, next
   try {
     const userId = req.user!._id;
     const result = await Notification.updateMany({ user: userId, readAt: null }, { readAt: new Date() }).exec();
-    res.json({ success: true, updated: result.modifiedCount ?? result.nModified ?? 0 });
+    res.json({ success: true, updated: result.modifiedCount ?? 0 });
   } catch (err) {
     next(err);
   }

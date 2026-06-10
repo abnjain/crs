@@ -6,9 +6,9 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { config } from '../config/index.js';
 import { AppError } from '../utils/AppError.js';
+import { verifyAccessToken } from '../utils/jwt.js';
 import { User } from '../models/User.js';
 import { logger } from '../utils/logger.js';
 
@@ -43,9 +43,7 @@ export async function protect(
       next(new AppError('JWT verification key not configured', 500));
       return;
     }
-    const decoded = jwt.verify(token, config.jwtVerifyKey, {
-      algorithms: [config.jwtAlgorithm],
-    }) as { id: string };
+    const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
       logger.warn('Auth failed: user not found for token');
@@ -90,9 +88,7 @@ export async function getOptionalAuthEmail(req: Request): Promise<string | undef
   if (!token) return undefined;
   try {
     if (!config.jwtVerifyKey) return undefined;
-    const decoded = jwt.verify(token, config.jwtVerifyKey, {
-      algorithms: [config.jwtAlgorithm],
-    }) as { id: string };
+    const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.id).select('email').lean<{ email?: string } | null>();
     const email = user?.email?.trim();
     return email || undefined;

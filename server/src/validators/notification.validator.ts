@@ -16,7 +16,7 @@ export const broadcastNotificationSchema = z.object({
   link: z.string().trim().optional(),
   roles: z.array(userRoleEnum).optional(),
   userIds: z.array(z.string().trim().min(1)).optional(),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type BroadcastNotificationBody = z.infer<typeof broadcastNotificationSchema>;

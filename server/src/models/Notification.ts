@@ -19,6 +19,8 @@ export interface INotification extends Document {
   sourceId?: mongoose.Types.ObjectId;
   data?: Record<string, unknown>;
   readAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const notificationSchema = new Schema<INotification>(

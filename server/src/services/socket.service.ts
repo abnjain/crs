@@ -5,13 +5,13 @@
  */
 
 import type { Server as HTTPServer } from 'http';
-import jwt from 'jsonwebtoken';
 import { Server, type Socket } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from 'ioredis';
 import mongoose from 'mongoose';
 import { config } from '../config/index.js';
 import { logger } from '../utils/logger.js';
+import { verifyAccessToken } from '../utils/jwt.js';
 import { User } from '../models/User.js';
 import { Conversation } from '../models/Conversation.js';
 import { Message } from '../models/Message.js';
@@ -121,9 +121,7 @@ export async function initSocketServer(httpServer: HTTPServer): Promise<void> {
         next(new Error('Unauthorized'));
         return;
       }
-      const decoded = jwt.verify(raw, config.jwtVerifyKey, {
-        algorithms: [config.jwtAlgorithm],
-      }) as { id: string };
+      const decoded = verifyAccessToken(raw);
       const user = await User.findById(decoded.id).select('-password').exec();
       if (!user || !user.isActive) {
         next(new Error('Unauthorized'));

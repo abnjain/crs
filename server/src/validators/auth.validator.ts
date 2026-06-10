@@ -45,9 +45,7 @@ export const updateMeBodySchema = z
 
 export const deleteMeBodySchema = z.object({
   password: z.string().min(1, 'Password is required'),
-  confirm: z.literal('DELETE', {
-    errorMap: () => ({ message: 'Type DELETE to confirm' }),
-  }),
+  confirm: z.literal('DELETE', { message: 'Type DELETE to confirm' }),
   deleteDocuments: z.boolean().optional(),
 });
 
