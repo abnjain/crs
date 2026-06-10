@@ -17,12 +17,30 @@ env:
 jobs:
   validate_target:
     runs-on: ubuntu-latest
+    outputs:
+      deploy_target: ${{ steps.resolve.outputs.deploy_target }}
     steps:
-      - name: Check DEPLOY_TARGET
+      - name: Resolve DEPLOY_TARGET
+        id: resolve
+        env:
+          TARGET_VAR: ${{ vars.DEPLOY_TARGET }}
+          TARGET_SECRET: ${{ secrets.DEPLOY_TARGET }}
         run: |
-          case "${{ vars.DEPLOY_TARGET }}" in
-            render|k8s) echo "Deploy target: ${{ vars.DEPLOY_TARGET }}" ;;
-            *) echo "DEPLOY_TARGET must be 'render' or 'k8s' (GitHub → Settings → Variables → Actions)"; exit 1 ;;
+          TARGET="${TARGET_VAR:-}"
+          if [ -z "$TARGET" ]; then
+            TARGET="${TARGET_SECRET:-}"
+          fi
+          case "$TARGET" in
+            render|k8s)
+              echo "deploy_target=$TARGET" >> "$GITHUB_OUTPUT"
+              echo "Deploy target: $TARGET"
+              ;;
+            *)
+              echo "DEPLOY_TARGET is missing or invalid."
+              echo "Set repository Variable OR Secret named DEPLOY_TARGET to exactly: render or k8s"
+              echo "GitHub → repo Settings → Secrets and variables → Actions"
+              exit 1
+              ;;
           esac
 
   ci:
@@ -52,21 +70,29 @@ jobs:
           npx tsc --noEmitOnError false
           test -f dist/server.js
       - name: Verify unified Docker image
-        if: vars.DEPLOY_TARGET == 'render'
+        if: needs.validate_target.outputs.deploy_target == 'render'
         run: docker build -t crs-unified:ci .
 
   deploy_render:
     runs-on: ubuntu-latest
-    needs: ci
-    if: vars.DEPLOY_TARGET == 'render'
+    needs: [validate_target, ci]
+    if: needs.validate_target.outputs.deploy_target == 'render'
     steps:
       - name: Trigger Render deploy
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK secret is required when DEPLOY_TARGET=render"
+            echo "Render Dashboard → crs service → Settings → Deploy Hook → copy URL"
+            exit 1
+          fi
+          curl -fsSL -X POST "$RENDER_DEPLOY_HOOK"
 
   deploy_k8s:
     runs-on: ubuntu-latest
-    needs: ci
-    if: vars.DEPLOY_TARGET == 'k8s'
+    needs: [validate_target, ci]
+    if: needs.validate_target.outputs.deploy_target == 'k8s'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -123,18 +149,32 @@ jobs:
         with:
           version: v1.30.0
       - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG_PROD: ${{ secrets.KUBE_CONFIG_PROD }}
         run: |
+          if [ -z "$KUBE_CONFIG_PROD" ]; then
+            echo "KUBE_CONFIG_PROD secret is required when DEPLOY_TARGET=k8s"
+            exit 1
+          fi
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > ~/.kube/config
+          echo "$KUBE_CONFIG_PROD" | base64 -d > ~/.kube/config
       - name: Apply manifests
         env:
           K8S_OVERLAY_PROD: ${{ secrets.K8S_OVERLAY_PROD }}
         run: |
+          if [ -z "$K8S_OVERLAY_PROD" ]; then
+            echo "K8S_OVERLAY_PROD secret is required when DEPLOY_TARGET=k8s"
+            exit 1
+          fi
           kubectl apply -k "$K8S_OVERLAY_PROD"
       - name: Update images
         env:
           K8S_NAMESPACE_PROD: ${{ secrets.K8S_NAMESPACE_PROD }}
         run: |
+          if [ -z "$K8S_NAMESPACE_PROD" ]; then
+            echo "K8S_NAMESPACE_PROD secret is required when DEPLOY_TARGET=k8s"
+            exit 1
+          fi
           kubectl -n "$K8S_NAMESPACE_PROD" set image deployment/crs-api api=${{ env.IMAGE_API }}:prod-${{ github.sha }}
           kubectl -n "$K8S_NAMESPACE_PROD" set image deployment/crs-web web=${{ env.IMAGE_WEB }}:prod-${{ github.sha }}
       - name: Wait for rollout
