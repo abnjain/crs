@@ -50,6 +50,7 @@ async function startServer(): Promise<void> {
     jwtSignKey: config.jwtSignKey ? '[redacted]' : undefined,
     jwtVerifyKey: config.jwtVerifyKey ? '[redacted]' : undefined,
     smtpPass: config.smtpPass ? '[redacted]' : undefined,
+    resendApiKey: config.resendApiKey ? '[redacted]' : undefined,
     s3AccessKeyId: config.s3AccessKeyId ? '[redacted]' : undefined,
     s3SecretAccessKey: config.s3SecretAccessKey ? '[redacted]' : undefined,
     libraryFeeWaiverKey: config.libraryFeeWaiverKey ? '[redacted]' : undefined,

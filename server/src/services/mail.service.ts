@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * Mail Service
- * Uses nodemailer to send emails (SMTP)
+ * Resend HTTP API (production / Render) or SMTP (local dev)
  * ============================================================
  */
 
@@ -9,93 +9,18 @@ import nodemailer from 'nodemailer';
 import { config } from '../config/index.js';
 import { logger } from '../utils/logger.js';
 
+export type MailBackend = 'resend' | 'smtp' | 'none';
+
 let transporter: nodemailer.Transporter | null = null;
+let probeCache: { result: MailProbeResult; at: number } | null = null;
+let lastLoggedProbeKey: string | null = null;
 
 export interface MailProbeResult {
   configured: boolean;
   ok: boolean | null;
   detail: string;
   latencyMs: number | null;
-}
-
-/** Probe SMTP connection at startup and log result */
-export async function probeMail(): Promise<MailProbeResult> {
-  const host = config.smtpHost;
-  if (!host) {
-    logger.info('Mail: SMTP not configured (missing SMTP_HOST)');
-    return { configured: false, ok: null, detail: 'Not configured', latencyMs: null };
-  }
-
-  const port = config.smtpPort;
-  const user = config.smtpUser;
-  const pass = config.smtpPass;
-  const from = config.smtpFrom;
-
-  try {
-    const probeTransport = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: user ? { user, pass } : undefined,
-    });
-
-    const t0 = Date.now();
-    await Promise.race([
-      probeTransport.verify(),
-      new Promise<never>((_, rej) => setTimeout(() => rej(new Error('SMTP verify timeout')), 5000)),
-    ]);
-
-    // Also create and cache the real transporter
-    transporter = probeTransport;
-
-    logger.info(`Mail: SMTP connected ${host}:${port} (from: ${from})`);
-    return {
-      configured: true,
-      ok: true,
-      detail: `${host}:${port}`,
-      latencyMs: Date.now() - t0,
-    };
-  } catch (err) {
-    logger.error('Mail: SMTP connection failed', String(err));
-    return {
-      configured: true,
-      ok: false,
-      detail: String(err),
-      latencyMs: null,
-    };
-  }
-}
-
-async function getTransporter(): Promise<nodemailer.Transporter | null> {
-  if (transporter) return transporter;
-
-  const host = config.smtpHost;
-  if (!host) {
-    logger.warn('Mail: SMTP not configured (missing SMTP_HOST)');
-    return null;
-  }
-
-  const port = config.smtpPort;
-  const user = config.smtpUser;
-  const pass = config.smtpPass;
-  const from = config.smtpFrom;
-
-  try {
-    transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port.toString() === '465',
-      auth: user ? { user, pass } : undefined,
-    });
-
-    // Verify connection on startup
-    await transporter.verify();
-    logger.info(`Mail: SMTP configured ${host}:${port} (from: ${from})`);
-    return transporter;
-  } catch (err) {
-    logger.error('Mail: Failed to create transporter', String(err));
-    return null;
-  }
+  backend?: MailBackend;
 }
 
 export interface SendMailOptions {
@@ -105,35 +30,307 @@ export interface SendMailOptions {
   text?: string;
 }
 
-/**
- * Send an email. Returns null if SMTP not configured.
- */
-export async function sendMail(options: SendMailOptions): Promise<boolean> {
-  const transport = await getTransporter();
-  if (!transport) return false;
+function isRenderRuntime(): boolean {
+  return process.env.RENDER === 'true';
+}
+
+/** Pick mail backend: Resend on Render/production; SMTP for local when configured. */
+export function resolveMailBackend(): MailBackend {
+  const mode = config.mailProvider;
+
+  if (mode === 'resend') {
+    return config.resendApiKey ? 'resend' : 'none';
+  }
+  if (mode === 'smtp') {
+    return config.smtpHost ? 'smtp' : 'none';
+  }
+
+  // auto
+  if (config.resendApiKey) return 'resend';
+  if (isRenderRuntime() && config.smtpHost) {
+    return 'none';
+  }
+  return config.smtpHost ? 'smtp' : 'none';
+}
+
+function mailFromAddress(): string {
+  return config.mailFrom || config.smtpFrom || `noreply@${config.appName.toLowerCase()}.local`;
+}
+
+function logProbeOnce(result: MailProbeResult): void {
+  const key = `${result.backend ?? 'none'}:${result.ok}:${result.detail}`;
+  if (key === lastLoggedProbeKey) return;
+  lastLoggedProbeKey = key;
+
+  if (!result.configured) {
+    logger.info(`Mail: ${result.detail}`);
+    return;
+  }
+  if (result.ok) {
+    logger.info(`Mail: connected (${result.backend}) ${result.detail}`);
+    return;
+  }
+  logger.error(`Mail: connection failed (${result.backend}) ${result.detail}`);
+}
+
+async function probeResend(): Promise<MailProbeResult> {
+  if (!config.resendApiKey) {
+    return {
+      configured: false,
+      ok: null,
+      detail: 'Resend not configured (missing RESEND_API_KEY)',
+      latencyMs: null,
+      backend: 'none',
+    };
+  }
+
+  const t0 = Date.now();
+  try {
+    const res = await fetch('https://api.resend.com/domains', {
+      headers: { Authorization: `Bearer ${config.resendApiKey}` },
+      signal: AbortSignal.timeout(config.smtpVerifyTimeoutMs),
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      return {
+        configured: true,
+        ok: false,
+        detail: 'Resend API key rejected',
+        latencyMs: Date.now() - t0,
+        backend: 'resend',
+      };
+    }
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      return {
+        configured: true,
+        ok: false,
+        detail: `Resend API error ${res.status}${body ? `: ${body.slice(0, 120)}` : ''}`,
+        latencyMs: Date.now() - t0,
+        backend: 'resend',
+      };
+    }
+
+    return {
+      configured: true,
+      ok: true,
+      detail: `resend.com (from: ${mailFromAddress()})`,
+      latencyMs: Date.now() - t0,
+      backend: 'resend',
+    };
+  } catch (err) {
+    return {
+      configured: true,
+      ok: false,
+      detail: String(err),
+      latencyMs: null,
+      backend: 'resend',
+    };
+  }
+}
+
+function smtpTransportOptions() {
+  const port = config.smtpPort;
+  return {
+    host: config.smtpHost,
+    port,
+    secure: port === 465,
+    requireTLS: config.smtpRequireTls,
+    pool: config.smtpPool,
+    maxConnections: config.smtpMaxConnections,
+    maxMessages: config.smtpMaxMessages,
+    connectionTimeout: config.smtpConnectionTimeoutMs,
+    greetingTimeout: config.smtpGreetingTimeoutMs,
+    socketTimeout: config.smtpSocketTimeoutMs,
+    auth: config.smtpUser ? { user: config.smtpUser, pass: config.smtpPass } : undefined,
+    family: 4,
+  };
+}
+
+async function probeSmtp(): Promise<MailProbeResult> {
+  const host = config.smtpHost;
+  if (!host) {
+    return {
+      configured: false,
+      ok: null,
+      detail: 'SMTP not configured (missing SMTP_HOST)',
+      latencyMs: null,
+      backend: 'none',
+    };
+  }
+
+  if (isRenderRuntime()) {
+    return {
+      configured: true,
+      ok: false,
+      detail:
+        'SMTP blocked on Render (ports 25/465/587). Set RESEND_API_KEY and MAIL_PROVIDER=resend, remove SMTP_* vars.',
+      latencyMs: null,
+      backend: 'none',
+    };
+  }
 
   const from = config.smtpFrom;
-  // const appName = config.appName;
+  const port = config.smtpPort;
+
+  try {
+    const probeTransport = nodemailer.createTransport(smtpTransportOptions());
+    const t0 = Date.now();
+    await Promise.race([
+      probeTransport.verify(),
+      new Promise<never>((_, rej) =>
+        setTimeout(() => rej(new Error('SMTP verify timeout')), config.smtpVerifyTimeoutMs)
+      ),
+    ]);
+
+    transporter = probeTransport;
+
+    return {
+      configured: true,
+      ok: true,
+      detail: `${host}:${port} (from: ${from})`,
+      latencyMs: Date.now() - t0,
+      backend: 'smtp',
+    };
+  } catch (err) {
+    return {
+      configured: true,
+      ok: false,
+      detail: String(err),
+      latencyMs: null,
+      backend: 'smtp',
+    };
+  }
+}
+
+async function probeMailUncached(): Promise<MailProbeResult> {
+  const backend = resolveMailBackend();
+
+  if (backend === 'none') {
+    if (isRenderRuntime() && config.smtpHost && !config.resendApiKey) {
+      return {
+        configured: true,
+        ok: false,
+        detail:
+          'SMTP blocked on Render. Add RESEND_API_KEY (https://resend.com) and MAIL_PROVIDER=resend.',
+        latencyMs: null,
+        backend: 'none',
+      };
+    }
+    return {
+      configured: false,
+      ok: null,
+      detail: 'Mail not configured (set RESEND_API_KEY or SMTP_HOST)',
+      latencyMs: null,
+      backend: 'none',
+    };
+  }
+
+  if (backend === 'resend') return probeResend();
+  return probeSmtp();
+}
+
+/** Probe mail connectivity; cached to avoid health-check log spam. */
+export async function probeMail(): Promise<MailProbeResult> {
+  const now = Date.now();
+  if (probeCache && now - probeCache.at < config.smtpProbeCacheMs) {
+    return probeCache.result;
+  }
+
+  const result = await probeMailUncached();
+  probeCache = { result, at: now };
+  logProbeOnce(result);
+  return result;
+}
+
+async function getSmtpTransporter(): Promise<nodemailer.Transporter | null> {
+  if (transporter) return transporter;
+  if (!config.smtpHost || isRenderRuntime()) return null;
+
+  try {
+    transporter = nodemailer.createTransport(smtpTransportOptions());
+    await Promise.race([
+      transporter.verify(),
+      new Promise<never>((_, rej) =>
+        setTimeout(() => rej(new Error('SMTP verify timeout')), config.smtpVerifyTimeoutMs)
+      ),
+    ]);
+    logger.info(`Mail: SMTP ready ${config.smtpHost}:${config.smtpPort}`);
+    return transporter;
+  } catch (err) {
+    logger.error('Mail: Failed to create SMTP transporter', String(err));
+    return null;
+  }
+}
+
+async function sendViaResend(options: SendMailOptions): Promise<boolean> {
+  if (!config.resendApiKey) {
+    logger.warn('Mail: RESEND_API_KEY not configured');
+    return false;
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${config.resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: mailFromAddress(),
+        to: [options.to],
+        subject: options.subject,
+        html: options.html,
+        text: options.text,
+      }),
+      signal: AbortSignal.timeout(config.smtpSocketTimeoutMs),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      logger.error(`Mail: Resend send failed ${res.status}${body ? `: ${body.slice(0, 200)}` : ''}`);
+      return false;
+    }
+
+    logger.info(`Mail: Sent via Resend to ${options.to} · ${options.subject}`);
+    return true;
+  } catch (err) {
+    logger.error('Mail: Resend send error', String(err));
+    return false;
+  }
+}
+
+async function sendViaSmtp(options: SendMailOptions): Promise<boolean> {
+  const transport = await getSmtpTransporter();
+  if (!transport) return false;
 
   try {
     await transport.sendMail({
-      from: `${from}`,
+      from: mailFromAddress(),
       to: options.to,
       subject: options.subject,
       text: options.text,
       html: options.html,
     });
-    logger.info(`Mail: Sent to ${options.to} · ${options.subject}`);
+    logger.info(`Mail: Sent via SMTP to ${options.to} · ${options.subject}`);
     return true;
   } catch (err) {
-    logger.error('Mail: Failed to send', String(err));
+    logger.error('Mail: SMTP send failed', String(err));
     return false;
   }
 }
 
-/**
- * Send email change verification code
- */
+/** Send an email using the configured backend. */
+export async function sendMail(options: SendMailOptions): Promise<boolean> {
+  const backend = resolveMailBackend();
+  if (backend === 'resend') return sendViaResend(options);
+  if (backend === 'smtp') return sendViaSmtp(options);
+  logger.warn('Mail: not configured — email not sent');
+  return false;
+}
+
+/** Send email change verification code */
 export async function sendEmailVerificationCode(
   email: string,
   code: string,

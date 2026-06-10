@@ -53,7 +53,13 @@ services:
         value: "900000"
       - key: RATE_LIMIT_AUTH_MAX
         value: "20"
+      - key: MAIL_PROVIDER
+        value: resend
       - key: MONGO_URI
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
         sync: false
       - key: JWT_PRIVATE_KEY
         sync: false

@@ -78,7 +78,12 @@ export const config = {
   s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
   s3SignedUrlExpires: parseInt(process.env.S3_SIGNED_URL_EXPIRES || '3600', 10),
 
-  /** SMTP */
+  /** Mail — Resend HTTP API (Render) or SMTP (local) */
+  mailProvider: (process.env.MAIL_PROVIDER || 'auto').trim().toLowerCase(),
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  mailFrom: process.env.MAIL_FROM || process.env.SMTP_FROM || '',
+
+  /** SMTP (local dev; blocked on Render free/starter outbound ports) */
   smtpHost: process.env.SMTP_HOST || '',
   smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
   smtpUser: process.env.SMTP_USER || '',
