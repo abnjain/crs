@@ -39,6 +39,11 @@ function parseSameSite(value: string | undefined): 'lax' | 'strict' | 'none' {
   return 'lax';
 }
 
+function normalizeSecret(value: string | undefined): string {
+  if (!value) return '';
+  return value.trim().replace(/^["']+|["']+$/g, '');
+}
+
 const jwtAlgorithm = (process.env.JWT_ALG || 'RS256').trim();
 const cookieSameSite = parseSameSite(process.env.COOKIE_SAMESITE);
 const cookieSecure = parseBool(process.env.COOKIE_SECURE, isProduction) || cookieSameSite === 'none';
@@ -80,8 +85,8 @@ export const config = {
 
   /** Mail — Resend HTTP API (Render) or SMTP (local) */
   mailProvider: (process.env.MAIL_PROVIDER || 'auto').trim().toLowerCase(),
-  resendApiKey: process.env.RESEND_API_KEY || '',
-  mailFrom: process.env.MAIL_FROM || process.env.SMTP_FROM || '',
+  resendApiKey: normalizeSecret(process.env.RESEND_API_KEY),
+  mailFrom: normalizeSecret(process.env.MAIL_FROM || process.env.SMTP_FROM),
 
   /** SMTP (local dev; blocked on Render free/starter outbound ports) */
   smtpHost: process.env.SMTP_HOST || '',

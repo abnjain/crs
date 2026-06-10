@@ -53,10 +53,6 @@ export function resolveMailBackend(): MailBackend {
   return config.smtpHost ? 'smtp' : 'none';
 }
 
-function mailFromAddress(): string {
-  return config.mailFrom || config.smtpFrom || `noreply@${config.appName.toLowerCase()}.local`;
-}
-
 function logProbeOnce(result: MailProbeResult): void {
   const key = `${result.backend ?? 'none'}:${result.ok}:${result.detail}`;
   if (key === lastLoggedProbeKey) return;
@@ -73,6 +69,19 @@ function logProbeOnce(result: MailProbeResult): void {
   logger.error(`Mail: connection failed (${result.backend}) ${result.detail}`);
 }
 
+function mailFromAddress(): string {
+  return config.mailFrom || config.smtpFrom || `noreply@${config.appName.toLowerCase()}.local`;
+}
+
+async function readResendError(res: Response): Promise<string> {
+  try {
+    const data = (await res.json()) as { message?: string; name?: string };
+    return (data.message || data.name || '').trim();
+  } catch {
+    return (await res.text().catch(() => '')).trim().slice(0, 200);
+  }
+}
+
 async function probeResend(): Promise<MailProbeResult> {
   if (!config.resendApiKey) {
     return {
@@ -84,29 +93,56 @@ async function probeResend(): Promise<MailProbeResult> {
     };
   }
 
+  if (!/^re_[A-Za-z0-9_]+$/.test(config.resendApiKey)) {
+    return {
+      configured: true,
+      ok: false,
+      detail:
+        'RESEND_API_KEY format invalid (expected re_... with no quotes or spaces). Re-paste the key in Render env.',
+      latencyMs: null,
+      backend: 'resend',
+    };
+  }
+
   const t0 = Date.now();
   try {
-    const res = await fetch('https://api.resend.com/domains', {
-      headers: { Authorization: `Bearer ${config.resendApiKey}` },
+    // Send-only keys return 403 on GET /domains. POST with empty body: 422 = auth OK, 401 = bad key.
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${config.resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
       signal: AbortSignal.timeout(config.smtpVerifyTimeoutMs),
     });
 
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 422) {
       return {
         configured: true,
-        ok: false,
-        detail: 'Resend API key rejected',
+        ok: true,
+        detail: `resend.com send access (from: ${mailFromAddress()})`,
         latencyMs: Date.now() - t0,
         backend: 'resend',
       };
     }
 
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
+    if (res.ok) {
+      return {
+        configured: true,
+        ok: true,
+        detail: `resend.com (from: ${mailFromAddress()})`,
+        latencyMs: Date.now() - t0,
+        backend: 'resend',
+      };
+    }
+
+    const errMsg = await readResendError(res);
+    if (res.status === 401) {
       return {
         configured: true,
         ok: false,
-        detail: `Resend API error ${res.status}${body ? `: ${body.slice(0, 120)}` : ''}`,
+        detail: `Resend API key invalid${errMsg ? `: ${errMsg}` : ''}`,
         latencyMs: Date.now() - t0,
         backend: 'resend',
       };
@@ -114,8 +150,8 @@ async function probeResend(): Promise<MailProbeResult> {
 
     return {
       configured: true,
-      ok: true,
-      detail: `resend.com (from: ${mailFromAddress()})`,
+      ok: false,
+      detail: `Resend API error ${res.status}${errMsg ? `: ${errMsg}` : ''}`,
       latencyMs: Date.now() - t0,
       backend: 'resend',
     };
@@ -288,8 +324,10 @@ async function sendViaResend(options: SendMailOptions): Promise<boolean> {
     });
 
     if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      logger.error(`Mail: Resend send failed ${res.status}${body ? `: ${body.slice(0, 200)}` : ''}`);
+      const errMsg = await readResendError(res);
+      logger.error(
+        `Mail: Resend send failed ${res.status}${errMsg ? `: ${errMsg}` : ''}`
+      );
       return false;
     }
 
